@@ -181,7 +181,15 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
      * This method unlocks the widget.
      */
     public void unlock() {
-        getGrid().getModel().clearRemovedRows();
+        Editable model = getGrid().getModel();
+        model.clearRemovedRows();
+        if (model.getTotalPagesNumber() <= model.getCurrentPageNumber()) {
+            int currentPageNumber = model.getTotalPagesNumber() - 1;
+            if (currentPageNumber >= 0)
+                model.setCurrentPageNumber(currentPageNumber);
+            else
+                model.setCurrentPageNumber(0);
+        }
         display();
         getLockingPanel().unlock();
         getGrid().setLocked(false);
