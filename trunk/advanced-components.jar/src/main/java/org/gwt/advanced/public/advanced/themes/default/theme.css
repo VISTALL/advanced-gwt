@@ -482,28 +482,6 @@
 .advanced-DatePicker {
 }
 
-/** date box styles */
-.advanced-DatePicker .date-box {
-    font-family: sans-serif;
-    font-size: 10px;
-    width: 100%;
-    border: 1px dashed darkgray;
-}
-
-/** open calendar button styles */
-.advanced-DatePicker .open-calendar-button {
-    font-family: sans-serif;
-    font-size: 10px;
-    text-align: center;
-    vertical-align: middle;
-    color: black;
-    padding: 1px 1px 1px 1px;
-    background-color: gainsboro;
-    border: 1px solid darkgray;
-    cursor: pointer;
-    width: 18px;
-}
-
 /*********************
  * Master-details panel styles
  */
@@ -551,4 +529,144 @@
 .advanced-masterDetailPanel .grid-panel-layout .layout-body {
     width: 100%;
     padding: 0;
+}
+
+/*********************
+ * Combo box, suggestion box and date picker styles
+ */
+
+/** main combo box style */
+.advanced-TextButtonPanel {
+    border: 1px;
+    padding: 0;
+}
+
+/** layout styles */
+.advanced-TextButtonPanel table {
+    border: 0;
+    padding: 0;
+    border-collapse: collapse;
+}
+
+/** common layout cell styles */
+.advanced-TextButtonPanel td {
+    border: 1px solid darkgray;
+    padding: 0;
+    vertical-align: middle;
+}
+
+/** text box styles */
+.advanced-TextButtonPanel .selected-value {
+    border: 1px solid white;
+    font-family: sans-serif;
+    font-size: 10px;
+    color: black;
+}
+
+/** selected text box style */
+.advanced-TextButtonPanel .selected-row {
+     background-color: lightgoldenrodyellow;
+}
+
+/** button styles */
+.advanced-TextButtonPanel .choice-button-up {
+    text-align: center;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    background-color: gainsboro;
+    border-top: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid darkgray;
+    border-bottom: 1px solid darkgray;
+    padding: 0;
+}
+
+/** button styles */
+.advanced-TextButtonPanel .choice-button-up-hovering {
+    text-align: center;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    background-color: gainsboro;
+    border-top: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid darkgray;
+    border-bottom: 1px solid darkgray;
+    cursor: pointer;
+    padding: 0;
+}
+
+/** button styles */
+.advanced-TextButtonPanel .choice-button-down {
+    text-align: center;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    background-color: gainsboro;
+    border: 1px solid darkgray;
+    padding: 0;
+}
+
+/** button styles */
+.advanced-TextButtonPanel .choice-button-down-hovering {
+    text-align: center;
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+    background-color: gainsboro;
+    border: 1px solid darkgray;
+    cursor: default;
+    padding: 0;
+}
+
+/** button image styles */
+.advanced-TextButtonPanel img {
+    display: inline;
+    border: 0;
+}
+
+/*********************
+ * Additional Combo box styles
+ */
+
+/** popup panel styles */
+.advanced-ListPopupPanel {
+    border: 1px solid darkgray;
+    background-color: white;
+    padding: 0;
+}
+
+/** items list style */
+.advanced-ListPopupPanel .list {
+    border-collapse: collapse;
+    padding: 0;
+    cursor: pointer;
+}
+
+/** items list selected row style */
+.advanced-ListPopupPanel .list .selected-row {
+    background-color: lightgoldenrodyellow;
+}
+
+/** item style **/
+.advanced-ListPopupPanel .list .item {
+    padding: 1px;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: normal;
+}
+
+/** icon item image style **/
+.advanced-ListPopupPanel .list .icon-item img {
+    padding: 1px;
+    border: 0;
+}
+
+/** icon item label style **/
+.advanced-ListPopupPanel .list .icon-item div {
+    padding: 1px;
+    font-size: 10px;
+    font-family: sans-serif;
+    font-weight: normal;
 }

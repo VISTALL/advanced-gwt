@@ -12,7 +12,7 @@
   <artifactId>advanced-components</artifactId>
   <packaging>jar</packaging>
   <name>Advanced GWT Components</name>
-  <version>1.1.1</version>
+  <version>1.2.0-beta</version>
 
   <description>The set of useful GWT components</description>
   <inceptionYear>2008</inceptionYear>

@@ -27,7 +27,7 @@ public class GridPanelFactoryImpl implements GridPanelFactory {
                         "Name", "Birth Date", "Position", "ID"
                 },
                 new Class[]{
-                        TextBoxCell.class, DateCell.class, ListCell.class, LongCell.class
+                        TextBoxCell.class, DateCell.class, ComboBoxCell.class, LongCell.class
                 },
                 (Editable) model
         );

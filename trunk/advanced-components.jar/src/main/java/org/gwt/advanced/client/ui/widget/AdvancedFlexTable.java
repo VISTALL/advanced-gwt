@@ -1,7 +1,12 @@
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.*;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.ArrayList;
@@ -16,13 +21,9 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  */
 public class AdvancedFlexTable extends FlexTable {
-    /**
-     * the thead element
-     */
+    /** the thead element */
     private Element tHeadElement;
-    /**
-     * header widgets list
-     */
+    /** header widgets list */
     private List headerWidgets;
     /** a scroll panel widget (supported by IE only) */
     private Panel scrollPanel;
@@ -99,20 +100,27 @@ public class AdvancedFlexTable extends FlexTable {
             if (enabled && !isScrollable()) {
                 Element parent = DOM.getParent(getElement());
                 String height = String.valueOf(getTableHeight());
+                String width = String.valueOf(getTableWidth());
 
-                DOM.appendChild(parent, scrollPanel.getElement());
-                DOM.removeChild(parent, getElement());
+                if (parent != null) {
+                    DOM.removeChild(parent, getElement());
+                    DOM.appendChild(parent, scrollPanel.getElement());
+                }
                 DOM.appendChild(scrollPanel.getElement(), getElement());
 
                 scrollPanel.setHeight(height);
+                scrollPanel.setWidth(width);
             } else if (!enabled && isScrollable()) {
                 Element parent = DOM.getParent(scrollPanel.getElement());
                 DOM.removeChild(scrollPanel.getElement(), getElement());
-                DOM.appendChild(parent, getElement());
-                DOM.removeChild(parent, scrollPanel.getElement());
+
+                if (parent != null) {
+                    DOM.removeChild(parent, scrollPanel.getElement());
+                    DOM.appendChild(parent, getElement());
+                }
             }
         } else {
-            int tableHeight = getTableHeight(); 
+            int tableHeight = getTableHeight();
 
             int bodyHeight;
             if (getTHeadElement() != null) {
@@ -143,6 +151,21 @@ public class AdvancedFlexTable extends FlexTable {
             return Integer.parseInt(height.substring(0, height.indexOf("px")));
         } else {
             return getOffsetHeight();
+        }
+    }
+
+    /**
+     * This method returns an actual table width.<p/>
+     * If the value is not specified in the element styles, it returns the offset width.
+     *
+     * @return an actual table width.
+     */
+    protected int getTableWidth() {
+        String width = DOM.getStyleAttribute(getElement(), "width");
+        if (width != null && width.endsWith("px")) {
+            return Integer.parseInt(width.substring(0, width.indexOf("px"))) + 20;
+        } else {
+            return getOffsetWidth() + 20;
         }
     }
 

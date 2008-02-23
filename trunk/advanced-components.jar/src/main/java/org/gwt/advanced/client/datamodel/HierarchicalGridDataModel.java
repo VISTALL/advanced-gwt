@@ -1,6 +1,8 @@
 package org.gwt.advanced.client.datamodel;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a hierarchical grid data model (experimental).

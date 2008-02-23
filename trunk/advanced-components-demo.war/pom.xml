@@ -13,10 +13,10 @@
     <artifactId>advanced-components-demo</artifactId>
     <packaging>war</packaging>
     <name>Advanced GWT Components Demo Application</name>
-    <version>1.1.1</version>
+    <version>1.2.0-beta</version>
 
     <description>The application demonstrating features of the GWT Advanced Components library.</description>
-    <inceptionYear>2007</inceptionYear>
+    <inceptionYear>2008</inceptionYear>
 
     <build>
         <defaultGoal>install</defaultGoal>
@@ -62,7 +62,7 @@
         <dependency>
             <groupId>org.gwt.advanced</groupId>
             <artifactId>advanced-components</artifactId>
-            <version>1.1.1</version>
+            <version>1.2.0-beta</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
