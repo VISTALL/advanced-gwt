@@ -55,7 +55,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      */
     private List decorators;
     /**
-     * a curre selected row number
+     * a current selected row number
      */
     private int currentRow = -1;
     /**

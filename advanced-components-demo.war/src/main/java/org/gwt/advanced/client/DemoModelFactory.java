@@ -1,13 +1,12 @@
 package org.gwt.advanced.client;
 
-import com.google.gwt.user.client.ui.ListBox;
+import org.gwt.advanced.client.datamodel.*;
+import org.gwt.advanced.client.ui.widget.ComboBox;
+import org.gwt.advanced.client.ui.widget.GridPanel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
-
-import org.gwt.advanced.client.datamodel.*;
-import org.gwt.advanced.client.ui.widget.GridPanel;
 
 /**
  * This is a model factory simulating persistence storage.
@@ -42,6 +41,59 @@ public class DemoModelFactory {
         new Object[] {"Management", "Managers", "They manage everyone", new Long(3)},
         new Object[] {"Testing", "Testers", "They test applications", new Long(4)},
         new Object[] {"President", "President", "Very important person", new Long(5)},
+    };
+
+    /**
+     * The list of Europe countries sorted by GDP.
+     */
+    private static String[][] countries = new String[][] {
+        new String[] {"1", "Germany"},
+        new String[] {"2", "United Kingdom"},
+        new String[] {"3", "France"},
+        new String[] {"4", "Italy"},
+        new String[] {"5", "Spain"},
+        new String[] {"6", "Russia"},
+        new String[] {"7", "Netherlands"},
+        new String[] {"8", "Turkey"},
+        new String[] {"9", "Sweden"},
+        new String[] {"10", "Poland"},
+        new String[] {"11", "Switzerland"},
+        new String[] {"12", "Norway"},
+        new String[] {"13", "Austria"},
+        new String[] {"14", "Greece"},
+        new String[] {"15", "Denmark"},
+        new String[] {"16", "Ireland"},
+        new String[] {"17", "Finland"},
+        new String[] {"18", "Portugal"},
+        new String[] {"19", "Romania"},
+        new String[] {"20", "Ukraine"},
+        new String[] {"21", "Hungary"},
+        new String[] {"22", "Slovakia"},
+        new String[] {"23", "Croatia"},
+        new String[] {"24", "Luxembourg"},
+        new String[] {"25", "Slovenia"},
+        new String[] {"26", "Serbia"},
+        new String[] {"27", "Bulgaria"},
+        new String[] {"28", "Azerbaijan"},
+        new String[] {"29", "Lithuania"},
+        new String[] {"30", "Belarus"},
+        new String[] {"31", "Latvia"},
+        new String[] {"32", "Estonia"},
+        new String[] {"33", "Cyprus"},
+        new String[] {"34", "Iceland"},
+        new String[] {"35", "Bosnia and Herzegovina"},
+        new String[] {"36", "Albania"},
+        new String[] {"37", "Georgia"},
+        new String[] {"38", "Armenia"},
+        new String[] {"39", "Macedonia"},
+        new String[] {"40", "Malta"},
+        new String[] {"41", "Moldova"},
+        new String[] {"42", "Andorra"},
+        new String[] {"43", "Liechtenstein"},
+        new String[] {"44", "Monaco"},
+        new String[] {"45", "Montenegro"},
+        new String[] {"46", "San Marino"},
+        new String[] {"47", "Vatican City"}
     };
 
     /**
@@ -126,6 +178,51 @@ public class DemoModelFactory {
     }
 
     /**
+     * Creates a combo box model of countries.
+     *
+     * @return is a combo box model instance.
+     */
+    public static ComboBoxDataModel createsCountriesModel() {
+        ComboBoxDataModel model = new ComboBoxDataModel();
+        for (int i = 0; i < countries.length; i++) {
+            String[] country = countries[i];
+            model.add(country[0], country[1]);
+        }
+        return model;
+    }
+
+    /**
+     * Fills the model with a list of countries filted by expression.
+     *
+     * @param expression is an expression to fill the list.
+     * @param model is a model to fill.
+     */
+    public static void fillCountriesModel(String expression, SuggestionBoxDataModel model) {
+        model.clear();
+        for (int i = 0; i < countries.length; i++) {
+            String[] country = countries[i];
+            if (expression != null && country[1].toLowerCase().startsWith(expression.toLowerCase()))
+                model.add(country[0], country[1]);
+        }
+    }
+
+    /**
+     * Fills the model with a list of countries (with flags) filted by expression.
+     *
+     * @param expression is an expression to fill the list.
+     * @param model is a model to fill.
+     */
+    public static void fillCountriesWithFlagsModel(String expression, SuggestionBoxDataModel model) {
+        model.clear();
+        for (int i = 0; i < countries.length; i++) {
+            String[] country = countries[i];
+            if (expression != null && country[1].toLowerCase().startsWith(expression.toLowerCase())) {
+                model.add(country[0], new IconItem("images/22px-Flag_of_" + country[1].replaceAll(" ", "_") + ".svg.png", country[1]));
+            }
+        }
+    }
+
+    /**
      * This method generates random date.
      *
      * @return a date.
@@ -159,23 +256,27 @@ public class DemoModelFactory {
     }
 
     /**
-     * This method generates departments list box.
+     * This method generates departments combo box.
      *
      * @param selectedIndex is a selected item index.
      * @return a list box of departments.
      */
-    public static ListBox createDepartmentListBox(int selectedIndex) {
-        ListBox listBox = new ListBox();
-        listBox.addItem("Recruiter", "Recruiter");
-        listBox.addItem("Accountant", "Accountant");
-        listBox.addItem("Jr. Developer", "Jr. Developer");
-        listBox.addItem("Developer", "Developer");
-        listBox.addItem("Senior Developer", "Senior Developer");
-        listBox.addItem("Project Manager", "Project Manager");
-        listBox.addItem("QA Manager", "QA Manager");
-        listBox.addItem("Tester", "Tester");
-        listBox.addItem("President", "President");
-        listBox.setSelectedIndex(selectedIndex);
-        return listBox;
+    public static ComboBox createDepartmentListBox(int selectedIndex) {
+        ComboBox comboBox = new ComboBox();
+        ComboBoxDataModel model = new ComboBoxDataModel();
+        comboBox.setModel(model);
+
+        model.add("Recruiter", "Recruiter");
+        model.add("Accountant", "Accountant");
+        model.add("Jr. Developer", "Jr. Developer");
+        model.add("Developer", "Developer");
+        model.add("Senior Developer", "Senior Developer");
+        model.add("Project Manager", "Project Manager");
+        model.add("QA Manager", "QA Manager");
+        model.add("Tester", "Tester");
+        model.add("President", "President");
+        model.setSelectedIndex(selectedIndex);
+
+        return comboBox;
     }
 }

@@ -3,7 +3,6 @@ package org.gwt.advanced.client.ui.widget;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.CalendarListener;
 
 import java.util.Date;
@@ -13,11 +12,7 @@ import java.util.Date;
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  */
-public class DatePicker extends DockPanel implements AdvancedWidget, CalendarListener {
-    /** date text box */
-    private TextBox dateBox;
-    /** open calendar button */
-    private ToggleButton openCalendarButton;
+public class DatePicker extends TextButtonPanel implements CalendarListener {
     /** calendar popup panel */
     private PopupPanel calendarPanel;
     /** calendar widget */
@@ -28,13 +23,11 @@ public class DatePicker extends DockPanel implements AdvancedWidget, CalendarLis
     private Date date;
     /** time visibility flag */
     private boolean timeVisible = false;
-    /** open calendar button visibility flag */
-    private boolean openCalendarButtonVisible = true;
 
     /**
      * Creates an instance of this class.
      *
-     * @param initialDate is ana initial date.
+     * @param initialDate is an initial date.
      */
     public DatePicker(Date initialDate) {
         this.date = initialDate;
@@ -58,29 +51,11 @@ public class DatePicker extends DockPanel implements AdvancedWidget, CalendarLis
         this.timeVisible = timeVisible;
     }
 
-    /**
-     * Getter for property 'openCalendarButtonVisible'.
-     *
-     * @return Value for property 'openCalendarButtonVisible'.
-     */
-    public boolean isOpenCalendarButtonVisible() {
-        return openCalendarButtonVisible;
-    }
-
-    /**
-     * Setter for property 'openCalendarButtonVisible'.
-     *
-     * @param openCalendarButtonVisible Value to set for property 'openCalendarButtonVisible'.
-     */
-    public void setOpenCalendarButtonVisible(boolean openCalendarButtonVisible) {
-        this.openCalendarButtonVisible = openCalendarButtonVisible;
-    }
-
     /** {@inheritDoc} */
     public void onChange(Widget sender, Date oldValue) {
         getCalendarPanel().hide();
         Date date = getCalendar().getDate();
-        getDateBox().setText(getFormat().format(date));
+        getSelectedValue().setText(getFormat().format(date));
         this.date = date; 
     }
 
@@ -100,26 +75,31 @@ public class DatePicker extends DockPanel implements AdvancedWidget, CalendarLis
     
     /** {@inheritDoc} */
     public void display() {
-        setStyleName("advanced-DatePicker");
+        super.display();
+        getCalendar().setShowTime(isTimeVisible());
+    }
 
-        removeWidgets();
+    /**
+     * Gets a textual representation of the date using format properties.
+     *
+     * @return textual representation.
+     */
+    public String getTextualDate() {
+        return getFormat().format(getDate());
+    }
 
+    /** {@inheritDoc} */
+    protected void prepareSelectedValue() {
+        super.prepareSelectedValue();
+        getSelectedValue().setReadOnly(true);
         Date date = getDate();
         if (date != null)
-            getDateBox().setText(getFormat().format(date));
-        add(getDateBox(), DockPanel.CENTER);
-        getDateBox().setStyleName("date-box");
-        setCellWidth(getDateBox(), "100%");
+            getSelectedValue().setText(getFormat().format(date));
+    }
 
-        if (isOpenCalendarButtonVisible()) {
-            add(getOpenCalendarButton(), DockPanel.EAST);
-            getOpenCalendarButton().setStyleName("open-calendar-button");
-            setCellWidth(getOpenCalendarButton(), "1%");
-        }
-
-        addComponentListeners();
-
-        getCalendar().setShowTime(isTimeVisible());
+    /** {@inheritDoc} */
+    protected String getDefaultImageName() {
+        return "calendar.gif";
     }
 
     /**
@@ -129,51 +109,17 @@ public class DatePicker extends DockPanel implements AdvancedWidget, CalendarLis
         if (openCalendarClickListener == null)
             openCalendarClickListener = new OpenCalendarClickListener();
 
-        if (isOpenCalendarButtonVisible()) {
-            ToggleButton calendarButton = getOpenCalendarButton();
+        if (isChoiceButtonVisible()) {
+            ToggleButton calendarButton = getChoiceButton();
             calendarButton.removeClickListener(openCalendarClickListener);
             calendarButton.addClickListener(openCalendarClickListener);
         } else {
-            TextBox box = getDateBox();
+            TextBox box = getSelectedValue();
             box.removeClickListener(openCalendarClickListener);
             box.addClickListener(openCalendarClickListener);
         }
 
         getCalendar().addCalendarListener(this);
-    }
-
-    /**
-     * This method cleans the main panel.
-     */
-    protected void removeWidgets() {
-        for (int i = 0; i < getWidgetCount(); i++)
-            remove(i);
-    }
-
-    /**
-     * Getter for property 'dateBox'.
-     *
-     * @return Value for property 'dateBox'.
-     */
-    protected TextBox getDateBox () {
-        if (dateBox == null) {
-            dateBox = new TextBox();
-            dateBox.setReadOnly(true);
-        }
-        
-        return dateBox;
-    }
-
-    /**
-     * Getter for property 'openCalendarButton'.
-     *
-     * @return Value for property 'openCalendarButton'.
-     */
-    protected ToggleButton getOpenCalendarButton () {
-        if (openCalendarButton == null)
-            openCalendarButton = new ToggleButton("..");
-
-        return openCalendarButton;
     }
 
     /**
@@ -233,11 +179,12 @@ public class DatePicker extends DockPanel implements AdvancedWidget, CalendarLis
             calendar.display();
             getCalendarPanel().show();
 
-            int left = getAbsoluteLeft() + getDateBox().getOffsetWidth();
+            int left = getAbsoluteLeft() + getSelectedValue().getOffsetWidth();
             if (left + getCalendar().getOffsetWidth() > Window.getClientWidth())
                 left -= getCalendar().getOffsetWidth();
 
             getCalendarPanel().setPopupPosition(left, getAbsoluteTop());
+            getChoiceButton().setDown(false);
         }
     }
 }

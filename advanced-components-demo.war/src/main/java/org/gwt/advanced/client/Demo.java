@@ -3,15 +3,13 @@ package org.gwt.advanced.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.*;
-import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.datamodel.LazyGridDataModel;
-import org.gwt.advanced.client.ui.widget.AdvancedFlexTable;
-import org.gwt.advanced.client.ui.widget.GridPanel;
-import org.gwt.advanced.client.ui.widget.HierarchicalGrid;
-import org.gwt.advanced.client.ui.widget.MasterDetailPanel;
+import org.gwt.advanced.client.datamodel.*;
+import org.gwt.advanced.client.ui.widget.*;
 import org.gwt.advanced.client.ui.widget.cell.LongCell;
 import org.gwt.advanced.client.ui.widget.cell.TextBoxCell;
 import org.gwt.advanced.client.util.ThemeHelper;
+
+import java.util.Date;
 
 /**
  * This is a demo entry point.
@@ -28,7 +26,8 @@ public class Demo implements EntryPoint {
             bundle.editableGridDemo(),
             bundle.hierarchicalGridDemo(),
             bundle.lazyGridDemo(),
-            bundle.masterDetailDemo()
+            bundle.masterDetailDemo(),
+            bundle.otherControlsDemo()
         };
     }
 
@@ -54,6 +53,7 @@ public class Demo implements EntryPoint {
         final AdvancedFlexTable scorllableGrid = createHierarchicalGridDemo(tabPanel).getGrid();
         createLazyLoadableGridDemo(tabPanel);
         createMasterDetailGridDemo(tabPanel);
+        createOtherControlsDemo(tabPanel);
 
         //add this listener to demostrate scrolling feature demo
         tabPanel.addTabListener(new TabListener() {
@@ -156,6 +156,12 @@ public class Demo implements EntryPoint {
         return gridPanel;
     }
 
+    /**
+     * Creates a tab containing Master-Detail panel demo.
+     *
+     * @param panel is a tab panel.
+     * @return a result of creation.
+     */
     private MasterDetailPanel createMasterDetailGridDemo(TabPanel panel) {
         MasterDetailPanel masterDetailPanel = new MasterDetailPanel();
 
@@ -186,5 +192,84 @@ public class Demo implements EntryPoint {
         panel.add(masterDetailPanel, "Master-Detail Grids");
         masterDetailPanel.display();
         return masterDetailPanel;
+    }
+
+    /**
+     * Creates a tab containing other controls demo.
+     *
+     * @param tab is a tab to be inserted.
+     */
+    private void createOtherControlsDemo(TabPanel tab) {
+        FlexTable panel = new FlexTable();
+
+        panel.setWidget(0, 0, createHintLabel("Select a country:"));
+        panel.setWidget(1, 0, createHintLabel("Select a date:"));
+        panel.setWidget(2, 0, createHintLabel("Type any European country name:"));
+        panel.setWidget(3, 0, createHintLabel("Type any European country name to see the flag:"));
+
+        ComboBox comboBox = new ComboBox();
+        comboBox.setWidth("100%");
+        ComboBoxDataModel model = DemoModelFactory.createsCountriesModel();
+        comboBox.setModel(model);
+        comboBox.setCustomTextAllowed(true);
+
+        DatePicker picker = new DatePicker(new Date());
+        picker.setWidth("100%");
+        picker.setTimeVisible(true);
+
+        SuggestionBox suggestionBox = new SuggestionBox();
+        suggestionBox.setExpressionLength(1);
+        suggestionBox.setModel(new SuggestionBoxDataModel(new SuggestionBoxHandler()));
+        suggestionBox.setWidth("100%");
+
+        SuggestionBox complexSuggestionBox = new SuggestionBox();
+        complexSuggestionBox.setExpressionLength(1);
+        complexSuggestionBox.setModel(new SuggestionBoxDataModel(new SuggestionBoxFlagsHandler()));
+        complexSuggestionBox.setWidth("100%");
+
+        panel.setWidget(0, 1, comboBox);
+        panel.setWidget(1, 1, picker);
+        panel.setWidget(2, 1, suggestionBox);
+        panel.setWidget(3, 1, complexSuggestionBox);
+        tab.add(panel, "Other Controls");
+
+        comboBox.display();
+        picker.display();
+        suggestionBox.display();
+        complexSuggestionBox.display();
+    }
+
+    /**
+     * Creates a hint label for the other controls demo.
+     *
+     * @param text is a hint text.
+     * @return a new label.
+     */
+    private Label createHintLabel(String text) {
+        Label label = new Label(text);
+        label.setStyleName("demo-ControlLabel");
+        return label;
+    }
+
+    /**
+     * Sample suggestion box handler.
+     */
+    private class SuggestionBoxHandler implements ListCallbackHandler {
+        /** {@inheritDoc} */
+        public void fill(ListDataModel model) {
+            String expression = ((SuggestionBoxDataModel) model).getExpression();
+            DemoModelFactory.fillCountriesModel(expression, (SuggestionBoxDataModel) model);
+        }
+    }
+
+    /**
+     * Sample suggestion box handler.
+     */
+    private class SuggestionBoxFlagsHandler implements ListCallbackHandler {
+        /** {@inheritDoc} */
+        public void fill(ListDataModel model) {
+            String expression = ((SuggestionBoxDataModel) model).getExpression();
+            DemoModelFactory.fillCountriesWithFlagsModel(expression, (SuggestionBoxDataModel) model);
+        }
     }
 }

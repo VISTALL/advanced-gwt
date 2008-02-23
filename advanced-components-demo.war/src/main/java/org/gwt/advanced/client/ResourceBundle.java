@@ -35,4 +35,11 @@ public interface ResourceBundle extends Constants {
      * @return the hint text.
      */
     String masterDetailDemo();
+
+    /**
+     * Other controls demo hint.
+     *
+     * @return the hint text.
+     */
+    String otherControlsDemo();
 }

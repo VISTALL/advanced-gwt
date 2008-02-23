@@ -3,6 +3,7 @@ package org.gwt.advanced.client.ui.widget.cell;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
+import org.gwt.advanced.client.ui.widget.ComboBox;
 
 import java.util.Date;
 
@@ -51,6 +52,8 @@ public class DefaultGridCellFactory implements GridCellFactory {
             result = create((Double) data);
         } else if (DateCell.class.equals(columnType)) {
             result = create((Date) data);
+        } else if (ComboBoxCell.class.equals(columnType)) {
+            result = create((ComboBox) data);
         } else {
             result = new LabelCell();
         }
@@ -204,5 +207,17 @@ public class DefaultGridCellFactory implements GridCellFactory {
      */
     protected GridCell create (Image data) {
         return new ImageCell();
+    }
+
+    /**
+     * This method creates a combo box cell.
+     *
+     * @param comboBox a combo box value.
+     *
+     * @return a {@link org.gwt.advanced.client.ui.widget.cell.ComboBoxCell} instance.
+     */
+    protected GridCell create (ComboBox comboBox) {
+        comboBox.display();
+        return new ComboBoxCell();
     }
 }
