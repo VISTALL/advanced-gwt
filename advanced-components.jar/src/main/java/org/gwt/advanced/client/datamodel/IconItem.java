@@ -4,6 +4,7 @@ package org.gwt.advanced.client.datamodel;
  * This object represents a labeled icon item for the conbo box model.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public class IconItem {
     /** an icon image name */

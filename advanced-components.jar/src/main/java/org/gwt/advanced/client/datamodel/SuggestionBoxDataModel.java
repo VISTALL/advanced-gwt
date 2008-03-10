@@ -8,6 +8,7 @@ import org.gwt.advanced.client.ui.SuggestionBoxListener;
  * and must be defined in the {@link org.gwt.advanced.client.datamodel.ListCallbackHandler} implementation.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public class SuggestionBoxDataModel extends ComboBoxDataModel implements SuggestionBoxListener {
     /** an expression to suggest items for the list */
@@ -52,7 +53,7 @@ public class SuggestionBoxDataModel extends ComboBoxDataModel implements Suggest
      * @param expression Value to set for property 'expression'.
      */
     public void setExpression(String expression) {
-        this.expression = expression; 
+        this.expression = expression;
     }
 
     /** {@inheritDoc} */
@@ -60,7 +61,7 @@ public class SuggestionBoxDataModel extends ComboBoxDataModel implements Suggest
         setExpression(expression);
         fill();
     }
-    
+
     /**
      * Getter for property 'handler'.
      *

@@ -6,6 +6,7 @@ package org.gwt.advanced.client.datamodel;
  * unique <code>String</code> ID and an object to be displayed in the list.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public interface ListDataModel {
     /**
@@ -90,7 +91,7 @@ public interface ListDataModel {
 
     /**
      * This method sets a currently selected item specifying it by the index.<p/>
-     * If the index < 0 it selects item 0. If the index > then list size, it selects the last item. 
+     * If the index < 0 it selects item 0. If the index > then list size, it selects the last item.
      *
      * @param index is an item index.
      */

@@ -1,5 +1,8 @@
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
@@ -74,6 +77,10 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * a list of select row listeners
      */
     private List selectRowListeners;
+    /**
+     * a callback handler for the row drawing events
+     */
+    private GridRowDrawCallbackHandler rowDrawHandler;
 
     /**
      * Creates a new instance of this class.
@@ -344,6 +351,24 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
+     * This method returns a row draw handler instance.
+     *
+     * @return a link to the handler.
+     */
+    public GridRowDrawCallbackHandler getRowDrawHandler() {
+        return rowDrawHandler;
+    }
+
+    /**
+     * This method sets a row draw handler for this grid.
+     *
+     * @param rowDrawHandler a row draw handler instance.
+     */
+    public void setRowDrawHandler(GridRowDrawCallbackHandler rowDrawHandler) {
+        this.rowDrawHandler = rowDrawHandler;
+    }
+
+    /**
      * Use this method to displayActive the grid.
      */
     public void display() {
@@ -561,8 +586,12 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
             int end = model.getEndRow();
             boolean empty = model.isEmpty();
 
-            for (int i = start; !empty && i <= end; i++)
-                addRow(i - start, model.getRowData(i));
+            if (!empty && getRowDrawHandler() != null) {
+                DeferredCommand.addCommand(new DrawRowCommand(start, end));
+            } else {
+                for (int i = start; !empty && i <= end; i++)
+                    addRow(i - start, model.getRowData(i));
+            }
 
             int count = end - start;
             if (empty) {
@@ -575,6 +604,33 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
                 setCurrentRow(0);
             }
         }
+    }
+
+    /**
+     * This method fires row drawing event before the row is drawn.
+     *
+     * @param row is a row number.
+     * @param pageSize is a page size.
+     * @param data is row data.
+     *
+     * @return <code>true</code> if the row must be drawn.
+     */
+    protected boolean fireBeforeDrawEvent(int row, int pageSize, Object[] data) {
+        GridRowDrawCallbackHandler handler = getRowDrawHandler();
+        return handler == null || handler.beforeDraw(row, pageSize, this, data);
+    }
+
+    /**
+     * This method fires row drawing event after the row is drawn.
+     *
+     * @param row is a row number.
+     * @param pageSize is a page size.
+     * @param data is row data.
+     * @return <code>true</code> if drawing must be continued.
+     */
+    protected boolean fireAfterDrawEvent(int row, int pageSize, Object[] data) {
+        GridRowDrawCallbackHandler handler = getRowDrawHandler();
+        return handler == null || handler.afterDraw(row, pageSize, this, data);
     }
 
     /**
@@ -713,6 +769,51 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
         if (selectRowListeners == null)
             selectRowListeners = new ArrayList();
         return selectRowListeners;
+    }
+
+    /**
+     * This command displays one row.
+     */
+    protected class DrawRowCommand implements IncrementalCommand {
+        /** start row number */
+        private int start;
+        /** end row number */
+        private int end;
+        /** current row number */
+        private int current;
+
+        /**
+         * Creates an instance of this class and initilizes internal variables.
+         *
+         * @param start is a start row number.
+         * @param end is an end row number.
+         */
+        public DrawRowCommand(int start, int end) {
+            this.start = start;
+            this.end = end;
+            this.current = this.start;
+            DOM.setStyleAttribute(getBodyElement(), "display", "none");
+        }
+
+        /**
+         * This method stops when the end row reached.
+         *
+         * @return <code>true</code> if drawing must be continued.
+         */
+        public boolean execute() {
+            int row = current - start;
+            int pageSize = end - start + 1;
+
+            Object[] data = model.getRowData(current);
+            if (fireBeforeDrawEvent(row, pageSize, data))
+                addRow(row, data);
+            boolean cont = fireAfterDrawEvent(row, pageSize, data);
+            current++;
+
+            if (!cont || current > end)
+                DOM.setStyleAttribute(getBodyElement(), "display", "");    
+            return cont && current <= end;
+        }
     }
 }
 

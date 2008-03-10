@@ -2,8 +2,9 @@ package org.gwt.advanced.client.ui;
 
 /**
  * This is a suggestion box events listener.
- * 
+ *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public interface SuggestionBoxListener {
     /**
