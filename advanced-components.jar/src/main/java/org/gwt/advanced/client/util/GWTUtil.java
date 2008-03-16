@@ -7,6 +7,7 @@ import com.google.gwt.user.client.impl.DOMImpl;
  * This class contains helper methods for GWT framework.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.1.0
  */
 public class GWTUtil {
     /**

@@ -5,6 +5,7 @@ package org.gwt.advanced.client.datamodel;
  * The grid uses it to obtain data and define paging and sorting settings.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface GridDataModel extends Pageable {
     /**

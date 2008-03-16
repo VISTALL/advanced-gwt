@@ -7,6 +7,7 @@ import org.gwt.advanced.client.ui.widget.GridPanel;
  * must be placed in.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.1.0
  */
 public interface MasterDetailLayout {
     /**

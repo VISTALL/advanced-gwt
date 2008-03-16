@@ -1,12 +1,15 @@
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
 
 /**
  * This is a default cell focus listener implementation.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class CellFocusListener implements FocusListener {
     /**

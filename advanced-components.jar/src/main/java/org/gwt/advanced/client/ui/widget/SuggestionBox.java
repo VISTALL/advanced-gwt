@@ -20,6 +20,7 @@ import java.util.List;
  * See also {@link #setModel(org.gwt.advanced.client.datamodel.SuggestionBoxDataModel)}.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public class SuggestionBox extends ComboBox {
     /**

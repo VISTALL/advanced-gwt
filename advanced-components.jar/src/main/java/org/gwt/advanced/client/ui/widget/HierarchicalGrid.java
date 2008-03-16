@@ -1,10 +1,15 @@
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.*;
-import org.gwt.advanced.client.datamodel.*;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.Widget;
+import org.gwt.advanced.client.datamodel.GridDataModel;
+import org.gwt.advanced.client.datamodel.Hierarchical;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
 import org.gwt.advanced.client.ui.GridPanelFactory;
-import org.gwt.advanced.client.ui.widget.cell.*;
+import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
+import org.gwt.advanced.client.ui.widget.cell.ExpandableCellFactory;
+import org.gwt.advanced.client.ui.widget.cell.GridCell;
 
 import java.util.*;
 
@@ -12,6 +17,7 @@ import java.util.*;
  * This is a hierarchical grid implementation.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class HierarchicalGrid extends EditableGrid {
     /** subgrid row style name */

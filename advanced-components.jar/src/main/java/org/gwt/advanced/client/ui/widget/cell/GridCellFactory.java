@@ -5,6 +5,7 @@ package org.gwt.advanced.client.ui.widget.cell;
  * You must implement this interface or extend one of existing factories if you like to use your own custom cells.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface GridCellFactory {
     /**

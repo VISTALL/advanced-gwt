@@ -6,6 +6,7 @@ import org.gwt.advanced.client.ui.widget.EditableGrid;
  * This is a cell factory designed especially to construct expandable cells.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class ExpandableCellFactory extends DefaultGridCellFactory {
     /**

@@ -19,6 +19,7 @@ import java.util.List;
  * and displayActive it.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class GridPanel extends DockPanel implements AdvancedWidget {
     /** an editable grid */

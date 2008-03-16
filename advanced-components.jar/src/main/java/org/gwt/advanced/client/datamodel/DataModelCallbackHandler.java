@@ -5,6 +5,7 @@ package org.gwt.advanced.client.datamodel;
  * It describes the method to be invoked by the data model during different user activities.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface DataModelCallbackHandler {
     /**

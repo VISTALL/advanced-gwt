@@ -5,6 +5,7 @@ package org.gwt.advanced.client.datamodel;
  * Implementations of this inteface are usually used by pagers.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface Pageable {
     /**

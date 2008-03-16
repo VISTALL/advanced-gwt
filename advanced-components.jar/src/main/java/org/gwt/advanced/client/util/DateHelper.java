@@ -1,10 +1,9 @@
 package org.gwt.advanced.client.util;
 
 import com.google.gwt.core.client.GWT;
+import org.gwt.advanced.client.ui.resources.CalendarConstants;
 
 import java.util.Date;
-
-import org.gwt.advanced.client.ui.resources.CalendarConstants;
 
 /**
  * This class simplifies operations related to dates.<p>
@@ -12,6 +11,7 @@ import org.gwt.advanced.client.ui.resources.CalendarConstants;
  * You can localize the helper using properties file placed in the folder <code>org/gwt/advanced/client/resources</code>.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class DateHelper {
     /** number of days per month */

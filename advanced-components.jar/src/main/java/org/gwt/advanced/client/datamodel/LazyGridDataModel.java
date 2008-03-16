@@ -7,6 +7,7 @@ import java.util.Comparator;
  * The total amount of rows is always greater or equal to data set length.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class LazyGridDataModel extends EditableGridDataModel implements LazyLoadable {
     /** overriden total row count */

@@ -1,14 +1,13 @@
 package org.gwt.advanced.client.ui.widget.combo;
 
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
+import org.gwt.advanced.client.datamodel.IconItem;
+import org.gwt.advanced.client.ui.widget.DatePicker;
 
 import java.util.Date;
-
-import org.gwt.advanced.client.ui.widget.DatePicker;
-import org.gwt.advanced.client.datamodel.IconItem;
 
 /**
  * This factory tries to detect what should be returned by value type.<p/>
@@ -17,6 +16,7 @@ import org.gwt.advanced.client.datamodel.IconItem;
  * If you want to use more complex objects you should develop your own factory.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public class DefaultListItemFactory implements ListItemFactory {
     /**

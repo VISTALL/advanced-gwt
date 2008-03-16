@@ -7,6 +7,7 @@ import java.util.Collection;
  * This is a list that has an unique identifier.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class IdentifiedList extends ArrayList {
     /** list identifier */

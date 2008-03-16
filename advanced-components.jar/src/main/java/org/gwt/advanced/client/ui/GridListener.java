@@ -7,6 +7,7 @@ import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
  * This interface describes grid events listeners.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface GridListener {
     /**

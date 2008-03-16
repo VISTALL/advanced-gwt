@@ -1,8 +1,7 @@
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.*;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.SourcesTableEvents;
 import com.google.gwt.user.client.ui.TableListener;
@@ -12,6 +11,7 @@ import org.gwt.advanced.client.datamodel.GridDataModel;
 import org.gwt.advanced.client.datamodel.LazyLoadable;
 import org.gwt.advanced.client.ui.*;
 import org.gwt.advanced.client.ui.widget.cell.*;
+import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.*;
 
@@ -19,6 +19,7 @@ import java.util.*;
  * This is an editable grid widget.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     /**
@@ -81,6 +82,14 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * a callback handler for the row drawing events
      */
     private GridRowDrawCallbackHandler rowDrawHandler;
+    /**
+     * a timer for automated grid resizing
+     */
+    private Timer resizeTimer = new ResizeTimer();
+    /**
+     * a flag meaning whether the grid has resizable columns
+     */
+    private boolean columnResizingAllowed = true;
 
     /**
      * Creates a new instance of this class.
@@ -90,6 +99,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      */
     public EditableGrid (String[] headers, Class[] columnWidgetClasses) {
         super();
+        DOM.setStyleAttribute(getElement(), "table-layout", "fixed");
         this.columnWidgetClasses = columnWidgetClasses;
         this.headers = headers;
 
@@ -98,6 +108,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
         }
 
         addListeners();
+        resizeTimer.scheduleRepeating(10);
     }
 
     /**
@@ -300,6 +311,24 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
+     * This method returns column resizability flag.
+     *
+     * @return a flag value.
+     */
+    public boolean isColumnResizingAllowed() {
+        return columnResizingAllowed;
+    }
+
+    /**
+     * This method switches on / off column resizability.
+     *
+     * @param columnResizingAllowed is a flag value.
+     */
+    public void setColumnResizingAllowed(boolean columnResizingAllowed) {
+        this.columnResizingAllowed = columnResizingAllowed;
+    }
+
+    /**
      * Setter for property 'currentRow'.
      *
      * @param currentRow Value to set for property 'currentRow'.
@@ -452,7 +481,29 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     public Editable getModel () {
         return model;
     }
-    
+
+    /**
+     * This method resizes the grid making it to fit as much space as possible.
+     */
+    protected void resize() {
+        Element parent = DOM.getParent(getElement());
+        int parentWidth = 0;
+        if (parent != null) {
+            if (isScrollable() && GWTUtil.isIE()) {
+                Element superParent = DOM.getParent(parent);
+                if (superParent != null)
+                    DOM.setStyleAttribute(parent, "width", DOM.getElementPropertyInt(superParent, "offsetWidth") + "px");
+                else
+                    DOM.setStyleAttribute(parent, "width", Window.getClientWidth() + "px");
+            }
+
+            parentWidth = DOM.getElementPropertyInt(parent, "offsetWidth");
+        }
+        if (parentWidth == 0)
+            parentWidth = Window.getClientWidth();
+        DOM.setStyleAttribute(getElement(), "width", parentWidth + "px");
+    }
+
     /**
      * This method runs all attached decorators in the same order they have been added.
      */
@@ -773,6 +824,8 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
 
     /**
      * This command displays one row.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
     protected class DrawRowCommand implements IncrementalCommand {
         /** start row number */
@@ -804,15 +857,31 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
             int row = current - start;
             int pageSize = end - start + 1;
 
-            Object[] data = model.getRowData(current);
-            if (fireBeforeDrawEvent(row, pageSize, data))
-                addRow(row, data);
-            boolean cont = fireAfterDrawEvent(row, pageSize, data);
-            current++;
+            boolean cont = false;
+            for (int i = 0; current <= end && i < 1; i++) {
+                Object[] data = model.getRowData(current);
+                if (fireBeforeDrawEvent(row, pageSize, data))
+                    addRow(row, data);
+                cont = fireAfterDrawEvent(row, pageSize, data);
+                if (!cont)
+                    break;
+                current++;
+            }
 
             if (!cont || current > end)
-                DOM.setStyleAttribute(getBodyElement(), "display", "");    
+                DOM.setStyleAttribute(getBodyElement(), "display", "");
             return cont && current <= end;
+        }
+    }
+
+    /**
+     * This timer automatically resizes the grid.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+     */
+    protected class ResizeTimer extends Timer {
+        public void run() {
+            resize();
         }
     }
 }

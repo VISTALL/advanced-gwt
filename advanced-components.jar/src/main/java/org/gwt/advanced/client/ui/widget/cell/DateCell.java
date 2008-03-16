@@ -1,11 +1,11 @@
 package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.Window;
 import org.gwt.advanced.client.ui.CalendarListener;
 import org.gwt.advanced.client.ui.widget.Calendar;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
@@ -16,6 +16,7 @@ import java.util.Date;
  * This is a cell implementation for <code>Date</code> values.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class DateCell extends AbstractCell {
     /** a calendart change listener */

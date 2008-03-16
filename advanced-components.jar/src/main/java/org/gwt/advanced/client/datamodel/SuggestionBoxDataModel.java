@@ -53,7 +53,7 @@ public class SuggestionBoxDataModel extends ComboBoxDataModel implements Suggest
      * @param expression Value to set for property 'expression'.
      */
     public void setExpression(String expression) {
-        this.expression = expression;
+        this.expression = expression; 
     }
 
     /** {@inheritDoc} */
@@ -61,7 +61,7 @@ public class SuggestionBoxDataModel extends ComboBoxDataModel implements Suggest
         setExpression(expression);
         fill();
     }
-
+    
     /**
      * Getter for property 'handler'.
      *

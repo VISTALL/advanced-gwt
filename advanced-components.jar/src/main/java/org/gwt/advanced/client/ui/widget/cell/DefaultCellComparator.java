@@ -1,6 +1,7 @@
 package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.user.client.ui.ListBox;
+import org.gwt.advanced.client.ui.widget.ComboBox;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
 
 import java.util.Comparator;
@@ -10,6 +11,7 @@ import java.util.Date;
  * This is a default implementation of grid cell comparator.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class DefaultCellComparator implements Comparator {
     /** grid instance */
@@ -36,8 +38,8 @@ public class DefaultCellComparator implements Comparator {
         Object value1 = prepareValue(o1);
         Object value2 = prepareValue(o2);
 
-        EditableGrid grdi = getGrid();
-        if (grdi.isAscending(grdi.getCurrentSortColumn().getColumn()))
+        EditableGrid grid = getGrid();
+        if (grid.isAscending(grid.getCurrentSortColumn().getColumn()))
             return ((Comparable) value1).compareTo(value2);
         else
             return -((Comparable) value1).compareTo(value2);
@@ -59,6 +61,8 @@ public class DefaultCellComparator implements Comparator {
             result = value == null ? "" : String.valueOf(value);
         } else if (ListCell.class.equals(columnType)) {
             result = getLabelText((ListBox) value);
+        } else if (ComboBoxCell.class.equals(columnType)) {
+            result = getComboBoxText((ComboBox) value);
         } else if (BooleanCell.class.equals(columnType)) {
             //Boolean is not comparable in GWT?
             result = Boolean.valueOf(String.valueOf(value)).toString();
@@ -104,6 +108,19 @@ public class DefaultCellComparator implements Comparator {
                 labelText = listBox.getItemText(0);
         }
         return labelText;
+    }
+
+    /**
+     * Gets a text value of the combo box.
+     *
+     * @param comboBox is a combo box.
+     * @return a text value.
+     */
+    protected String getComboBoxText(ComboBox comboBox) {
+        String text = comboBox.getText();
+        if (text == null)
+            text = comboBox.getListItemFactory().convert(comboBox.getModel().getSelected());
+        return text;
     }
 
     /**

@@ -4,6 +4,7 @@ package org.gwt.advanced.client.datamodel;
  * This is a lazy loadable hierarchical data model.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class LazyHierarchicalGridDataModel extends HierarchicalGridDataModel implements LazyLoadable {
     /**

@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Widget;
  * This is a cell implementation forr <code>Image</code> widgets.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class ImageCell extends AbstractCell {
     /** one pixel image name */
@@ -15,7 +16,7 @@ public class ImageCell extends AbstractCell {
     private Image image;
 
     /** {@inheritDoc} */
-    public boolean valuesEqual (Object value) {
+    public boolean valueEqual (Object value) {
         return false; //because there is no way to compare selected values
     }
 

@@ -1,9 +1,10 @@
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.Pageable;
-import org.gwt.advanced.client.ui.*;
+import org.gwt.advanced.client.ui.AdvancedWidget;
+import org.gwt.advanced.client.ui.PagerListener;
 import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
@@ -12,6 +13,7 @@ import org.gwt.advanced.client.util.ThemeHelper;
  * These widgets must implement the {@link PagerListener} interface.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class Pager extends SimplePanel implements AdvancedWidget {
     /** this flag defines whether the arrows must be displayed */

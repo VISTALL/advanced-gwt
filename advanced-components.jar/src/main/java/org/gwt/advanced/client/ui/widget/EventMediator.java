@@ -1,7 +1,10 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.user.client.ui.HTMLTable;
-import org.gwt.advanced.client.datamodel.*;
+import org.gwt.advanced.client.datamodel.DataModelCallbackHandler;
+import org.gwt.advanced.client.datamodel.Editable;
+import org.gwt.advanced.client.datamodel.GridDataModel;
+import org.gwt.advanced.client.datamodel.Hierarchical;
 import org.gwt.advanced.client.ui.GridListener;
 import org.gwt.advanced.client.ui.GridToolbarListener;
 import org.gwt.advanced.client.ui.PagerListener;
@@ -17,6 +20,7 @@ import java.util.List;
  * interoperability.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class EventMediator implements PagerListener, GridListener, GridToolbarListener, SelectRowListener {
     /** a grid panel */

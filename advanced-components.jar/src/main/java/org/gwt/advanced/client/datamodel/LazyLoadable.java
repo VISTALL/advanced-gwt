@@ -4,6 +4,7 @@ package org.gwt.advanced.client.datamodel;
  * This interface describes lazily loadable data models.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface LazyLoadable {
     /**

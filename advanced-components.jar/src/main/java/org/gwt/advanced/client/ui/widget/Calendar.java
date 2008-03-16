@@ -17,6 +17,7 @@ import java.util.Set;
  * This is a calendar widget that shows the calendar panel.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class Calendar extends SimplePanel implements AdvancedWidget {
     /** calendar constants */

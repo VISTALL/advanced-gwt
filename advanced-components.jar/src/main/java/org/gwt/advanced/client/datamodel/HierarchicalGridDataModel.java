@@ -8,6 +8,7 @@ import java.util.Map;
  * This is a hierarchical grid data model (experimental).
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.1.0
  */
 public class HierarchicalGridDataModel implements Hierarchical {
     /** associated subgrids */

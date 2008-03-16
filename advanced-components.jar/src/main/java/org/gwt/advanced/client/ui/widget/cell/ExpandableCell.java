@@ -1,13 +1,10 @@
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.AbstractImagePrototype;
-import com.google.gwt.user.client.ui.TreeImages;
-
 /**
  * This interface describes expandable cell methods.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface ExpandableCell extends GridCell {
     /**

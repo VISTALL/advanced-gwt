@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Widget;
  * This is a cell implementation for textual value to be represnted as read only label.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class LabelCell extends AbstractCell {
     /** {@inheritDoc} */

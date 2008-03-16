@@ -19,6 +19,7 @@ import java.util.List;
  * For horizontal scrolling use traditional tools like <code>ScrollPanel</code>.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class AdvancedFlexTable extends FlexTable {
     /** the thead element */
@@ -215,7 +216,7 @@ public class AdvancedFlexTable extends FlexTable {
      *
      * @return Value for property 'tHeadElement'.
      */
-    protected Element getTHeadElement () {
+    public Element getTHeadElement () {
         return tHeadElement;
     }
 

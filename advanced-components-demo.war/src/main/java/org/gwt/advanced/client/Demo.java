@@ -3,6 +3,7 @@ package org.gwt.advanced.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.Window;
 import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.widget.*;
 import org.gwt.advanced.client.ui.widget.cell.LongCell;
@@ -50,7 +51,7 @@ public class Demo implements EntryPoint {
         switcherTable.setWidget(0, 1, switcher);
 
         createEditableGridDemo(tabPanel);
-        final AdvancedFlexTable scorllableGrid = createHierarchicalGridDemo(tabPanel).getGrid();
+        final AdvancedFlexTable scrollableGrid = createHierarchicalGridDemo(tabPanel).getGrid();
         createLazyLoadableGridDemo(tabPanel);
         createMasterDetailGridDemo(tabPanel);
         createOtherControlsDemo(tabPanel);
@@ -64,7 +65,8 @@ public class Demo implements EntryPoint {
 
             public void onTabSelected (SourcesTabEvents sender, int tabIndex) {
                 if (tabIndex == 1) {
-                    scorllableGrid.enableVerticalScrolling(true);
+                    scrollableGrid.setHeight(((int)(Window.getClientHeight() * 0.5)) + "px");
+                    scrollableGrid.enableVerticalScrolling(true);
                 }
             }
         });

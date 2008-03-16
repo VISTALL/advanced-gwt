@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  * This is a panel that appears when one of components like to lock the screen.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class LockingPanel extends PopupPanel {
     /**

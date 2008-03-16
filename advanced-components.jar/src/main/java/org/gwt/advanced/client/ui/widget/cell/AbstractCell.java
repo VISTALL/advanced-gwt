@@ -8,6 +8,7 @@ import org.gwt.advanced.client.ui.widget.EditableGrid;
  * All existing cells extend this class.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public abstract class AbstractCell extends SimplePanel implements GridCell {
     /** cell value */

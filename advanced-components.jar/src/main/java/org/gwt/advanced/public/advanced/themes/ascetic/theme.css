@@ -101,7 +101,6 @@
 
 /** main flex table styles */
 .advanced-Grid {
-    width: 100%;
     border-collapse: collapse;
     padding: 2px 2px 2px 2px;
 }
@@ -120,7 +119,6 @@
 .advanced-Grid th {
     height: 24px;
     padding: 0;
-    width: 1%;
     border-top: 1px solid #999999;
     border-bottom: 1px solid #EEEEEE;
 }
@@ -165,12 +163,10 @@
 
 /** header sortable cells nested panel styles */
 .advanced-Grid .sortable-header {
-    cursor: pointer;
 }
 
 /** header non-sortable cells nested panel styles */
 .advanced-Grid .non-sortable-header {
-    cursor: default;
 }
 
 /** grid selected row styles */
@@ -180,7 +176,6 @@
 
 /** grid column styles */
 .advanced-Grid .grid-column {
-    width: 1%;
 }
 
 /** data cell nested panel styles */

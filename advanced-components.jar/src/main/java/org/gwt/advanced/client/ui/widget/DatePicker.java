@@ -11,6 +11,7 @@ import java.util.Date;
  * This is a date picker widget.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class DatePicker extends TextButtonPanel implements CalendarListener {
     /** calendar popup panel */
