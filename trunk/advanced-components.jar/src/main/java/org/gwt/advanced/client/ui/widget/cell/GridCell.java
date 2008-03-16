@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.FlexTable;
  * All cell implementations must implement it.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface GridCell {
     /**

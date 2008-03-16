@@ -12,6 +12,7 @@ import java.util.Iterator;
  * represented as a table of grids.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.1.0
  */
 public class MasterDetailPanel extends FlexTable implements MasterDetailLayout, AdvancedWidget {
     /** Constructs a new MasterDetailPanel with 2 rows and 1 column. */

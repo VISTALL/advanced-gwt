@@ -7,6 +7,7 @@ import com.google.gwt.user.client.ui.Widget;
  * {@link org.gwt.advanced.client.ui.widget.ListPopupPanel}.
  * 
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public interface ListItemFactory {
     /**

@@ -10,6 +10,7 @@ import org.gwt.advanced.client.util.ThemeHelper;
  * {@link org.gwt.advanced.client.ui.GridToolbarListener} interface also.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class GridToolbar extends FlowPanel implements AdvancedWidget {
     /** a flag meaning whether the Add button should be displayed */

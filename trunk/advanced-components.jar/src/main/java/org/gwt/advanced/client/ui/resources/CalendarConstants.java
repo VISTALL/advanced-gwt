@@ -7,6 +7,7 @@ import com.google.gwt.i18n.client.Constants;
  * and {@link org.gwt.advanced.client.util.DateHelper}.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface CalendarConstants extends Constants {
     /**

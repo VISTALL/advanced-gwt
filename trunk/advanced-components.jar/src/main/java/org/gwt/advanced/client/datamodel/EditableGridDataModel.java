@@ -8,6 +8,7 @@ import java.util.*;
  * if the specified row or column is too long.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class EditableGridDataModel extends SimpleGridDataModel implements Editable {
     /** encapsulated data */

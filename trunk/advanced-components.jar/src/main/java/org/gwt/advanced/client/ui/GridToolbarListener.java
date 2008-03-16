@@ -5,6 +5,7 @@ package org.gwt.advanced.client.ui;
  * Normally you don't have to implement it.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface GridToolbarListener {
     /**

@@ -4,6 +4,7 @@ package org.gwt.advanced.client.util;
  * This is a CSS manipulation util.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class StyleUtil {
     /**

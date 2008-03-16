@@ -4,6 +4,7 @@ package org.gwt.advanced.client.ui.widget.cell;
  * This is a header cell interface.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface HeaderCell extends GridCell {
     /**

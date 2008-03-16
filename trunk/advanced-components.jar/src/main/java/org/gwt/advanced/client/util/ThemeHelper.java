@@ -4,6 +4,7 @@ package org.gwt.advanced.client.util;
  * This sigleton is used to centrilize and simplify theme management.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class ThemeHelper {
     /** default name of the CSS link element */

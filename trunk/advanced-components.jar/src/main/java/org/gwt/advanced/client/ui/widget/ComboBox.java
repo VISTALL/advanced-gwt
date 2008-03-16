@@ -12,6 +12,7 @@ import java.util.Set;
  * This is a combo box widget implementation.
  * 
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */                                                       
 public class ComboBox extends TextButtonPanel
         implements SourcesFocusEvents, SourcesChangeEvents, SourcesKeyboardEvents, SourcesClickEvents {
@@ -161,6 +162,15 @@ public class ComboBox extends TextButtonPanel
      */
     public boolean isListPanelOpened() {
         return !getListPanel().isHidden();
+    }
+
+    /**
+     * This method returns a value currently displayed in the text box.
+     *
+     * @return a text value.
+     */
+    public String getText() {
+        return getSelectedValue().getText();
     }
 
     /** {@inheritDoc} */

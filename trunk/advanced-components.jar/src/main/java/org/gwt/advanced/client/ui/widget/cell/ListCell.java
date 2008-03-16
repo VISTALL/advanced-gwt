@@ -1,11 +1,14 @@
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This is a cell implementation for <code>List</code> box widgets.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class ListCell extends AbstractCell {
     /** list box value */

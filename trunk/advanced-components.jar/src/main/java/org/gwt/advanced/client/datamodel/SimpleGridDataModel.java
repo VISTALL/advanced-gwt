@@ -5,6 +5,7 @@ package org.gwt.advanced.client.datamodel;
  * Use it for quick tests and for simple grids.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class SimpleGridDataModel implements GridDataModel {
     /** data set */
@@ -138,7 +139,7 @@ public class SimpleGridDataModel implements GridDataModel {
 
     /** {@inheritDoc} */
     public int getEndPage () {
-        int endPage = 0;
+        int endPage;
 
         if (getStartPage() + getDisplayedPages() > getTotalPagesNumber() )
             endPage = getTotalPagesNumber() - 1;

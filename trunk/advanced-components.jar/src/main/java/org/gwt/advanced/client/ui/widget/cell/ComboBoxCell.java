@@ -9,6 +9,7 @@ import org.gwt.advanced.client.ui.widget.ComboBox;
  * This is a cell implementation that must contain a combo box.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public class ComboBoxCell extends AbstractCell {
     /** {@inheritDoc} */

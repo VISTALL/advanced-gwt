@@ -8,6 +8,7 @@ import java.util.Date;
  * This is a calendar listener.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface CalendarListener {
     /**

@@ -1,7 +1,7 @@
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.*;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
@@ -15,6 +15,7 @@ import java.util.List;
  * Don't try to use it directly. It's just for the combo box widget.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     /** a list of items */

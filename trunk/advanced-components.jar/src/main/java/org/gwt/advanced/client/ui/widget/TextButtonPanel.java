@@ -11,6 +11,7 @@ import org.gwt.advanced.client.util.ThemeHelper;
  * @see org.gwt.advanced.client.ui.widget.DatePicker
  * 
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.2.0
  */
 public abstract class TextButtonPanel extends SimplePanel implements AdvancedWidget {
     /** widget layout */

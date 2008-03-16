@@ -2,8 +2,8 @@ package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
-import org.gwt.advanced.client.ui.widget.EditableGrid;
 import org.gwt.advanced.client.ui.widget.ComboBox;
+import org.gwt.advanced.client.ui.widget.EditableGrid;
 
 import java.util.Date;
 
@@ -11,6 +11,7 @@ import java.util.Date;
  * This is a default implementation of the grid cell factory.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class DefaultGridCellFactory implements GridCellFactory {
     /** a grid instance */

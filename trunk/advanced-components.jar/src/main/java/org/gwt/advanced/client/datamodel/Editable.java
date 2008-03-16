@@ -6,6 +6,7 @@ import java.util.Comparator;
  * This is interface describing an editable table.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface Editable extends GridDataModel {
     /**

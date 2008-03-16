@@ -7,7 +7,7 @@ import java.util.Map;
 
 /**
  * This is an implementation of the data model interface for the ComboBox widget.
- *
+ * 
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
  */

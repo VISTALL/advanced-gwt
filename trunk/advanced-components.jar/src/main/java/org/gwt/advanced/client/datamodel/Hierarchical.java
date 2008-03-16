@@ -4,6 +4,7 @@ package org.gwt.advanced.client.datamodel;
  * This is a hierarchical grid data model interface.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface Hierarchical extends Editable {
     /**

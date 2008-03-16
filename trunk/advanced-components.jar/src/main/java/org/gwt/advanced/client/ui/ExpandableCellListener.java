@@ -6,6 +6,7 @@ import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
  * This interface describes expandable cell listener.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public interface ExpandableCellListener {
     /**

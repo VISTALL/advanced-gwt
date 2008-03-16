@@ -29,7 +29,7 @@
     padding: 0;
     height: 24px;
     width: 100%;
-    border: 1 solid white;
+    border: 1px solid white;
     cursor: default;
 }
 
@@ -72,7 +72,7 @@
     width: 100%;
     text-align: left;
     vertical-align: middle;
-    border: 1 solid white;
+    border: 1px solid white;
     padding: 0;
     background-image: url(images/gradient.gif);
     background-repeat: repeat-x;
@@ -104,7 +104,6 @@
 
 /** main flex table styles */
 .advanced-Grid {
-    width: 100%;
     border-collapse: collapse;
     padding: 2px 2px 2px 2px;
 }
@@ -124,7 +123,6 @@
     height: 24px;
     padding-right: 2px;
     padding-bottom: 1px;
-    width: 1%;
 }
 
 /** data cells nested panel styles (if editable) */
@@ -143,7 +141,7 @@
     width: 100%;
     text-align: center;
     vertical-align: middle;
-    padding: 1px 1px 1px 1px;
+    padding: 0;
     background-image: url(images/gradient.gif);
     background-repeat: repeat-x;
 }
@@ -167,12 +165,10 @@
 
 /** header sortable cells nested panel styles */
 .advanced-Grid .sortable-header {
-    cursor: pointer;
 }
 
 /** header non-sortable cells nested panel styles */
 .advanced-Grid .non-sortable-header {
-    cursor: default;
 }
 
 /** grid selected row styles */
@@ -182,7 +178,6 @@
 
 /** grid column styles */
 .advanced-Grid .grid-column {
-    width: 1%;
 }
 
 /** data cell nested panel styles */

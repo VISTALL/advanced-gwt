@@ -1,6 +1,9 @@
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.widget.HierarchicalGrid;
 import org.gwt.advanced.client.util.ThemeHelper;
 
@@ -8,6 +11,7 @@ import org.gwt.advanced.client.util.ThemeHelper;
  * This is a basic expandable cell implementation.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.0.0
  */
 public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
     /** a dock panel to place an original cell and a node image */

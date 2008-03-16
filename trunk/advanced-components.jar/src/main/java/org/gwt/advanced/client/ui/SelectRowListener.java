@@ -9,6 +9,7 @@ import org.gwt.advanced.client.ui.widget.EditableGrid;
  * you must use {@link org.gwt.advanced.client.ui.EditCellListener}.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+ * @since 1.1.0
  */
 public interface SelectRowListener {
     /**
