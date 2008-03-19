@@ -494,13 +494,16 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
                 if (superParent != null)
                     DOM.setStyleAttribute(parent, "width", DOM.getElementPropertyInt(superParent, "offsetWidth") + "px");
                 else
-                    DOM.setStyleAttribute(parent, "width", Window.getClientWidth() + "px");
+                    DOM.setStyleAttribute(parent, "width", (Window.getClientWidth() - 20) + "px");
             }
 
-            parentWidth = DOM.getElementPropertyInt(parent, "offsetWidth");
+            if (GWTUtil.isIE())
+                parentWidth = DOM.getElementPropertyInt(parent, "offsetWidth");
+            else
+                parentWidth = DOM.getElementPropertyInt(parent, "offsetWidth") - 2; 
         }
         if (parentWidth == 0)
-            parentWidth = Window.getClientWidth();
+            parentWidth = Window.getClientWidth() - 20;
         DOM.setStyleAttribute(getElement(), "width", parentWidth + "px");
     }
 
