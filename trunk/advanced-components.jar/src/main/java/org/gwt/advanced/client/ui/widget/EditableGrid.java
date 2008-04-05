@@ -90,6 +90,10 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * a flag meaning whether the grid has resizable columns
      */
     private boolean columnResizingAllowed = true;
+    /**
+     * a falg that means whether the grid columns are resizable
+     */
+    private boolean resizable;
 
     /**
      * Creates a new instance of this class.
@@ -98,17 +102,28 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * @param columnWidgetClasses is a list of column widget classes.
      */
     public EditableGrid (String[] headers, Class[] columnWidgetClasses) {
+        this(headers, columnWidgetClasses, true);
+    }
+
+    /**
+     * Creates a new instance of this class.
+     *
+     * @param headers             is a list of header labels (including invisible).
+     * @param columnWidgetClasses is a list of column widget classes.
+     * @param resizable           is a flag that means columns resizability (by default is <code>true</code>).
+     */
+    public EditableGrid (String[] headers, Class[] columnWidgetClasses, boolean resizable) {
         super();
-        DOM.setStyleAttribute(getElement(), "table-layout", "fixed");
         this.columnWidgetClasses = columnWidgetClasses;
         this.headers = headers;
+        this.resizable = resizable;
 
         for (int i = 0; headers != null && i < headers.length; i++) {
             sortableHeaders.put(new Integer(i), Boolean.TRUE);
         }
 
         addListeners();
-        resizeTimer.scheduleRepeating(10);
+        makeResizable(resizable);
     }
 
     /**
@@ -242,7 +257,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      *
      * @return <code>true</code> if the column is sortable.
      */
-    public boolean isSoratble (int column) {
+    public boolean isSortable (int column) {
         return Boolean.valueOf(
             String.valueOf(getSortableHeaders().get(new Integer(column)))
         ).booleanValue();
@@ -451,9 +466,10 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
 
             if (
                 isClientSortEnabled()
+                && isSortable(cell.getColumn())
                 && isSorted(cell.getColumn())
                 && !cell.valueEqual(oldValue)
-                ) {
+            ) {
                 dataModel.setAscending(!dataModel.isAscending()); // to keep original sort order
                 fireSort(getCurrentSortColumn());
             }
@@ -462,6 +478,59 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
         }
 
         return result;
+    }
+
+    /**
+     * This method returns a sort column number.
+     *
+     * @return is a sort column number.
+     */
+    public int getSortColumn() {
+        return getModel().getSortColumn();
+    }
+
+    /**
+     * This method sets the sort column and redisplays the grid.<p/>
+     * Don't use this method if you are going to do other actions before grid redisplaying.
+     * Use model methods instead.
+     *
+     * @param column is a column to be sorted.
+     */
+    public void setSortColumn(int column) {
+        getModel().setSortColumn(column);
+        display();
+    }
+
+    /**
+     * This method sets the order of sorting and redisplays the grid.<p/>
+     * Don't use this method if you are going to do other actions before grid redisplaying.
+     * Use model methods instead.
+     *
+     * @param ascending is the order of sorting. <code>true</code> means ascending.
+     */
+    public void setAscending(boolean ascending) {
+        getModel().setAscending(ascending);
+        display();
+    }
+
+    /**
+     * Getter for property 'resizable'.
+     *
+     * @return Value for property 'resizable'.
+     */
+    public boolean isResizable() {
+        return resizable;
+    }
+
+    /**
+     * Sets the resizability of column flag.<p/>
+     * This method also sets table-layout style.
+     *
+     * @param columns resizability flag value.
+     */
+    public void setResizable(boolean resizable) {
+        this.resizable = resizable;
+        makeResizable(resizable);
     }
 
     /**
@@ -826,6 +895,21 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
+     * Enables or disables columns resizability.
+     *
+     * @param resizable a flag to enable or disable resizable columns.
+     */
+    protected void makeResizable(boolean resizable) {
+        if (resizable){
+            DOM.setStyleAttribute(getElement(), "table-layout", "fixed");
+            resizeTimer.scheduleRepeating(10);
+        } else {
+            DOM.setStyleAttribute(getElement(), "table-layout", "");
+            resizeTimer.cancel();
+        }
+    }
+
+    /**
      * This command displays one row.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
@@ -883,6 +967,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
     protected class ResizeTimer extends Timer {
+        /** {@inheritDoc} */
         public void run() {
             resize();
         }

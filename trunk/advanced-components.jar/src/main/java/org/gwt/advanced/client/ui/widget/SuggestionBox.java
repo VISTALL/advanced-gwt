@@ -110,6 +110,34 @@ public class SuggestionBox extends ComboBox {
     }
 
     /**
+     * This method returns an expression entered by a user for drop down list selection.<p/>
+     * If the associated model is not {@link org.gwt.advanced.client.datamodel.SuggestionBoxDataModel} it retuns
+     * <code>null</code>.
+     *
+     * @return an expression value.
+     */
+    public String getExpression() {
+        ComboBoxDataModel comboBoxDataModel = getModel();
+        if (comboBoxDataModel instanceof SuggestionBoxDataModel)
+            return ((SuggestionBoxDataModel) comboBoxDataModel).getExpression();
+        else
+            return null;
+    }
+
+    /**
+     * Sets the expression value and displays it in the text box.
+     *
+     * @param expression is an expression to be applied.
+     */
+    public void setExpression(String expression) {
+        ComboBoxDataModel comboBoxDataModel = getModel();
+        if (comboBoxDataModel instanceof SuggestionBoxDataModel) {
+            ((SuggestionBoxDataModel) comboBoxDataModel).setExpression(expression);
+            getSelectedValue().setText(expression);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     protected void prepareSelectedValue() {

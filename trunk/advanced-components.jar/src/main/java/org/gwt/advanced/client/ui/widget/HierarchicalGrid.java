@@ -36,7 +36,18 @@ public class HierarchicalGrid extends EditableGrid {
      * @param columnWidgetClasses is a list of column widget classes.
      */
     public HierarchicalGrid (String[] headers, Class[] columnWidgetClasses) {
-        super(headers, columnWidgetClasses);
+        this(headers, columnWidgetClasses, true);
+    }
+
+    /**
+     * Creates a new instance of this class.
+     *
+     * @param headers             is a list of header labels (including invisible).
+     * @param columnWidgetClasses is a list of column widget classes.
+     * @param resizable           is a column resizability flag value.
+     */
+    public HierarchicalGrid (String[] headers, Class[] columnWidgetClasses, boolean resizable) {
+        super(headers, columnWidgetClasses, resizable);
         setGridCellfactory(new ExpandableCellFactory(this));
     }
 

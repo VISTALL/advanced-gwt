@@ -74,11 +74,26 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
      * @return a newly created grid.
      */
     public EditableGrid createEditableGrid(String[] headers, Class[] columnWidgetClasses, Editable model) {
+        return createEditableGrid(headers, columnWidgetClasses, model, true);
+    }
+
+    /**
+     * Creates and adds a new editable grid into the panel.<p>
+     * Use this method before {@link #display()}.
+     *
+     * @param headers is a list of heder labels.
+     * @param columnWidgetClasses is a list of column widget classes.
+     * @param model is a data model to be applied in the grid.
+     * @param resizable is a columns resizability flag value.
+     *
+     * @return a newly created grid.
+     */
+    public EditableGrid createEditableGrid(String[] headers, Class[] columnWidgetClasses, Editable model, boolean resizable) {
         EditableGrid grid;
         if (model instanceof Hierarchical)
-            grid = new HierarchicalGrid(headers, columnWidgetClasses);
+            grid = new HierarchicalGrid(headers, columnWidgetClasses, resizable);
         else
-            grid = new EditableGrid(headers, columnWidgetClasses);
+            grid = new EditableGrid(headers, columnWidgetClasses, resizable);
         grid.setGridPanel(this);
         grid.setModel(model);
         setGrid(grid);
@@ -383,6 +398,76 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
         this.parentGridPanel = panel;
         if (panel != null)
             panel.addChildGridPanel(this);
+    }
+
+    /**
+     * Checks whether th column in the grid is sortable.
+     *
+     * @param column is a column to check.
+     * @return a result of check.
+     */
+    public boolean isSortable(int column) {
+        return getGrid().isSortable(column);
+    }
+
+    /**
+     * Checks whether the column is sorted ascending.
+     *
+     * @param column is a column number.
+     * @return a result of check.
+     */
+    public boolean isAscending(int column) {
+        return getGrid().isAscending(column);
+    }
+
+    /**
+     * Sets the acsending / descending order of sorting.<p/>
+     * Note that this method also redisplays the grid. If you don't want to redisplay it you should
+     * use model methods instead.
+     *
+     * @param ascending is an order of sorting. <code>true</code> means ascending.
+     */
+    public void setAscending(boolean ascending) {
+        getGrid().setAscending(ascending);
+    }
+
+    /**
+     * Sets the sort column.<p/>
+     * Note that this method also redisplays the grid. If you don't want to redisplay it you should
+     * use model methods instead.
+     *
+     * @param column is a column number.
+     */
+    public void setSortColumn(int column) {
+        getGrid().setSortColumn(column);
+    }
+
+    /**
+     * Gets a currently selected row number.
+     *
+     * @return is a current row number.
+     */
+    public int getCurrentRow() {
+        return getGrid().getCurrentRow();
+    }
+
+    /**
+     * Gets a flag that is responsible for column resisability.
+     *
+     * @return <code>true</code> means that columns of the grid must be resizable.
+     */
+    public boolean isResizable() {
+        return getGrid().isResizable();
+    }
+
+    /**
+     * Sets a flag value that means whether the grid columns will be resizable.<p/>
+     * This method also switches on / off table-layout style.
+     *
+     * @param resizable is a flag value.
+     */
+    public void setResizable(boolean resizable) {
+        getGrid().setResizable(resizable);
     }
 
     /**
