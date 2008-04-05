@@ -173,6 +173,51 @@ public class ComboBox extends TextButtonPanel
         return getSelectedValue().getText();
     }
 
+    /**
+     * This method returns a selected item.
+     *
+     * @return is a selected item.
+     */
+    public Object getSelected() {
+        return getModel().getSelected();
+    }
+
+    /**
+     * This method returns a selected item index.
+     *
+     * @return is a selected item index.
+     */
+    public int getSelectedIndex() {
+        return getModel().getSelectedIndex();
+    }
+
+    /**
+     * This method returns a selected item ID.
+     *
+     * @return is a selected item ID.
+     */
+    public String getSelectedId() {
+        return getModel().getSelectedId();
+    }
+
+    /**
+     * This method sets the selected item ID.
+     *
+     * @param id is an item ID to select.
+     */
+    public void setSelectedId(String id) {
+        getModel().setSelectedId(id);
+    }
+
+    /**
+     * This method sets the selected item index.
+     *
+     * @param index a selected item index.
+     */
+    public void setSelectedIndex(int index) {
+        getModel().setSelectedIndex(index);
+    }
+
     /** {@inheritDoc} */
     protected String getDefaultImageName() {
         return "drop-down.gif";

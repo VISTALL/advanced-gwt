@@ -68,7 +68,7 @@ public class DefaultGridCellFactory implements GridCellFactory {
     public HeaderCell create(int column, String header) {
         HeaderCell cell = new HeaderCellImpl();
 
-        cell.setSortable(getGrid().isSoratble(column));
+        cell.setSortable(getGrid().isSortable(column));
         cell.setAscending(getGrid().isAscending(column));
         cell.setSorted(getGrid().isSorted(column));
 
