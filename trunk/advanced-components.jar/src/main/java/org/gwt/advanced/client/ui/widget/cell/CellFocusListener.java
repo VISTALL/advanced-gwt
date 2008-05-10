@@ -3,7 +3,9 @@ package org.gwt.advanced.client.ui.widget.cell;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.KeyboardListener;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
+import org.gwt.advanced.client.ui.widget.GridPanel;
 
 /**
  * This is a default cell focus listener implementation.
@@ -13,18 +15,11 @@ import org.gwt.advanced.client.ui.widget.EditableGrid;
  */
 public class CellFocusListener implements FocusListener {
     /**
-     * Fires start edit event.
+     * Does nothing.
      *
      * @param sender is a sender cell.
      */
     public void onFocus (Widget sender) {
-        GridCell cell = (GridCell) sender.getParent();
-        if (cell == null)
-            return;
-
-        FlexTable grid = cell.getGrid();
-        if (grid instanceof EditableGrid)
-            ((EditableGrid)grid).fireStartEdit(cell);
     }
 
     /**
@@ -38,7 +33,9 @@ public class CellFocusListener implements FocusListener {
             return;
 
         FlexTable grid = cell.getGrid();
-        if (grid instanceof EditableGrid)
-            ((EditableGrid)grid).fireFinishEdit(cell, cell.getNewValue());
+        if (grid instanceof EditableGrid) {
+            GridPanel gridPanel = ((EditableGrid) grid).getGridPanel();
+            gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyboardListener.KEY_ENTER, 0);
+        }
     }
 }
