@@ -1,1 +1,24 @@
 Visit our site http://advanced-gwt.sourceforge.net/
+
+Release Notes
+
+====================================================================================================================
+Relase 1.3.0-beta includes:
+
+Bug fixes:
+1. [ 1939728 ] Scrolling issue
+2. ConcurrentModificationException in debug mode
+3. Other minor bug fixes
+
+New features:
+1. Centralized customizable I/O device event management for the grids
+2. Keyboard events support
+3. Rendering perfomance optimization
+4. Rendering customization
+
+===================================================================================================================
+Release 1.2.2 includes:
+
+1. Emergency fix for the bug #1932694
+2. Minor improvements related to grids, combo box, suggestion box and grid panel usability: some methods have been added to avaoid getModel() invocation every time when data change required
+3. License file was added into the package
