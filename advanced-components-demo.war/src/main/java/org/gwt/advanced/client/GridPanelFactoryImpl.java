@@ -3,10 +3,11 @@ package org.gwt.advanced.client;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.GridDataModel;
 import org.gwt.advanced.client.ui.GridPanelFactory;
-import org.gwt.advanced.client.ui.GridToolbarListenerAdapter;
-import org.gwt.advanced.client.ui.widget.EditableGrid;
 import org.gwt.advanced.client.ui.widget.GridPanel;
-import org.gwt.advanced.client.ui.widget.cell.*;
+import org.gwt.advanced.client.ui.widget.cell.ComboBoxCell;
+import org.gwt.advanced.client.ui.widget.cell.DateCell;
+import org.gwt.advanced.client.ui.widget.cell.LongCell;
+import org.gwt.advanced.client.ui.widget.cell.TextBoxCell;
 
 /**
  * This is a grid panel factory implementation.
@@ -32,14 +33,6 @@ public class GridPanelFactoryImpl implements GridPanelFactory {
                 (Editable) model
         );
         gridPanel.setInvisibleColumn(3, true);
-        gridPanel.addToolbarListener(new GridToolbarListenerAdapter() {
-            public void onAddClick() {
-                EditableGrid grid = gridPanel.getGrid();
-                GridCell cell = (GridCell) grid.getWidget(grid.getRowCount() - 1, 2);
-                grid.fireStartEdit(cell);
-                grid.fireFinishEdit(cell, DemoModelFactory.createDepartmentListBox(0));
-            }
-        });
         return gridPanel;
     }
 

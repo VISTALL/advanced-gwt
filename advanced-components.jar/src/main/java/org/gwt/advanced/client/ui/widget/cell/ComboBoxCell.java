@@ -18,6 +18,23 @@ public class ComboBoxCell extends AbstractCell {
     }
 
     /** {@inheritDoc} */
+    public void setValue(Object value) {
+        if (value == null) {
+            value = new ComboBox();
+            ComboBoxDataModel model = new ComboBoxDataModel();
+            model.add("---", "---");
+            ((ComboBox)value).setModel(model);
+            ((ComboBox)value).display();
+        } else if (value instanceof ComboBoxDataModel) {
+            ComboBox box = new ComboBox();
+            box.setModel((ComboBoxDataModel) value);
+            box.display();
+            value = box;
+        }
+        super.setValue(value);
+    }
+
+    /** {@inheritDoc} */
     protected Widget createActive() {
         removeStyleName("list-cell");
         ComboBox box = (ComboBox) getValue();
@@ -30,7 +47,10 @@ public class ComboBoxCell extends AbstractCell {
 
     /** {@inheritDoc} */
     protected Widget createInactive() {
-        return getComboBoxWidget((ComboBox) getValue());
+        ComboBox comboBox = (ComboBox) getValue();
+        if (comboBox.isListPanelOpened())
+            comboBox.setListPopupOpened(false);
+        return getComboBoxWidget(comboBox);
     }
 
     /** {@inheritDoc} */

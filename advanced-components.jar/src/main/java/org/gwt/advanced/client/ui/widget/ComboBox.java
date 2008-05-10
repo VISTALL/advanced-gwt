@@ -218,6 +218,18 @@ public class ComboBox extends TextButtonPanel
         getModel().setSelectedIndex(index);
     }
 
+    /**
+     * Opens / closes list popup panel by request.
+     *
+     * @param opened <code>true</code> means "show".
+     */
+    public void setListPopupOpened(boolean opened) {
+        if (opened)
+            getListPanel().show();
+        else
+            getListPanel().hide();
+    }
+
     /** {@inheritDoc} */
     protected String getDefaultImageName() {
         return "drop-down.gif";
@@ -317,6 +329,9 @@ public class ComboBox extends TextButtonPanel
 
         /** {@inheritDoc} */
         public void onLostFocus(Widget sender) {
+            if (!isFocus())
+                return;
+            
             getFocuses().remove(sender);
 
             TextBox value = getSelectedValue();

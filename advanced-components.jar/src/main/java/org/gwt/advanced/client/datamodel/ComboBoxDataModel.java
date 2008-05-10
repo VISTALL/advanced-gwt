@@ -65,6 +65,8 @@ public class ComboBoxDataModel implements ListDataModel {
 
     /** {@inheritDoc} */
     public String getSelectedId() {
+        if (selectedId == null && itemIds.size() > 0)
+            selectedId = (String) itemIds.get(0);
         return selectedId;
     }
 

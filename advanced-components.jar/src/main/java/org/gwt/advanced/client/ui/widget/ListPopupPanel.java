@@ -303,8 +303,10 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     protected class AutoPopupListener implements PopupListener {
         /** {@inheritDoc} */
         public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
-            if (autoClosed)
+            if (autoClosed) {
+                hide();
                 getComboBox().getChoiceButton().setDown(false);
+            }
         }
     }
 }

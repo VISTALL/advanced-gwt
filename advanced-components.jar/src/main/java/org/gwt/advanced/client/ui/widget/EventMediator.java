@@ -82,6 +82,8 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
             dataModel.setAscending(!dataModel.isAscending());
         }
 
+        grid.drawHeaders();
+        grid.sortOnClient();
         synchronizeDataModel((Editable)dataModel);
     }
 
@@ -421,9 +423,9 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
     protected void synchronizeDataModel(Editable dataModel) {
         DataModelCallbackHandler callbackHandler = dataModel.getHandler();
         if (callbackHandler != null) {
-            callbackHandler.synchronize(dataModel); //redisplay will be doen automatically
+            callbackHandler.synchronize(dataModel); //redisplay will be done automatically
         } else {
-            getPanel().display(); //just redisplay the panel if data synchronization is not required
+            getPanel().getGrid().drawContent(); //just redisplay the content if data synchronization is not required
         }
     }
 }

@@ -1,11 +1,13 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.Hierarchical;
 import org.gwt.advanced.client.ui.AdvancedWidget;
+import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.GridToolbarListener;
 import org.gwt.advanced.client.ui.PagerListener;
 
@@ -58,6 +60,10 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     private GridPanel parentGridPanel;
     /** a list of child grid panels */
     private List children;
+    /** a panel that handles key events */
+    private FocusPanel focusPanel;
+    /** a grid key event manager instance */
+    private GridEventManager gridEventManager;
 
     /** Constructs a new GridPanel. */
     public GridPanel () {
@@ -97,6 +103,10 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
         grid.setGridPanel(this);
         grid.setModel(model);
         setGrid(grid);
+
+        if (model instanceof Hierarchical)
+            setGridEventManager(new HierarchicalGridEventManager(this));
+        
         return grid;
     }
 
@@ -179,10 +189,18 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
             GridToolbarListener toolbarListener = (GridToolbarListener) iterator.next();
             getMediator().addToolbarListener(toolbarListener);
         }
-        
+
+        getGrid().removeTableListener(getGridEventManager());
+        getFocusPanel().removeFocusListener(getGridEventManager());
+        getFocusPanel().removeKeyboardListener(getGridEventManager());
+
         packTopPanel();
         packGrid();
         packBottomPanel();
+
+        getGrid().addTableListener(getGridEventManager());
+        getFocusPanel().addFocusListener(getGridEventManager());
+        getFocusPanel().addKeyboardListener(getGridEventManager());
     }
 
     /**
@@ -205,8 +223,12 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
                 model.setCurrentPageNumber(currentPageNumber);
             else
                 model.setCurrentPageNumber(0);
+            if (isTopPagerVisible())
+                getTopPager().display();
+            if (isBottomPagerVisible())
+                getBottomPager().display();
         }
-        display();
+        getGrid().drawContent();
         getLockingPanel().unlock();
         getGrid().setLocked(false);
     }
@@ -471,6 +493,38 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     }
 
     /**
+     * Getter for property 'gridEventManager'.
+     *
+     * @return Value for property 'gridEventManager'.
+     */
+    public GridEventManager getGridEventManager() {
+        if (gridEventManager == null)
+            setGridEventManager(new DefaultGridEventManager(this));
+        return gridEventManager;
+    }
+
+    /**
+     * Setter for property 'gridEventManager'.
+     *
+     * @param gridEventManager Value to set for property 'gridEventManager'.
+     */
+    public void setGridEventManager(GridEventManager gridEventManager) {
+        if (getGrid() != null) {
+            getGrid().removeTableListener(this.gridEventManager);
+            getFocusPanel().removeFocusListener(this.gridEventManager);
+            getFocusPanel().removeKeyboardListener(this.gridEventManager);
+        }
+
+        this.gridEventManager = gridEventManager;
+
+        if (getGrid() != null && gridEventManager != null) {
+            getGrid().addTableListener(getGridEventManager());
+            getFocusPanel().addFocusListener(getGridEventManager());
+            getFocusPanel().addKeyboardListener(getGridEventManager());
+        }
+    }
+
+    /**
      * This method displays a top panel and adds top pager and toolbar into it.
      */
     protected void packTopPanel() {
@@ -490,7 +544,9 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
      */
     protected void packGrid() {
         EditableGrid grid = getGrid();
-        add(grid, CENTER);
+        FocusPanel focusPanel = getFocusPanel();
+        focusPanel.setWidget(grid);
+        add(focusPanel, CENTER);
         grid.display();
     }
 
@@ -643,6 +699,15 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     }
 
     /**
+     * This method sets focus to the grid.
+     *
+     * @param focus is a focus flag value.
+     */
+    public void setGridFocus(boolean focus) {
+        getFocusPanel().setFocus(focus);
+    }
+
+    /**
      * Getter for property 'lockingPanel'.
      *
      * @return Value for property 'lockingPanel'.
@@ -672,6 +737,17 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
         if (children == null)
             children = new ArrayList();
         return children;
+    }
+
+    /**
+     * Getter for property 'focusPanel'.
+     *
+     * @return Value for property 'focusPanel'.
+     */
+    protected FocusPanel getFocusPanel() {
+        if (focusPanel == null)
+            focusPanel = new FocusPanel();
+        return focusPanel;
     }
 
     /**

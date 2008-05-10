@@ -23,8 +23,6 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
     private boolean active;
     /** default cell focus listener */
     private FocusListener focusListener;
-    /** default cell keybord listner */
-    private KeyboardListener keyboardListener;
     /** label instance to be used in most cell extensions */
     private Label label;
 
@@ -92,6 +90,7 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
             addStyleName("passive-cell");
             
             prepare(createInactive());
+            ((EditableGrid)getGrid()).setFocus(true);
         }
 
         FlexTable grid = getGrid();
@@ -162,15 +161,10 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
      * @param widget is a content widget.
      */
     protected void addListeners(Widget widget) {
-        if (focusListener == null)
+        if (widget instanceof SourcesFocusEvents && focusListener == null) {
             focusListener = new CellFocusListener();
-        if (keyboardListener == null)
-            keyboardListener = new CellKeyboardListener();
-
-        if (widget instanceof SourcesFocusEvents)
             ((SourcesFocusEvents)widget).addFocusListener(focusListener);
-        if (widget instanceof SourcesKeyboardEvents)
-            ((SourcesKeyboardEvents)widget).addKeyboardListener(keyboardListener);
+        }
     }
 
     /**
@@ -179,10 +173,6 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
      * @param widget is a content widget.
      */
     protected void removeListeners(Widget widget) {
-        if (widget instanceof SourcesFocusEvents)
-            ((SourcesFocusEvents)widget).removeFocusListener(focusListener);
-        if (widget instanceof SourcesKeyboardEvents)
-            ((SourcesKeyboardEvents)widget).removeKeyboardListener(keyboardListener);
     }
 
     /**

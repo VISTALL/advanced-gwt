@@ -176,6 +176,15 @@
     background-color: lightgoldenrodyellow;
 }
 
+/** grid selected cell styles */
+.advanced-Grid .selected-column {
+}
+
+/** grid selected cell */
+.advanced-Grid .selected-cell {
+    background-color: burlywood;
+}
+
 /** grid column styles */
 .advanced-Grid .grid-column {
 }

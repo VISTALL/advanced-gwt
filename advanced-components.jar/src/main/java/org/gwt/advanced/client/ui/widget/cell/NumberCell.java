@@ -1,7 +1,6 @@
 package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -27,8 +26,6 @@ public abstract class NumberCell extends TextBoxCell {
     private FocusListener focusListener;
     /** default cell focus listener */
     private FocusListener cellFocusListener;
-    /** default cell keyboard listener */
-    private KeyboardListener cellKeyboardListener;
 
     /**
      * Creates an instance of the class.
@@ -86,14 +83,11 @@ public abstract class NumberCell extends TextBoxCell {
 
         if (cellFocusListener == null)
             cellFocusListener = new CellFocusListener();
-        if (cellKeyboardListener == null)
-            cellKeyboardListener = new CellKeyboardListener();
 
         TextBox box = getTextBox();
 
         box.addFocusListener(focusListener);
         box.addFocusListener(cellFocusListener);
-        box.addKeyboardListener(cellKeyboardListener);
     }
 
     /** {@inheritDoc} */
@@ -101,7 +95,6 @@ public abstract class NumberCell extends TextBoxCell {
         TextBox box = getTextBox();
         box.removeFocusListener(focusListener);
         box.removeFocusListener(cellFocusListener);
-        box.removeKeyboardListener(cellKeyboardListener);
     }
 
     /** {@inheritDoc} */

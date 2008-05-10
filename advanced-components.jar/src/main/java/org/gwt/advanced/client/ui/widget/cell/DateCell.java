@@ -2,13 +2,11 @@ package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.CalendarListener;
 import org.gwt.advanced.client.ui.widget.Calendar;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
+import org.gwt.advanced.client.ui.widget.GridPanel;
 
 import java.util.Date;
 
@@ -46,8 +44,10 @@ public class DateCell extends AbstractCell {
         panel.setPopupPosition(left, getAbsoluteTop());
 
         FlexTable table = getGrid();
-        if (table instanceof EditableGrid)
-            ((EditableGrid)table).fireStartEdit(this);
+        if (table instanceof EditableGrid) {
+            EditableGrid grid = (EditableGrid) table;
+            grid.setCurrentCell(getRow(), getColumn());
+        }
 
         return getLabel();
     }
@@ -65,6 +65,8 @@ public class DateCell extends AbstractCell {
 
     /** {@inheritDoc} */
     public void setFocus(boolean focus) {
+        if (!focus)
+            getPopup().hide();
     }
 
     /** {@inheritDoc} */
@@ -75,26 +77,24 @@ public class DateCell extends AbstractCell {
     /** {@inheritDoc} */
     protected void addListeners(Widget widget) {
         if (changeListener == null) {
-            final GridCell cell = this;
             changeListener = new CalendarListener() {
                 public void onChange(Widget sender, Date date) {
                     getPopup().hide();
-                    ((AbstractCell)cell).setActive(false);
 
                     FlexTable table = getGrid();
-                    boolean valid = true;
-                    if (table instanceof EditableGrid)
-                        valid = ((EditableGrid)table).fireFinishEdit(cell, getNewValue());
-
-                    if (valid) {
-                        createInactive();
-                    }
+//                    boolean valid = true;
+                    EditableGrid grid = (EditableGrid) table;
+                    GridPanel gridPanel = grid.getGridPanel();
+                    gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyboardListener.KEY_ENTER, 0);
+                    grid.setCurrentCell(getRow(), getColumn());
                 }
 
                 public void onCancel(Widget sender) {
                     getPopup().hide();
-                    ((AbstractCell)cell).setActive(false);
-                    createInactive();
+                    EditableGrid grid = (EditableGrid) getGrid();
+                    GridPanel gridPanel = grid.getGridPanel();
+                    gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyboardListener.KEY_ENTER, 0);
+                    grid.setCurrentCell(getRow(), getColumn());
                 }
             };
         }

@@ -14,6 +14,8 @@ import java.util.Date;
  * @since 1.0.0
  */
 public class DatePicker extends TextButtonPanel implements CalendarListener {
+    /** change value listeners */
+    private ChangeListenerCollection listeners;
     /** calendar popup panel */
     private PopupPanel calendarPanel;
     /** calendar widget */
@@ -57,7 +59,8 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
         getCalendarPanel().hide();
         Date date = getCalendar().getDate();
         getSelectedValue().setText(getFormat().format(date));
-        this.date = date; 
+        this.date = date;
+        getListeners().fireChange(this);
     }
 
     /** {@inheritDoc} */
@@ -165,7 +168,20 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
     }
 
     /**
+     * Getter for property 'listeners'.
+     *
+     * @return Value for property 'listeners'.
+     */
+    public ChangeListenerCollection getListeners() {
+        if (listeners == null)
+            listeners = new ChangeListenerCollection();
+        return listeners;
+    }
+
+    /**
      * This is an open calendar evbent listener implementation.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
     protected class OpenCalendarClickListener implements ClickListener {
         /** {@inheritDoc} */
