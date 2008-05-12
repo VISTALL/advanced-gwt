@@ -1054,7 +1054,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
-     * Overrides this method to make it accessible for this package.
+     * Overrides this method to make it accessible for this package and server side renderers.
      *
      * @return a body element.
      */

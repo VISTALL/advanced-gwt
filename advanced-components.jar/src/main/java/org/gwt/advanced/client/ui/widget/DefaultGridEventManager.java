@@ -43,34 +43,31 @@ public class DefaultGridEventManager implements GridEventManager {
 
     /** {@inheritDoc} */
     public void dispatch(GridPanel panel, char keyCode, int modifiers) {
-        EditableGrid grid = getPanel().getGrid();
-        boolean hasActiveCell = grid.hasActiveCell();
-
         int mainModifier = KeyboardListener.MODIFIER_ALT | KeyboardListener.MODIFIER_CTRL;
 
-        if (!hasActiveCell && KeyboardListener.KEY_DOWN == keyCode && modifiers == mainModifier)
+        if (KeyboardListener.KEY_DOWN == keyCode && modifiers == mainModifier)
             moveCursorDown();
-        else if (!hasActiveCell && KeyboardListener.KEY_RIGHT == keyCode && modifiers == mainModifier)
+        else if (KeyboardListener.KEY_RIGHT == keyCode && modifiers == mainModifier)
             moveCursorRight();
-        else if (!hasActiveCell && KeyboardListener.KEY_UP == keyCode && modifiers == mainModifier)
+        else if (KeyboardListener.KEY_UP == keyCode && modifiers == mainModifier)
             moveCursorUp();
-        else if (!hasActiveCell && KeyboardListener.KEY_LEFT == keyCode && modifiers == mainModifier)
+        else if (KeyboardListener.KEY_LEFT == keyCode && modifiers == mainModifier)
             moveCursorLeft();
-        else if (!hasActiveCell && KeyboardListener.KEY_HOME == keyCode && modifiers == KeyboardListener.MODIFIER_SHIFT)
+        else if (KeyboardListener.KEY_HOME == keyCode && modifiers == KeyboardListener.MODIFIER_SHIFT)
             moveToFirstCell();
-        else if (!hasActiveCell && KeyboardListener.KEY_END == keyCode && modifiers == KeyboardListener.MODIFIER_SHIFT)
+        else if (KeyboardListener.KEY_END == keyCode && modifiers == KeyboardListener.MODIFIER_SHIFT)
             moveToLastCell();
-        else if (!hasActiveCell && KeyboardListener.KEY_HOME == keyCode && modifiers == mainModifier)
+        else if (KeyboardListener.KEY_HOME == keyCode && modifiers == mainModifier)
             moveToStartPage();
-        else if (!hasActiveCell && KeyboardListener.KEY_END == keyCode && modifiers == mainModifier)
+        else if (KeyboardListener.KEY_END == keyCode && modifiers == mainModifier)
             moveToEndPage();
-        else if (!hasActiveCell && KeyboardListener.KEY_PAGEUP == keyCode && modifiers == mainModifier)
+        else if (KeyboardListener.KEY_PAGEUP == keyCode && modifiers == mainModifier)
             moveToPrevPage();
-        else if (!hasActiveCell && KeyboardListener.KEY_PAGEDOWN == keyCode && modifiers == mainModifier)
+        else if (KeyboardListener.KEY_PAGEDOWN == keyCode && modifiers == mainModifier)
             moveToNextPage();
-        else if (!hasActiveCell && keyCode == ' ' && modifiers == (KeyboardListener.MODIFIER_SHIFT | mainModifier))
+        else if (keyCode == ' ' && modifiers == (KeyboardListener.MODIFIER_SHIFT | mainModifier))
             moveToPreviousCell();
-        else if (!hasActiveCell && keyCode == ' ' && modifiers == mainModifier)
+        else if (keyCode == ' ' && modifiers == mainModifier)
             moveToNextCell();
         else if (KeyboardListener.KEY_ENTER == keyCode && !isReadOnly())
             activateCell();
@@ -126,6 +123,8 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveToNextCell() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
 
         if (grid.getCurrentColumn() < grid.getCellCount(grid.getCurrentRow()) - 1)
             moveCursorRight();
@@ -138,6 +137,8 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveToPreviousCell() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
 
         if (grid.getCurrentColumn() > 0)
             moveCursorLeft();
@@ -150,6 +151,8 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveCursorRight() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
         setCursor(grid.getCurrentRow(), grid.getCurrentColumn() + 1);
     }
 
@@ -158,6 +161,8 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveCursorDown() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
         setCursor(grid.getCurrentRow() + 1, grid.getCurrentColumn());
     }
 
@@ -166,6 +171,8 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveCursorLeft() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
         setCursor(grid.getCurrentRow(), grid.getCurrentColumn() - 1);
     }
 
@@ -174,6 +181,8 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveCursorUp() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
         setCursor(grid.getCurrentRow() - 1, grid.getCurrentColumn());
     }
 
@@ -181,6 +190,8 @@ public class DefaultGridEventManager implements GridEventManager {
      * Opens the first page of the grid
      */
     protected void moveToStartPage() {
+        if (getPanel().getGrid().hasActiveCell())
+            return;
         setPage(0);
     }
 
@@ -188,7 +199,10 @@ public class DefaultGridEventManager implements GridEventManager {
      * Opens the last page of the grid
      */
     protected void moveToEndPage() {
-        int page = getPanel().getGrid().getModel().getTotalPagesNumber() - 1;
+        EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
+        int page = grid.getModel().getTotalPagesNumber() - 1;
         setPage(page);
     }
 
@@ -196,6 +210,8 @@ public class DefaultGridEventManager implements GridEventManager {
      * Moves the cursor to the first cell on this page
      */
     protected void moveToFirstCell() {
+        if (getPanel().getGrid().hasActiveCell())
+            return;
         setCursor(0, 0);
     }
 
@@ -204,6 +220,8 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveToLastCell() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
         int row = grid.getRowCount() - 1;
         if (row < 0)
             return;
@@ -217,7 +235,10 @@ public class DefaultGridEventManager implements GridEventManager {
      * Open the next page
      */
     protected void moveToNextPage() {
-        int page = getPanel().getGrid().getModel().getCurrentPageNumber();
+        EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
+        int page = grid.getModel().getCurrentPageNumber();
         setPage(page + 1);
     }
 
@@ -225,7 +246,10 @@ public class DefaultGridEventManager implements GridEventManager {
      * Opens the previos page
      */
     protected void moveToPrevPage() {
-        int page = getPanel().getGrid().getModel().getCurrentPageNumber();
+        EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            return;
+        int page = grid.getModel().getCurrentPageNumber();
         setPage(page - 1);
     }
 

@@ -20,6 +20,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -227,6 +228,24 @@ public class DefaultGridRenderer implements GridRenderer {
      */
     protected GridCellFactory getCellFactory() {
         return getGrid().getGridCellFactory();
+    }
+
+    /**
+     * This method retuns the thead element of the grid.
+     *
+     * @return a thead element.
+     */
+    protected Element getTHeadElement() {
+        return getGrid().getTHeadElement();
+    }
+
+    /**
+     * This method returns a tbody element of the grid.
+     *
+     * @return a tbody element.
+     */
+    protected Element getTBodyElement() {
+        return getGrid().getBodyElement();
     }
 
     /**

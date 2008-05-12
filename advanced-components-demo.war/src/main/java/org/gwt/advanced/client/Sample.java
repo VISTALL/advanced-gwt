@@ -21,17 +21,12 @@ import org.gwt.advanced.client.ui.widget.cell.LabelCell;
 import org.gwt.advanced.client.ui.widget.cell.IntegerCell;
 import org.gwt.advanced.client.ui.widget.cell.AbstractCell;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
-import org.gwt.advanced.client.ui.GridListenerAdapter;
-import org.gwt.advanced.client.ui.GridPanelFactory;
-import org.gwt.advanced.client.ui.EditCellListener;
-import org.gwt.advanced.client.ui.SelectRowListener;
+import org.gwt.advanced.client.ui.*;
 import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.util.ThemeHelper;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.DOM;
 
 import java.util.Date;
 
@@ -330,6 +325,46 @@ public class Sample {
     public class MyRowSelectionListener implements SelectRowListener {
         public void onSelect(EditableGrid grid, int row) {
             Window.alert("Row number " + row);
+        }
+    }
+
+    public class MyGridEventManager extends DefaultGridEventManager {
+        public MyGridEventManager(GridPanel panel) {
+            super(panel);
+        }
+
+        public void dispatch(GridPanel panel, char keyCode, int modifiers) {
+            if (keyCode == KEY_TAB) //move the cursor to the next cell on TAB pressing
+                moveToNextCell();
+            else
+                super.dispatch(panel, keyCode, modifiers);
+        }
+    }
+
+    public class MyGridRenderer extends DefaultGridRenderer {
+        public MyGridRenderer(EditableGrid grid) {
+            super(grid);
+        }
+
+        public void drawHeaders(Object[] headers) {
+            //draw simple labels
+            for (int i = 0; i < headers.length; i++) {
+                Object header = headers[i];
+                getGrid().setHeaderWidget(i, new Label(String.valueOf(header)));
+            }
+        }
+    }
+
+    public class ServerSideContentRenderer extends DefaultGridRenderer {
+        private String html; // HTML tbody content rendered on server side
+
+        public ServerSideContentRenderer(EditableGrid grid, String html) {
+            super(grid);
+            this.html = html;
+        }
+
+        public void drawContent(GridDataModel model) {
+            DOM.setInnerHTML(getTBodyElement(), html);
         }
     }
 }
