@@ -195,7 +195,8 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * @param model Value to set for property 'model'.
      */
     public void setModel (Editable model) {
-        this.model = model;
+        if (model != null)
+            this.model = model;
     }
 
     /**
@@ -204,7 +205,8 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * @param cellComparator is a cell comparator.
      */
     public void setCellComparator (Comparator cellComparator) {
-        this.cellComparator = cellComparator;
+        if (cellComparator != null)
+            this.cellComparator = cellComparator;
     }
 
     /**
@@ -440,7 +442,8 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * @param rowDrawHandler a row draw handler instance.
      */
     public void setRowDrawHandler(GridRowDrawCallbackHandler rowDrawHandler) {
-        this.rowDrawHandler = rowDrawHandler;
+        if (rowDrawHandler != null)
+            this.rowDrawHandler = rowDrawHandler;
     }
 
     /**

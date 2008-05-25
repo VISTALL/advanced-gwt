@@ -105,7 +105,7 @@ public class DefaultGridRenderer implements GridRenderer {
             )
                 setCellText(formatString(data), row, column, "numeric-cell");
             else if (ListCell.class.equals(columnType))
-                setCellText(getLabelText((ListBox) data), row, column, "list-cell");
+                setCellText(getListBoxText((ListBox) data), row, column, "list-cell");
             else if (DateCell.class.equals(columnType))
                 setCellText(formatDate((Date) data), row, column, "date-cell");
             else if (LabelCell.class.equals(columnType) || TextBoxCell.class.equals(columnType))
@@ -205,7 +205,7 @@ public class DefaultGridRenderer implements GridRenderer {
      *
      * @return a label text.
      */
-    protected String getLabelText (ListBox listBox) {
+    protected String getListBoxText(ListBox listBox) {
         String labelText = "";
         if (listBox != null) {
             int index = -1;
@@ -220,7 +220,7 @@ public class DefaultGridRenderer implements GridRenderer {
         }
         return labelText;
     }
-
+    
     /**
      * Getter for property 'cellFactory'.
      *

@@ -47,7 +47,8 @@ public class ComboBox extends TextButtonPanel
      * @param model Value to set for property 'model'.
      */
     public void setModel(ComboBoxDataModel model) {
-        this.model = model;
+        if (model != null)
+            this.model = model;
     }
 
     /**
@@ -56,7 +57,8 @@ public class ComboBox extends TextButtonPanel
      * @param listItemFactory Value to set for property 'listItemFactory'.
      */
     public void setListItemFactory(ListItemFactory listItemFactory) {
-        this.listItemFactory = listItemFactory;
+        if (listItemFactory != null)
+            this.listItemFactory = listItemFactory;
     }
 
     /**

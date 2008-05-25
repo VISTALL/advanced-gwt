@@ -102,8 +102,10 @@ public class SuggestionBox extends ComboBox {
      * @param model Value to set for property 'model'.
      */
     public void setModel(SuggestionBoxDataModel model) {
-        setModel((ComboBoxDataModel) model);
-        addSuggestionBoxListener(model);
+        if (model != null) {
+            setModel((ComboBoxDataModel) model);
+            addSuggestionBoxListener(model);
+        }
     }
 
     /**

@@ -27,6 +27,8 @@ import org.gwt.advanced.client.ui.widget.EditableGrid;
  * @since 1.0.0
  */
 public abstract class AbstractCell extends SimplePanel implements GridCell {
+    /** default cell focus listener */
+    private static FocusListener defaultFocusListener = new CellFocusListener();
     /** cell value */
     private Object value;
     /** row number */
@@ -37,10 +39,10 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
     private FlexTable grid;
     /** active status flag */
     private boolean active;
-    /** default cell focus listener */
-    private FocusListener focusListener;
     /** label instance to be used in most cell extensions */
     private Label label;
+    /** a flag meaning that the default focus listener has been added */
+    private boolean defaultFocusListenerAdded;
 
     /** {@inheritDoc} */
     public Object getValue () {
@@ -177,9 +179,9 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
      * @param widget is a content widget.
      */
     protected void addListeners(Widget widget) {
-        if (widget instanceof SourcesFocusEvents && focusListener == null) {
-            focusListener = new CellFocusListener();
-            ((SourcesFocusEvents)widget).addFocusListener(focusListener);
+        if (widget instanceof SourcesFocusEvents && !isDefaultFocusListenerAdded()) {
+            ((SourcesFocusEvents)widget).addFocusListener(defaultFocusListener);
+            defaultFocusListenerAdded = true;
         }
     }
 
@@ -210,5 +212,23 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
      */
     protected void setLabel (Label label) {
         this.label = label;
+    }
+
+    /**
+     * Getter for property 'defaultFocusListener'.
+     *
+     * @return Value for property 'defaultFocusListener'.
+     */
+    protected FocusListener getDefaultFocusListener() {
+        return defaultFocusListener;
+    }
+
+    /**
+     * Getter for property 'defaultFocusListenerAdded'.
+     *
+     * @return Value for property 'defaultFocusListenerAdded'.
+     */
+    protected boolean isDefaultFocusListenerAdded() {
+        return defaultFocusListenerAdded;
     }
 }

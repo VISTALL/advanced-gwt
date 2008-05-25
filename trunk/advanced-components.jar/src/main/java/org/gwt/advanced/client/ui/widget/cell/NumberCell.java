@@ -40,8 +40,6 @@ public abstract class NumberCell extends TextBoxCell {
     private double min;
     /** default numeric cell focus listener */
     private FocusListener focusListener;
-    /** default cell focus listener */
-    private FocusListener cellFocusListener;
 
     /**
      * Creates an instance of the class.
@@ -95,22 +93,10 @@ public abstract class NumberCell extends TextBoxCell {
                     } 
                 }
             };
+            TextBox box = getTextBox();
+            box.addFocusListener(focusListener);
+            super.addListeners(box);
         }
-
-        if (cellFocusListener == null)
-            cellFocusListener = new CellFocusListener();
-
-        TextBox box = getTextBox();
-
-        box.addFocusListener(focusListener);
-        box.addFocusListener(cellFocusListener);
-    }
-
-    /** {@inheritDoc} */
-    protected void removeListeners (Widget widget) {
-        TextBox box = getTextBox();
-        box.removeFocusListener(focusListener);
-        box.removeFocusListener(cellFocusListener);
     }
 
     /** {@inheritDoc} */

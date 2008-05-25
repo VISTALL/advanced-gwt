@@ -17,6 +17,7 @@
 package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.user.client.ui.ListBox;
+import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.ui.widget.ComboBox;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
 
@@ -78,7 +79,10 @@ public class DefaultCellComparator implements Comparator {
         } else if (ListCell.class.equals(columnType)) {
             result = getLabelText((ListBox) value);
         } else if (ComboBoxCell.class.equals(columnType)) {
-            result = getComboBoxText((ComboBox) value);
+            if (value instanceof ComboBox)
+                result = getComboBoxText((ComboBox) value);
+            else
+                result = getComboBoxText((ListDataModel) value);
         } else if (BooleanCell.class.equals(columnType)) {
             //Boolean is not comparable in GWT?
             result = Boolean.valueOf(String.valueOf(value)).toString();
@@ -101,6 +105,18 @@ public class DefaultCellComparator implements Comparator {
         }
 
         return result;
+    }
+
+    /**
+     * This method converts the model into its string representation.
+     *
+     * @param model is a model to be converted.
+     * @return a string representation.
+     */
+    protected String getComboBoxText(ListDataModel model) {
+        if (model == null)
+            return "";
+        return String.valueOf(model.getSelected());
     }
 
     /**
@@ -133,10 +149,10 @@ public class DefaultCellComparator implements Comparator {
      * @return a text value.
      */
     protected String getComboBoxText(ComboBox comboBox) {
-        String text = comboBox.getText();
-        if (text == null)
-            text = comboBox.getListItemFactory().convert(comboBox.getModel().getSelected());
-        return text;
+        if (comboBox == null)
+            return "";
+
+        return comboBox.getListItemFactory().convert(comboBox.getModel().getSelected());
     }
 
     /**
