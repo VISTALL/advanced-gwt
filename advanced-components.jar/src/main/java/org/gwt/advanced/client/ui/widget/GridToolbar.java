@@ -37,6 +37,10 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
     private boolean saveButtonVisible = true;
     /** a flag meaning whether the Clear button should be displayed */
     private boolean clearButtonVisible = true;
+    /** a flag meaning whether the move left button should be displayed */
+    private boolean moveLeftButtonVisible = true;
+    /** a flag meaning whether the move right button should be displayed */
+    private boolean moveRightButtonVisible = true;
     /** a grid panel instance */
     private GridPanel gridPanel;
 
@@ -83,6 +87,22 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
             addButton("delete_16.gif", new ClickListener(){
                 public void onClick (Widget sender) {
                     getGridPanel().getMediator().fireClearEvent();
+                }
+            });
+        }
+
+        if (isMoveLeftButtonVisible()) {
+            addButton("arrow-left.gif", new ClickListener(){
+                public void onClick (Widget sender) {
+                    getGridPanel().getMediator().fireMoveLeftEvent();
+                }
+            });
+        }
+
+        if (isMoveRightButtonVisible()) {
+            addButton("arrow-right.gif", new ClickListener(){
+                public void onClick (Widget sender) {
+                    getGridPanel().getMediator().fireMoveRightEvent();
                 }
             });
         }
@@ -158,6 +178,42 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
      */
     public void setClearButtonVisible(boolean clearButtonVisible) {
         this.clearButtonVisible = clearButtonVisible;
+    }
+
+    /**
+     * Getter for property 'moveLeftButtonVisible'.
+     *
+     * @return Value for property 'moveLeftButtonVisible'.
+     */
+    public boolean isMoveLeftButtonVisible() {
+        return moveLeftButtonVisible && getGridPanel().getGrid() instanceof TreeGrid;
+    }
+
+    /**
+     * Setter for property 'moveLeftButtonVisible'.
+     *
+     * @param moveLeftButtonVisible Value to set for property 'moveLeftButtonVisible'.
+     */
+    public void setMoveLeftButtonVisible(boolean moveLeftButtonVisible) {
+        this.moveLeftButtonVisible = moveLeftButtonVisible;
+    }
+
+    /**
+     * Getter for property 'moveRightButtonVisible'.
+     *
+     * @return Value for property 'moveRightButtonVisible'.
+     */
+    public boolean isMoveRightButtonVisible() {
+        return moveRightButtonVisible && getGridPanel().getGrid() instanceof TreeGrid;
+    }
+
+    /**
+     * Setter for property 'moveRightButtonVisible'.
+     *
+     * @param moveRightButtonVisible Value to set for property 'moveRightButtonVisible'.
+     */
+    public void setMoveRightButtonVisible(boolean moveRightButtonVisible) {
+        this.moveRightButtonVisible = moveRightButtonVisible;
     }
 
     /**

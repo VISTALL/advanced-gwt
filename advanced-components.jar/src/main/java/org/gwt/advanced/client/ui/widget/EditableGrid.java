@@ -22,9 +22,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.datamodel.GridDataModel;
-import org.gwt.advanced.client.datamodel.LazyLoadable;
+import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.*;
 import org.gwt.advanced.client.ui.widget.cell.*;
 import org.gwt.advanced.client.util.GWTUtil;
@@ -118,6 +116,8 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     private GridCell activeCell;
     /** grid renderer instance */
     private GridRenderer gridRenderer;
+    /** a default selected row index */
+    private int defaultSelectedRow;
 
     /**
      * Creates a new instance of this class.
@@ -241,7 +241,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     /**
      * This method removes the specified column form the list of invisible columns.
      *
-     * @param column is an iinvisible column number.
+     * @param column is an invisible column number.
      */
     public void removeInvisibleColumn (int column) {
         getInvisibleColumns().remove(new Integer(column));
@@ -379,8 +379,6 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      */
     public void setCurrentRow (int currentRow) {
         int oldRow = getCurrentRow();
-        if(oldRow == currentRow)
-            return;
         
         HTMLTable.RowFormatter rowFormatter = getRowFormatter();
 
@@ -391,7 +389,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
             rowFormatter.addStyleName(currentRow, "selected-row");
 
         this.currentRow = currentRow;
-        for (Iterator iterator = getSelectRowListeners().iterator(); iterator.hasNext();) {
+        for (Iterator iterator = getSelectRowListeners().iterator(); oldRow != currentRow && iterator.hasNext();) {
             SelectRowListener selectRowListener = (SelectRowListener) iterator.next();
             selectRowListener.onSelect(this, currentRow);
         }
@@ -491,12 +489,10 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
 
         if (result) {
             Editable dataModel = getModel();
-
-            dataModel.update(getModelRow(cell.getRow()), cell.getColumn(), newValue);
+            updateModel(cell, newValue);
 
             Object oldValue = cell.getValue();
             cell.setValue(newValue);
-//            activateCell(cell.getRow(), cell.getColumn(), false);
 
             if (
                 isClientSortEnabled()
@@ -612,7 +608,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * @return a grid cell widget.
      */
     public Widget getWidget(int row, int column) {
-        Widget widget = super.getWidget(row, column);
+        Widget widget = getOriginalWidget(row, column);
         if (widget == null) {
             int modelRow = getModelRow(row);
             Object data = null;
@@ -624,6 +620,35 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
             ((GridCell)widget).displayActive(false);
         }
         return widget;
+    }
+
+    /**
+     * Getter for property 'defaultSelectedRow'.
+     *
+     * @return Value for property 'defaultSelectedRow'.
+     */
+    public int getDefaultSelectedRow() {
+        return defaultSelectedRow;
+    }
+
+    /**
+     * Setter for property 'defaultSelectedRow'.
+     *
+     * @param defaultSelectedRow Value to set for property 'defaultSelectedRow'.
+     */
+    public void setDefaultSelectedRow(int defaultSelectedRow) {
+        this.defaultSelectedRow = defaultSelectedRow;
+    }
+
+    /**
+     * Invokes the <code>getWidget()</code> moethod of the <code>FlexTable</code>.
+     *
+     * @param row is a row number.
+     * @param column is a column number.
+     * @return an original widget.
+     */
+    protected Widget getOriginalWidget(int row, int column) {
+        return super.getWidget(row, column);
     }
 
     /**
@@ -750,13 +775,24 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
+     * This method updates the model with the new value of the cell on finish edit event.
+     *
+     * @param cell is a cell that produced the event.
+     * @param newValue is a new value of the cell.
+     */
+    protected void updateModel(GridCell cell, Object newValue) {
+        Editable dataModel = getModel();
+        dataModel.update(getModelRow(cell.getRow()), cell.getColumn(), newValue);
+    }
+    
+    /**
      * This method drops cell selection.
      */
     protected void dropSelection() {
         int oldRow = getCurrentRow();
         int oldColumn = getCurrentColumn();
 
-        if (oldRow >= 0 && oldColumn >=0) {
+        if (oldRow >= 0 && oldColumn >=0 && oldRow < getRowCount() && oldColumn < getCellCount(oldRow)) {
             getColumnFormatter().removeStyleName(oldColumn, "selected-column");
             getCellFormatter().removeStyleName(oldRow, oldColumn, "selected-cell");
             this.currentColumn = -1;
@@ -811,6 +847,67 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
+     * This method returns a header cell widget.
+     *
+     * @param column is a column number.
+     * @return a header cell widget associated with this column.
+     */
+    public HeaderCell getHeaderCell(int column) {
+        return (HeaderCell) getHeaderWidgets().get(column);
+    }
+
+    /**
+     * This method adds a new empty row into the grid.<p/>
+     * Grid cells must provide correct results to allow the grid to support this feature. 
+     */
+    protected void addRow() {
+        Editable dataModel = getModel();
+        Object[] emptyCells = new Object[getHeaders().length];
+
+        int position = getRowCount();
+        dataModel.addRow(getModelRow(position), emptyCells);
+        addRow(position, emptyCells);
+
+        setCurrentRow(position);
+    }
+
+    /**
+     * This method removes the currently selected row.
+     */
+    protected void removeRow() {
+        Editable model = getModel();
+        int currentRow = getCurrentRow();
+        
+        if (currentRow >= 0 && getRowCount() > 0) {
+            int modelRow = getModelRow(currentRow);
+            model.removeRow(modelRow);
+
+            int rowCount = getRowCount() - 1;
+            int selectRow = currentRow;
+            if (selectRow >= rowCount) {
+                selectRow = rowCount - 1;
+            }
+
+            removeRow(currentRow);
+            setCurrentRow(selectRow);
+            increaseRowNumbers(currentRow, -1);
+        }
+    }
+
+    /**
+     * This method invokes the data model handler to synchronize the model and persistence
+     * storage or redraws content if the model is not lazily loadable.
+     */
+    protected void synchronizeDataModel() {
+        Editable dataModel = getModel();
+        DataModelCallbackHandler callbackHandler = dataModel.getHandler();
+        if (callbackHandler != null)
+            callbackHandler.synchronize(dataModel); //redisplay will be done automatically
+        else
+            drawContent(); //just redisplay the content if data synchronization is not required
+    }
+    
+    /**
      * This method removes all content from the grid.
      */
     protected void removeContent () {
@@ -864,7 +961,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
             } else if (getCurrentRow() != -1) {
                 setCurrentRow(getCurrentRow());
             } else {
-                setCurrentRow(0);
+                setCurrentRow(getDefaultSelectedRow());
             }
         }
     }
@@ -902,16 +999,6 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     protected void drawHeaders () {
         getGridRenderer().drawHeaders(getHeaders());
         detectCurrentSortColumn();
-    }
-
-    /**
-     * This method returns a header cell widget.
-     *
-     * @param column is a column number.
-     * @return a header cell widget associated with this column.
-     */
-    public HeaderCell getHeaderCell(int column) {
-        return (HeaderCell) getHeaderWidgets().get(column);
     }
 
     /**
@@ -982,7 +1069,7 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
-     * This method increases ro numbers in the cells.
+     * This method increases row numbers in the cells.
      *
      * @param startRow is a start row number.
      * @param step     is an increase step.
@@ -990,10 +1077,12 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     protected void increaseRowNumbers (int startRow, int step) {
         for (int i = startRow; i >=0 && i < getRowCount(); i++) {
             for (int j = 0; j < getCellCount(i); j++) {
-                Widget widget = getWidget(i, j);
-                if (widget instanceof GridCell) {
-                    GridCell gridCell = (GridCell) widget;
-                    gridCell.setPosition(gridCell.getRow() + step, j);
+                if (getOriginalWidget(i, j) != null) {
+                    Widget widget = getWidget(i, j);
+                    if (widget instanceof GridCell) {
+                        GridCell gridCell = (GridCell) widget;
+                        gridCell.setPosition(gridCell.getRow() + step, j);
+                    }
                 }
             }
         }

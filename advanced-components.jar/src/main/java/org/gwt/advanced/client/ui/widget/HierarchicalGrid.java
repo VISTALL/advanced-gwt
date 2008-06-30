@@ -17,10 +17,13 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HTMLTable;
 import org.gwt.advanced.client.datamodel.Hierarchical;
+import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
 import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.GridPanelFactory;
+import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
 import org.gwt.advanced.client.ui.widget.cell.ExpandableCellFactory;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
@@ -33,7 +36,7 @@ import java.util.*;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class HierarchicalGrid extends EditableGrid {
+public class HierarchicalGrid extends EditableGrid implements ExpandCellEventProducer {
     /** subgrid row style name */
     public static final String SUBGRID_ROW_STYLE = "subgrid-row";
     /** a list of expandable cell listeners */
@@ -75,6 +78,15 @@ public class HierarchicalGrid extends EditableGrid {
      */
     public void addExpandableCellListener (ExpandableCellListener listener) {
         expandableCellListeners.add(listener);
+    }
+
+    /**
+     * Removes expandable cell listener.
+     *
+     * @param listener is a listener to remove.
+     */
+    public void removeExpandableCellListener (ExpandableCellListener listener) {
+        expandableCellListeners.remove(listener);
     }
 
     /**
@@ -150,6 +162,36 @@ public class HierarchicalGrid extends EditableGrid {
         return (GridPanel)getGridPanelCache().get(model.getSubgridModel(modelRow, parentColumn));
     }
 
+    /** {@inheritDoc} */
+    protected void removeRow() {
+        Editable dataModel = getModel();
+        if (dataModel instanceof Hierarchical) {
+            int currentRow = getCurrentRow();
+
+            if (currentRow >= 0 && currentRow < getRowCount()) {
+                int modelRow = getModelRow(currentRow);
+
+                for (int i = 0; i < getCellCount(currentRow); i++) {
+                    Hierarchical hierarchical = ((Hierarchical) dataModel);
+                    if (hierarchical.isExpanded(modelRow, i))
+                        collapseCell(currentRow, i);
+                    getGridPanelCache().remove(hierarchical.getSubgridModel(modelRow, i));
+                }
+            }
+
+            super.removeRow();
+
+            HTMLTable.RowFormatter rowFormatter = getRowFormatter();
+            while (
+                rowFormatter.getStyleName(getCurrentRow()).indexOf(HierarchicalGrid.SUBGRID_ROW_STYLE) != -1
+                && getCurrentRow() > 0
+            ) {
+                setCurrentRow(getCurrentRow() - 1);
+            }
+        } else
+            super.removeRow();
+    }
+
     /**
      * This method expands the cell and adds a subgrid row below the current row.
      *
@@ -213,15 +255,17 @@ public class HierarchicalGrid extends EditableGrid {
     protected void increaseRowNumbers (int startRow, int step) {
         for (int i = startRow; i >= 0 && i < getRowCount(); i++) {
             for (int j = 0; j < getCellCount(i); j++) {
-                Widget widget = super.getWidget(i, j);
-                if (widget instanceof GridCell) {
-                    GridCell gridCell = (GridCell) widget;
-                    gridCell.setPosition(gridCell.getRow() + step, j);
+                if (getOriginalWidget(i, j) != null) {
+                    Widget widget = super.getWidget(i, j);
+                    if (widget instanceof GridCell) {
+                        GridCell gridCell = (GridCell) widget;
+                        gridCell.setPosition(gridCell.getRow() + step, j);
 
-                    if (widget instanceof ExpandableCell)
-                        ((GridCell)((ExpandableCell)widget).getValue()).setPosition (
-                            gridCell.getRow(), gridCell.getColumn()
-                        );
+                        if (widget instanceof ExpandableCell)
+                            ((GridCell)((ExpandableCell)widget).getValue()).setPosition (
+                                gridCell.getRow(), gridCell.getColumn()
+                            );
+                    }
                 }
             }
         }

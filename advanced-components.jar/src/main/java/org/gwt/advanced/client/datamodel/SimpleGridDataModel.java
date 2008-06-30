@@ -30,12 +30,8 @@ public class SimpleGridDataModel implements GridDataModel {
     private int sortColumn;
     /** sort direction */
     private boolean ascending = true;
-    /** page size */
-    private int pageSize = 20;
-    /** current page number */
-    private int currentPageNumber = 0;
-    /** displayed pages number */
-    private int displayedPages = 10;
+    /** this is a delegate object for paging */
+    private Pageable pageable = new GridPagerModel(this);
 
     /**
      * Creates an instance of this class and initializes it with the specified data set.
@@ -108,74 +104,47 @@ public class SimpleGridDataModel implements GridDataModel {
 
     /** {@inheritDoc} */
     public void setPageSize (int pageSize) {
-        if (pageSize < 0)
-            throw new IllegalArgumentException("Page size must be greater then zero");
-
-        this.pageSize = pageSize;
+        pageable.setPageSize(pageSize);
     }
 
     /** {@inheritDoc} */
     public void setCurrentPageNumber (int currentPageNumber) throws IllegalArgumentException {
-        if (currentPageNumber < 0)
-            throw new IllegalArgumentException("Page number must be greater then zero");
-        if (!isEmpty() && getTotalPagesNumber() <= currentPageNumber)
-            throw new IllegalArgumentException("Page number must be less then total pages number");
-
-        this.currentPageNumber = currentPageNumber;
+        pageable.setCurrentPageNumber(currentPageNumber);
     }
 
     /** {@inheritDoc} */
     public int getDisplayedPages () {
-        return displayedPages;
+        return pageable.getDisplayedPages();
     }
 
     /** {@inheritDoc} */
     public void setDisplayedPages (int displayedPages) {
-        this.displayedPages = displayedPages;
+        pageable.setDisplayedPages(displayedPages);
     }
 
     /** {@inheritDoc} */
     public int getTotalPagesNumber () {
-        int rowCount = getTotalRowCount();
-        int pageSize = getPageSize();
-        int result = rowCount / pageSize;
-
-        return result + (result * pageSize == rowCount ? 0 : 1);
+        return pageable.getTotalPagesNumber();
     }
 
     /** {@inheritDoc} */
     public int getStartPage () {
-        int startPage = 0;
-
-        if (getCurrentPageNumber() >= getDisplayedPages())
-            startPage = getCurrentPageNumber() / getDisplayedPages() * getDisplayedPages();
-
-        return startPage;
+        return pageable.getStartPage();
     }
 
     /** {@inheritDoc} */
     public int getEndPage () {
-        int endPage;
-
-        if (getStartPage() + getDisplayedPages() > getTotalPagesNumber() )
-            endPage = getTotalPagesNumber() - 1;
-        else
-            endPage = getStartPage() + getDisplayedPages() - 1;
-
-        if (endPage < 0)
-            endPage = 0;
-        
-        return endPage;
+        return pageable.getEndPage();
     }
 
     /** {@inheritDoc} */
     public int getPageSize () {
-        return pageSize;
+        return pageable.getPageSize();
     }
 
     /** {@inheritDoc} */
     public int getCurrentPageNumber () {
-        return currentPageNumber;
+        return pageable.getCurrentPageNumber();
     }
 
     /** {@inheritDoc} */
@@ -191,5 +160,24 @@ public class SimpleGridDataModel implements GridDataModel {
             result += "\n";
         }
         return result; 
+    }
+
+    /**
+     * Getter for property 'pageable'.
+     *
+     * @return Value for property 'pageable'.
+     */
+    protected Pageable getPageable() {
+        return pageable;
+    }
+
+    /**
+     * Setter for property 'pageable'.
+     *
+     * @param pageable Value to set for property 'pageable'.
+     */
+    protected void setPageable(Pageable pageable) {
+        if (pageable != null)
+            this.pageable = pageable;
     }
 }

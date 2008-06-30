@@ -16,11 +16,8 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.HTMLTable;
-import org.gwt.advanced.client.datamodel.DataModelCallbackHandler;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.GridDataModel;
-import org.gwt.advanced.client.datamodel.Hierarchical;
 import org.gwt.advanced.client.ui.GridListener;
 import org.gwt.advanced.client.ui.GridToolbarListener;
 import org.gwt.advanced.client.ui.PagerListener;
@@ -77,7 +74,7 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
         if (grid instanceof HierarchicalGrid)
             ((HierarchicalGrid)grid).getGridPanelCache().clear();
 
-        synchronizeDataModel(grid.getModel());
+        grid.synchronizeDataModel();
     }
 
     /** {@inheritDoc} */
@@ -100,7 +97,7 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
 
         grid.drawHeaders();
         grid.sortOnClient();
-        synchronizeDataModel((Editable)dataModel);
+        grid.synchronizeDataModel();
     }
 
     /** {@inheritDoc} */
@@ -112,7 +109,7 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
         if (gridPanel.isBottomPagerVisible())
             setCurrentPageNumber(dataModel, gridPanel.getBottomPager());
 
-        synchronizeDataModel((Editable)dataModel);
+        gridPanel.getGrid().synchronizeDataModel();
     }
 
     /** {@inheritDoc} */
@@ -124,76 +121,17 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
         if (gridPanel.isBottomPagerVisible())
             setCurrentPageNumber(dataModel, gridPanel.getBottomPager());
 
-        synchronizeDataModel((Editable)dataModel);
+        gridPanel.getGrid().synchronizeDataModel();
     }
 
     /** {@inheritDoc} */
     public void onAddClick () {
-        GridPanel panel = getPanel();
-        EditableGrid grid = panel.getGrid();
-
-        Editable dataModel = grid.getModel();
-        Object[] emptyCells = new Object[grid.getHeaders().length];
-
-        int rowCount = grid.getRowCount();
-        dataModel.addRow(grid.getModelRow(rowCount), emptyCells);
-
-        grid.addRow(rowCount, emptyCells);
-        grid.setCurrentRow(rowCount);
+        getPanel().getGrid().addRow();
     }
 
     /** {@inheritDoc} */
     public void onRemoveClick () {
-        GridPanel panel = getPanel();
-        EditableGrid grid = panel.getGrid();
-        Editable model = grid.getModel();
-
-        if (grid instanceof HierarchicalGrid) {
-            int currentRow = grid.getCurrentRow();
-
-            if (currentRow >= 0 && currentRow < grid.getRowCount()) {
-                int modelRow = grid.getModelRow(currentRow);
-
-                for (int i = 0; model instanceof Hierarchical && i < grid.getCellCount(currentRow); i++) {
-                    Hierarchical hierarchical = ((Hierarchical) model);
-                    if (hierarchical.isExpanded(modelRow, i)) {
-                        ((HierarchicalGrid)grid).collapseCell(currentRow, i);
-                    }
-                    ((HierarchicalGrid)grid).getGridPanelCache().remove(
-                        hierarchical.getSubgridModel(modelRow, i)
-                    );
-                }
-            }
-        }
-
-        int currentRow = grid.getCurrentRow();
-
-        if (currentRow >= 0 && grid.getRowCount() > 0) {
-            int modelRow = grid.getModelRow(currentRow);
-            model.removeRow(modelRow);
-
-            int rowCount = grid.getRowCount() - 1;
-            int selectRow = currentRow;
-            if (selectRow >= rowCount) {
-                selectRow = rowCount - 1;
-            }
-
-            grid.removeRow(currentRow);
-            grid.setCurrentRow(selectRow);
-            grid.increaseRowNumbers(selectRow, -1);
-        }
-
-        if (grid instanceof HierarchicalGrid) {
-            HTMLTable.RowFormatter rowFormatter = grid.getRowFormatter();
-            while(
-                rowFormatter.getStyleName(
-                    grid.getCurrentRow()).indexOf(HierarchicalGrid.SUBGRID_ROW_STYLE
-                ) != -1
-                && grid.getCurrentRow() > 0
-            ) {
-                grid.setCurrentRow(grid.getCurrentRow() - 1);
-            }
-        }
+        getPanel().getGrid().removeRow();
     }
 
     /** {@inheritDoc} */
@@ -221,7 +159,7 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
     public void onSelect(EditableGrid grid, int row) {
         for (Iterator iterator = getPanel().getChildGridPanels().iterator(); iterator.hasNext();) {
             GridPanel gridPanel = (GridPanel) iterator.next();
-            gridPanel.getMediator().synchronizeDataModel(gridPanel.getGrid().getModel());
+            gridPanel.getGrid().synchronizeDataModel();
         }
     }
 
@@ -313,6 +251,38 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
             GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
             gridToolbarListener.onClearClick();
         }
+    }
+
+    /**
+     * Fires the move left click event.
+     */
+    protected void fireMoveLeftEvent() {
+        for (Iterator iterator = getToolbarListeners().iterator(); iterator.hasNext();) {
+            GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
+            gridToolbarListener.onMoveLeftClick();
+        }
+    }
+
+    /**
+     * Fires the move right click event.
+     */
+    protected void fireMoveRightEvent() {
+        for (Iterator iterator = getToolbarListeners().iterator(); iterator.hasNext();) {
+            GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
+            gridToolbarListener.onMoveRightClick();
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void onMoveLeftClick() {
+        TreeGrid grid = (TreeGrid) getPanel().getGrid();
+        grid.moveLeft();
+    }
+
+    /** {@inheritDoc} */
+    public void onMoveRightClick() {
+        TreeGrid grid = (TreeGrid) getPanel().getGrid();
+        grid.moveRight();
     }
 
     /**
@@ -429,19 +399,5 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
             pageNumber = 0;
         pager.setCurrentPageNumber(pageNumber);
     }
-
-    /**
-     * This method invokes the data model handler to synchronize the model and persistence
-     * storage.
-     *
-     * @param dataModel is a grid data model.
-     */
-    protected void synchronizeDataModel(Editable dataModel) {
-        DataModelCallbackHandler callbackHandler = dataModel.getHandler();
-        if (callbackHandler != null) {
-            callbackHandler.synchronize(dataModel); //redisplay will be done automatically
-        } else {
-            getPanel().getGrid().drawContent(); //just redisplay the content if data synchronization is not required
-        }
-    }
 }
+

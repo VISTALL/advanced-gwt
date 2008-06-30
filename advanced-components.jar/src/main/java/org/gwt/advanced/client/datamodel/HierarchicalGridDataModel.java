@@ -147,13 +147,28 @@ public class HierarchicalGridDataModel implements Hierarchical {
     }
 
     /** {@inheritDoc} */
+    public void addColumn(int beforeColumn, String name, Object[] column) throws IllegalArgumentException {
+        getDelegate().addColumn(beforeColumn, name, column);
+    }
+
+    /** {@inheritDoc} */
     public void updateColumn (int columnNumber, Object[] column) throws IllegalArgumentException {
         delegate.updateColumn(columnNumber, column);
     }
 
     /** {@inheritDoc} */
+    public void updateColumn(String name, Object[] column) {
+        getDelegate().updateColumn(name, column);
+    }
+
+    /** {@inheritDoc} */
     public void removeColumn (int columnNumber) throws IllegalArgumentException {
         delegate.removeColumn(columnNumber);
+    }
+
+    /** {@inheritDoc} */
+    public void removeColumn(String name) {
+        getDelegate().removeColumn(name);
     }
 
     /** {@inheritDoc} */
@@ -201,6 +216,36 @@ public class HierarchicalGridDataModel implements Hierarchical {
     /** {@inheritDoc} */
     public void clearRemovedRows () {
         delegate.clearRemovedRows();
+    }
+
+    /** {@inheritDoc} */
+    public GridRow[] getRows() {
+        return getDelegate().getRows();
+    }
+
+    /** {@inheritDoc} */
+    public GridColumn[] getColumns() {
+        return getDelegate().getColumns();
+    }
+
+    /** {@inheritDoc} */
+    public GridRow getRow(int index) {
+        return getDelegate().getRow(index);
+    }
+
+    /** {@inheritDoc} */
+    public GridColumn getGridColumn(int index) {
+        return getDelegate().getGridColumn(index);
+    }
+
+    /** {@inheritDoc} */
+    public String[] getColumnNames() {
+        return getDelegate().getColumnNames();
+    }
+
+    /** {@inheritDoc} */
+    public void setColumNames(String[] names) {
+        getDelegate().setColumNames(names);
     }
 
     /** {@inheritDoc} */

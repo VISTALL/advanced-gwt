@@ -62,6 +62,17 @@ public interface Editable extends GridDataModel {
     void addColumn(int beforeColumn, Object[] column) throws IllegalArgumentException;
 
     /**
+     * This method adds a column into the model.
+     *
+     * @param beforeColumn a column number.
+     * @param name a column name.
+     * @param column a column data set.
+     *
+     * @throws IllegalArgumentException if the column number is invalid.
+     */
+    void addColumn(int beforeColumn, String name, Object[] column) throws IllegalArgumentException;
+
+    /**
      * This method updates a column with the specified data set.
      *
      * @param columnNumber a column number.
@@ -72,6 +83,14 @@ public interface Editable extends GridDataModel {
     void updateColumn(int columnNumber, Object[] column) throws IllegalArgumentException;
 
     /**
+     * This method updates a column with the specified data set.
+     *
+     * @param name a column name.
+     * @param column a column data set.
+     */
+    void updateColumn(String name, Object[] column);
+
+    /**
      * This method removes a column from the model.
      *
      * @param columnNumber a column number.
@@ -79,6 +98,13 @@ public interface Editable extends GridDataModel {
      * @throws IllegalArgumentException if the column number is invalid.
      */
     void removeColumn(int columnNumber) throws IllegalArgumentException;
+
+    /**
+     * This method removes a column from the model.
+     *
+     * @param name a column name.
+     */
+    void removeColumn(String name);
 
     /**
      * This method removes all rows from the model.
@@ -143,4 +169,50 @@ public interface Editable extends GridDataModel {
      * This method clears 
      */
     void clearRemovedRows();
+
+    /**
+     * This method returns all rows of the model.
+     *
+     * @return a grid row array.
+     */
+    GridRow[] getRows();
+
+    /**
+     * Gets an array of all model columns.
+     *
+     * @return a columns array.
+     */
+    GridColumn[] getColumns();
+
+    /**
+     * Gets a grid row by index.
+     *
+     * @param index is an index value.
+     * @return a grid row.
+     */
+    GridRow getRow(int index);
+
+    /**
+     * Gets a grid column by index.
+     *
+     * @param index is an index value.
+     * @return a grid column.
+     */
+    GridColumn getGridColumn(int index);
+
+    /**
+     * This method gets a list of column names.<p/>
+     * Size of this list must be equal to the size of the model data array.
+     *
+     * @return is a list of column names.
+     */
+    String[] getColumnNames();
+
+    /**
+     * This method sets a list of column names<p/>
+     * This list must be in the same order like the data array columns (see {@link #update(Object[][])} for details.
+     *
+     * @param names is a list of column names.
+     */
+    void setColumNames(String[] names);
 }

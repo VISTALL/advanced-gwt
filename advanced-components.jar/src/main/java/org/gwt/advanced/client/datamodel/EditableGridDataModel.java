@@ -29,6 +29,8 @@ import java.util.*;
 public class EditableGridDataModel extends SimpleGridDataModel implements Editable {
     /** encapsulated data */
     private List data;
+    /** column names list */
+    private List columnNames = new ArrayList();
     /** a list of removed rows */
     private List removedRows = new ArrayList();
     /** number of columns */
@@ -77,10 +79,9 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
 
         if (row == null)
             row = new Object[getTotalColumnCount()];
-
-        IdentifiedList resultRow = normalizeColumnsCount(row);
-
-        data.add(beforeRow, resultRow);
+        GridRow gridRow = normalizeColumnsCount(row);
+        data.add(beforeRow, gridRow);
+        gridRow.setIndex(beforeRow);
     }
 
     /**
@@ -98,8 +99,8 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         if (row == null)
             row = new Object[getTotalColumnCount()];
 
-        IdentifiedList oldRow = (IdentifiedList) data.get(rowNumber);
-        IdentifiedList resultRow = normalizeColumnsCount(row);
+        GridRow oldRow = (GridRow) data.get(rowNumber);
+        GridRow resultRow = normalizeColumnsCount(row);
         resultRow.setIdentifier(oldRow.getIdentifier());
         
         data.set(rowNumber, resultRow);
@@ -118,17 +119,9 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         removedRows.add(data.remove(rowNumber));
     }
 
-    /**
-     * This method adds the specified column in the data model.<p>
-     * It normalizes the model if the column is too long.
-     *
-     * @param beforeColumn is a number of the new column in the grid.
-     * @param column is new column data.
-     *
-     * @throws IllegalArgumentException if the column number is in invalid range.
-     */
+    /** {@inheritDoc} */
     public void addColumn(int beforeColumn, Object[] column) throws IllegalArgumentException {
-        checkColumnNumber(beforeColumn, getTotalColumnCount() + 1);
+        checkColumnNumber(beforeColumn, getTotalColumnCount());
 
         if (column == null)
             column = new Object[getTotalRowCount()];
@@ -136,12 +129,27 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         ArrayList resultColumn = normalizeRowsCount(column);
 
         for (int i = 0; i < resultColumn.size(); i++) {
-            ArrayList row = (ArrayList) data.get(i);
+            GridRow row = (GridRow) data.get(i);
             Object data = resultColumn.get(i);
             row.add(beforeColumn, data);
         }
 
         totalColumnCount++;
+    }
+
+    /**
+     * This method adds the specified column in the data model.<p>
+     * It normalizes the model if the column is too long.
+     *
+     * @param beforeColumn is a number of the new column in the grid.
+     * @param name is a name of the column.
+     * @param column is new column data.
+     *
+     * @throws IllegalArgumentException if the column number is in invalid range.
+     */
+    public void addColumn(int beforeColumn, String name, Object[] column) throws IllegalArgumentException {
+        addColumn(beforeColumn, column);
+        getColumnNamesList().add(beforeColumn, name);
     }
 
     /**
@@ -154,7 +162,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
      * @throws IllegalArgumentException if the column number is in invalid range.
      */
     public void updateColumn(int columnNumber, Object[] column) {
-        checkColumnNumber(columnNumber, getTotalColumnCount());
+        checkColumnNumber(columnNumber, getTotalColumnCount() - 1);
 
         if (column == null)
             column = new Object[getTotalRowCount()];
@@ -162,33 +170,53 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         ArrayList resultColumn = normalizeRowsCount(column);
 
         for (int i = 0; i < resultColumn.size(); i++) {
-            ArrayList row = (ArrayList) data.get(i);
+            GridRow row = (GridRow) data.get(i);
             Object cellData = resultColumn.get(i);
             row.set(columnNumber, cellData);
         }
     }
 
     /**
-     * This method deletes the specified column in the data model.
+     * This method updates the specified column in the data model.<p>
+     * It normalizes the model if the column is too long.
      *
-     * @param columnNumber is a number of the column in the grid.
-     *
-     * @throws IllegalArgumentException if the column number is in invalid range.
+     * @param name is a name of the column.
+     * @param column is new data.
      */
-    public void removeColumn(int columnNumber) {
-        checkColumnNumber(columnNumber, getTotalColumnCount());
+    public void updateColumn(String name, Object[] column) {
+        int index = getColumnNamesList().indexOf(name);
+        if (index != -1)
+            updateColumn(index, column);
+    }
+
+    /** {@inheritDoc} */
+    public void removeColumn(int columnNumber) throws IllegalArgumentException {
+        checkColumnNumber(columnNumber, getTotalColumnCount() - 1);
 
         for (int i = 0; i < data.size(); i++) {
-            ArrayList row = (ArrayList) data.get(i);
+            GridRow row = (GridRow) data.get(i);
             row.remove(columnNumber);
         }
-        
+
         totalColumnCount--;
+    }
+
+    /**
+     * This method deletes the specified column in the data model.
+     *
+     * @param name is a name of the column.
+     */
+    public void removeColumn(String name) {
+        int index = getColumnNamesList().indexOf(name);
+        if (index != -1) {
+            removeColumn(index);
+            getColumnNamesList().remove(index);
+        }
     }
 
     /** {@inheritDoc} */
     public Object[] getRowData (int rowNumber) {
-        return ((List)data.get(rowNumber)).toArray();
+        return ((GridRow)data.get(rowNumber)).getData();
     }
 
     /** {@inheritDoc} */
@@ -202,7 +230,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         checkRowNumber(row, this.data.size());
         checkColumnNumber(column, getTotalColumnCount());
 
-        ((List)this.data.get(row)).set(column, data);
+        ((GridRow)this.data.get(row)).set(column, data);
     }
 
     /** {@inheritDoc} */
@@ -314,7 +342,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         Object[][] rows = new Object[data.size()][getTotalColumnCount()];
         
         for (int i = 0; i < rows.length; i++) {
-            ArrayList row = (ArrayList) data.get(i);
+            GridRow row = (GridRow) data.get(i);
             for (int j = 0; row != null && j < rows[i].length; j++) {
                 rows[i][j] = row.get(j);
             }
@@ -331,13 +359,14 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
      *
      * @return a result row.
      */
-    protected IdentifiedList normalizeColumnsCount (Object[] row) {
-        IdentifiedList resultRow = new IdentifiedList(Arrays.asList(row));
+    protected GridRow normalizeColumnsCount (Object[] row) {
+        GridRow resultRow = createGridRow(0);
+        resultRow.setData(row);
 
         //normalization
         if (row.length > getTotalColumnCount()) {
             for (Iterator iterator = data.iterator(); iterator.hasNext();) {
-                ArrayList otherRow = (ArrayList) iterator.next();
+                GridRow otherRow = (GridRow) iterator.next();
                 for (int i = getTotalColumnCount(); i < row.length; i++) {
                     otherRow.add(null);
                 }
@@ -364,11 +393,11 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         //normalize
         if (column.length > data.size()) {
             for (int i = data.size(); i < column.length; i++) {
-                ArrayList row = new IdentifiedList(getTotalColumnCount());
-                for (int j = 0; j < getTotalColumnCount(); j++) {
+                GridRow row = createGridRow(getTotalColumnCount());
+                for (int j = 0; j < getTotalColumnCount(); j++)
                     row.add(null);
-                }
                 data.add(row);
+                row.setIndex(i);
             }
         } else {
             for (int i = column.length; i < getTotalRowCount(); i++) {
@@ -393,7 +422,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
 
         this.data = new ArrayList(rowCount);
         for (int i = 0; i < rowCount; i++) {
-            List row = new IdentifiedList(columnCount);
+            GridRow row = createGridRow(columnCount);
             for (int j = 0; j < columnCount; j++) {
                 if (data != null && data.length > i && data[0].length > j)
                     row.add(data[i][j]);
@@ -401,9 +430,20 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
                     row.add(null);
             }
             this.data.add(i, row);
+            row.setIndex(i);
         }
 
         this.totalColumnCount = columnCount;
+    }
+
+    /**
+     * This method creates a new identified list instance.
+     *
+     * @param columnCount is a column count value.
+     * @return a new identified list.
+     */
+    protected GridRow createGridRow(int columnCount) {
+        return new GridRow(columnCount);
     }
 
     /**
@@ -411,8 +451,52 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
      *
      * @return a list of rows.
      */
-    protected List getRows() {
-        return data;
+    public GridRow[] getRows() {
+        return (GridRow[]) data.toArray(new GridRow[data.size()]);
+    }
+
+    /** {@inheritDoc} */
+    public GridColumn[] getColumns() {
+        int columnCount = getTotalColumnCount();
+        GridColumn[] columns = new GridColumn[columnCount];
+        for (int i = 0; i < columnCount; i++)
+            columns[i] = getGridColumn(i);
+        return columns;
+    }
+
+    /** {@inheritDoc} */
+    public GridRow getRow(int index) {
+        return (GridRow) data.get(index);
+    }
+
+    /** {@inheritDoc} */
+    public GridColumn getGridColumn(int index) {
+        GridColumn column = new GridColumn(this);
+        column.setIndex(index);
+        if (index < getColumnNamesList().size())
+            column.setName((String) getColumnNamesList().get(index));
+        return column;
+    }
+
+    /** {@inheritDoc} */
+    public String[] getColumnNames() {
+        List columnNamesList = getColumnNamesList();
+        int size = columnNamesList.size();
+        if (size > getTotalColumnCount())
+            columnNamesList = getSublist(columnNamesList, 0, getTotalColumnCount());
+        else if (size < getTotalColumnCount()) {
+            columnNamesList = new ArrayList(getTotalRowCount());
+            columnNamesList.addAll(getColumnNamesList());
+            for (int i = size; i < getTotalColumnCount(); i++)
+                columnNamesList.add(null);
+        }
+        return (String[]) columnNamesList.toArray(new String[size]);
+    }
+
+    /** {@inheritDoc} */
+    public void setColumNames(String[] names) {
+        getColumnNamesList().clear();
+        getColumnNamesList().addAll(Arrays.asList(names));
     }
 
     /**
@@ -422,7 +506,40 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
      * @return an identifier value.
      */
     protected String getInternalRowIdentifier(int row) {
-        return ((IdentifiedList)getRows().get(row)).getIdentifier();
+        return getRows()[row].getIdentifier();
+    }
+
+    /**
+     * Getter for property 'columnNames'.
+     *
+     * @return Value for property 'columnNames'.
+     */
+    protected List getColumnNamesList() {
+        return columnNames;
+    }
+
+    /**
+     * This method extract a sublist of the specified list.
+     *
+     * @param list is a list of values.
+     * @param start is a start index (including).
+     * @param end is an end index (excluding).
+     * @return a sublist.
+     */
+    protected List getSublist(List list, int start, int end) {
+        List result = new ArrayList();
+        for (int i = start; i < end && i < list.size(); i++)
+            result.add(list.get(i));
+        return result;
+    }
+
+    /**
+     * Gets a list of data.
+     *
+     * @return a data list.
+     */
+    protected List getDataList() {
+        return data;
     }
 
     /**
@@ -456,9 +573,9 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
          * @return a result of comparison.
          */
         public int compare (Object o1, Object o2) {
-            if (!(o1 instanceof List) || !(o2 instanceof List))
+            if (!(o1 instanceof GridRow) || !(o2 instanceof GridRow))
                 return 0;
-            return comparator.compare(((List)o1).get(column), ((List)o2).get(column));
+            return comparator.compare(((GridRow)o1).get(column), ((GridRow)o2).get(column));
         }
 
         /**

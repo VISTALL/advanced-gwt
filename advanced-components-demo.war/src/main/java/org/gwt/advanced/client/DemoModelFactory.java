@@ -49,6 +49,46 @@ public class DemoModelFactory {
         new Object[]{"Rupert Wheel", createRandomDate(), createDepartmentListBox(8), new Long(14)}
     };
 
+    /**
+     * This method creates people tree model.<p>
+     * Each boss has 0 or more employees.
+     *
+     * @return editable data model instance.
+     */
+    public static Editable createTreePeopleModel() {
+        TreeGridDataModel model = new TreeGridDataModel(new Object[][]{employees[14]});
+        model.setAscending(false);
+        model.setPageSize(10);
+
+        TreeGridRow president = (TreeGridRow) model.getRow(0);
+        president.setExpanded(true);
+        model.addRow(president, employees[10]);
+        model.addRow(president, employees[11]);
+        model.addRow(president, employees[2]);
+        model.addRow(president, employees[3]);
+        model.addRow(president, employees[0]);
+        model.addRow(president, employees[1]);
+        model.setSubtreePagingEnabled(president, true);
+
+        //developers
+        TreeGridRow projectManager = model.getRow(president, 0);
+        model.addRow(projectManager, employees[9]);
+        model.addRow(projectManager, employees[6]);
+        model.addRow(projectManager, employees[7]);
+        model.addRow(projectManager, employees[4]);
+        model.addRow(projectManager, employees[8]);
+        model.addRow(projectManager, employees[5]);
+        model.setSubtreePagingEnabled(projectManager, true);
+
+        //testers
+        TreeGridRow qaManager = model.getRow(president, 1);
+        model.addRow(qaManager, employees[12]);
+        model.addRow(qaManager, employees[13]);
+        model.setSubtreePagingEnabled(qaManager, true);
+
+        return model;
+    }
+
     /** departments list */
     private static Object[][] departments = new Object[][] {
         new Object[] {"HR", "Recruiters", "They hired everyone", new Long(0)},
