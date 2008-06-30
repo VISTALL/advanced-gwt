@@ -3,6 +3,18 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.4.0-beta includes:
+
+Bug fixes:
+1. Incorrect cell selection in case of adding / removing rows fixed
+2. Default selected row index get and set methods provided in the EditableGrid
+3. Other minor bug fixes and refactorings (100% backward compatible)
+
+New features:
+1. New widget: TreeGrid is an EditableGrid extention to display tree-like structures of entities
+2. Named columns support in grid data models
+
+====================================================================================================================
 Release 1.3.0 includes:
 
 Bug fixes:
