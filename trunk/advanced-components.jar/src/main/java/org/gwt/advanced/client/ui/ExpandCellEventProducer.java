@@ -16,41 +16,33 @@
 
 package org.gwt.advanced.client.ui;
 
+import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
+
 /**
- * This interface describes grid toolbar listeners.<p>
- * Normally you don't have to implement it.
+ * This interface describes a widget that can fire expand cell events.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
- * @since 1.0.0
+ * @since 1.4.0
  */
-public interface GridToolbarListener {
+public interface ExpandCellEventProducer {
     /**
-     * This is an operation to be done on Add button click.
+     * This method adds an expandable cell listener.
+     *
+     * @param listener a listener instance.
      */
-    void onAddClick();
+    void addExpandableCellListener (ExpandableCellListener listener);
 
     /**
-     * This is an operation to be done on Remove button click.
+     * Removes expandable cell listener.
+     *
+     * @param listener is a listener to remove.
      */
-    void onRemoveClick();
+    void removeExpandableCellListener (ExpandableCellListener listener);
 
     /**
-     * This is an operation to be done on Save button click.
+     * This method fires the expand cell event.
+     *
+     * @param cell is an expanded / collapsed cell.
      */
-    void onSaveClick ();
-
-    /**
-     * This is an operation to be done on Clear button click.
-     */
-    void onClearClick ();
-
-    /**
-     * This is anoperation to be done on Move Left button click.
-     */
-    void onMoveLeftClick();
-
-    /**
-     * This is anoperation to be done on Move Right button click.
-     */
-    void onMoveRightClick();
+    void fireExpandCell (ExpandableCell cell);
 }

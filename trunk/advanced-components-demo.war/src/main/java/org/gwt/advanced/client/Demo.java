@@ -24,6 +24,8 @@ import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.widget.*;
 import org.gwt.advanced.client.ui.widget.cell.LongCell;
 import org.gwt.advanced.client.ui.widget.cell.TextBoxCell;
+import org.gwt.advanced.client.ui.widget.cell.DateCell;
+import org.gwt.advanced.client.ui.widget.cell.ComboBoxCell;
 import org.gwt.advanced.client.util.ThemeHelper;
 
 import java.util.Date;
@@ -43,6 +45,7 @@ public class Demo implements EntryPoint {
             bundle.editableGridDemo(),
             bundle.hierarchicalGridDemo(),
             bundle.lazyGridDemo(),
+            bundle.treeGridDemo(),
             bundle.masterDetailDemo(),
             bundle.otherControlsDemo()
         };
@@ -69,6 +72,7 @@ public class Demo implements EntryPoint {
         createEditableGridDemo(tabPanel);
         final AdvancedFlexTable scrollableGrid = createHierarchicalGridDemo(tabPanel).getGrid();
         createLazyLoadableGridDemo(tabPanel);
+        createTreeGridDemo(tabPanel);
         createMasterDetailGridDemo(tabPanel);
         createOtherControlsDemo(tabPanel);
 
@@ -170,6 +174,29 @@ public class Demo implements EntryPoint {
         GridPanel gridPanel = new GridPanelFactoryImpl().create(editable);
         ((ServiceEmulationModelHandler)editable.getHandler()).setPanel(gridPanel);
         panel.add(gridPanel, "Lazy Loadable Grid");
+        gridPanel.display();
+        return gridPanel;
+    }
+
+    /**
+     * This method creates a sample of the tree grid.
+     *
+     * @param panel is a tab panel instnace where the grid must be placed.
+     * @return is a created grid panel.
+     */
+    private GridPanel createTreeGridDemo(TabPanel panel) {
+        GridPanel gridPanel = new GridPanel();
+        gridPanel.createEditableGrid(
+            new String[]{
+                    "Name", "Birth Date", "Position", "ID"
+            },
+            new Class[]{
+                    TextBoxCell.class, DateCell.class, ComboBoxCell.class, LongCell.class
+            },
+            DemoModelFactory.createTreePeopleModel()
+        );
+        gridPanel.setInvisibleColumn(3, true);
+        panel.add(gridPanel, "Tree Grid");
         gridPanel.display();
         return gridPanel;
     }

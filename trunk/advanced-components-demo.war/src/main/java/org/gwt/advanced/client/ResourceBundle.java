@@ -46,6 +46,13 @@ public interface ResourceBundle extends Constants {
     String lazyGridDemo();
 
     /**
+     * Tree Grid Demo hit.
+     *
+     * @return the hint text.
+     */
+    String treeGridDemo();
+
+    /**
      * Master-detail demo hint.
      *
      * @return the hint text.

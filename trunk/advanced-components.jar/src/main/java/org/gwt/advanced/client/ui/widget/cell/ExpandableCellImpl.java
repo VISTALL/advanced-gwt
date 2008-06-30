@@ -20,7 +20,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwt.advanced.client.ui.widget.HierarchicalGrid;
+import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
@@ -95,7 +95,7 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
 
 
                     if (!isLeaf())
-                        ((HierarchicalGrid)getGrid()).fireExpandCell(cell);
+                        ((ExpandCellEventProducer)getGrid()).fireExpandCell(cell);
                 }
             };
         }
@@ -146,8 +146,12 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
      * This method creates the node image and adds the listener.
      */
     protected void createImage() {
-        if (isLeaf())
-            setImage(new Image("advnaced/images/single.gif"));
+        if (isLeaf()) {
+            Image image = new Image("advanced/images/single.gif");
+            image.setWidth("9px");
+            image.setHeight("9px");
+            setImage(image);
+        }
         if (isExpanded())
             setImage(new Image(ThemeHelper.getInstance().getFullImageName("expanded.gif")));
         else if (!isLeaf())
@@ -175,5 +179,14 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
             panel.setVerticalAlignment(DockPanel.ALIGN_MIDDLE);
         }
         return panel;
+    }
+
+    /**
+     * Getter for property 'imageClickListener'.
+     *
+     * @return Value for property 'imageClickListener'.
+     */
+    protected ClickListener getImageClickListener() {
+        return imageClickListener;
     }
 }

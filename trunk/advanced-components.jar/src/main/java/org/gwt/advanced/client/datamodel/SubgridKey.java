@@ -68,12 +68,9 @@ public class SubgridKey {
 
         SubgridKey that = (SubgridKey) o;
 
-        if (columnNumber != that.columnNumber) return false;
-        if (rowIdentifier != null
-            ? !rowIdentifier.equals(that.rowIdentifier)
-            : that.rowIdentifier != null) return false;
-
-        return true;
+        return columnNumber == that.columnNumber && !(rowIdentifier != null
+                ? !rowIdentifier.equals(that.rowIdentifier)
+                : that.rowIdentifier != null);
     }
 
     /** {@inheritDoc} */

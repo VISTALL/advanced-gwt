@@ -14,36 +14,20 @@
  * limitations under the License.
  */
 
-package org.gwt.advanced.client.ui;
+package org.gwt.advanced.client.datamodel;
 
 /**
- * This is an adapter class for the grid toolbar listeners.
+ * This interface describes lazy loadable composites.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
- * @since 1.0.0
+ * @since 1.4.0
  */
-public class GridToolbarListenerAdapter implements GridToolbarListener {
-    /** {@inheritDoc} */
-    public void onAddClick () {
-    }
-
-    /** {@inheritDoc} */
-    public void onRemoveClick () {
-    }
-
-    /** {@inheritDoc} */
-    public void onSaveClick () {
-    }
-
-    /** {@inheritDoc} */
-    public void onClearClick () {
-    }
-
-    /** {@inheritDoc} */
-    public void onMoveLeftClick() {
-    }
-
-    /** {@inheritDoc} */
-    public void onMoveRightClick() {
-    }
+public interface LazyLoadableComposite extends LazyLoadable {
+    /**
+     * Sets a total gridRow count of the subtree rows.
+     *
+     * @param gridRow is a parent gridRow.
+     * @param totalRowCount is a total gridRow count of the subtree rows.
+     */
+    void setTotalRowCount(TreeGridRow gridRow, int totalRowCount);
 }

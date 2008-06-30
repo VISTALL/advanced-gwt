@@ -20,8 +20,10 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import org.gwt.advanced.client.datamodel.Composite;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.Hierarchical;
+import org.gwt.advanced.client.datamodel.TreeGridRow;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.GridToolbarListener;
@@ -101,7 +103,8 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
 
     /**
      * Creates and adds a new editable grid into the panel.<p>
-     * Use this method before {@link #display()}.
+     * Use this method before {@link #display()}. It automatically detects a type of the new grid by the type of 
+     * the model.
      *
      * @param headers is a list of heder labels.
      * @param columnWidgetClasses is a list of column widget classes.
@@ -114,6 +117,8 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
         EditableGrid grid;
         if (model instanceof Hierarchical)
             grid = new HierarchicalGrid(headers, columnWidgetClasses, resizable);
+        else if (model instanceof Composite)
+            grid = new TreeGrid(headers, columnWidgetClasses, resizable);
         else
             grid = new EditableGrid(headers, columnWidgetClasses, resizable);
         grid.setGridPanel(this);
@@ -228,7 +233,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     }
 
     /**
-     * This method unlocks the widget.
+     * This method unlocks the widget and repaints it.
      */
     public void unlock() {
         Editable model = getGrid().getModel();
@@ -244,6 +249,29 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
             if (isBottomPagerVisible())
                 getBottomPager().display();
         }
+        getGrid().drawContent();
+        getLockingPanel().unlock();
+        getGrid().setLocked(false);
+    }
+    
+    /**
+     * This method unlocks the subtree and repaints it.<p/>
+     * Use this unlocking method only if the
+     * {@link org.gwt.advanced.client.datamodel.TreeDataModelCallbackHandler#synchronize(
+                org.gwt.advanced.client.datamodel.LazyTreeGridRow, Composite
+            )
+       } method has been invoked. Otherwise use the {@link #unlock()} method instead. 
+     *
+     * @param parent is a parent row of the subtree.
+     */
+    public void unlock(TreeGridRow parent) {
+        if (!(getGrid().getModel() instanceof Composite)) {
+            unlock();
+            return;
+        }
+
+        Composite model = (Composite) getGrid().getModel();
+        model.clearRemovedRows(parent);
         getGrid().drawContent();
         getLockingPanel().unlock();
         getGrid().setLocked(false);

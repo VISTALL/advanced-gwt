@@ -18,17 +18,17 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.IncrementalCommand;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.CheckBox;
+import org.gwt.advanced.client.datamodel.Editable;
+import org.gwt.advanced.client.datamodel.GridDataModel;
 import org.gwt.advanced.client.ui.GridRenderer;
 import org.gwt.advanced.client.ui.widget.cell.*;
-import org.gwt.advanced.client.datamodel.GridDataModel;
-import org.gwt.advanced.client.datamodel.Editable;
 
 import java.util.Date;
 
@@ -90,7 +90,7 @@ public class DefaultGridRenderer implements GridRenderer {
             }
         }
     }
-
+    
     /** {@inheritDoc} */
     public void drawCell(Object data, int row, int column, boolean active) {
         if (active)
@@ -127,6 +127,15 @@ public class DefaultGridRenderer implements GridRenderer {
         return row + dataModel.getPageSize() * dataModel.getCurrentPageNumber();
     }
 
+    /**
+     * Getter for property 'grid'.
+     *
+     * @return Value for property 'grid'.
+     */
+    public EditableGrid getGrid() {
+        return grid;
+    }
+    
     /**
      * This method sets the cell value in textual format.<p/>
      * It also decorates the cell with the specified style.
@@ -249,15 +258,6 @@ public class DefaultGridRenderer implements GridRenderer {
     }
 
     /**
-     * Getter for property 'grid'.
-     *
-     * @return Value for property 'grid'.
-     */
-    public EditableGrid getGrid() {
-        return grid;
-    }
-
-    /**
      * This command displays one row.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
@@ -289,23 +289,63 @@ public class DefaultGridRenderer implements GridRenderer {
          * @return <code>true</code> if drawing must be continued.
          */
         public boolean execute() {
-            int row = current - start;
-            int pageSize = end - start + 1;
+            int row = getCurrent() - getStart();
+            int pageSize = getEnd() - getStart() + 1;
 
             boolean cont = false;
-            for (int i = 0; current <= end && i < 1; i++) {
-                Object[] data = getGrid().getModel().getRowData(current);
-                if (getGrid().fireBeforeDrawEvent(row, pageSize, data))
+            for (int i = 0; getCurrent() <= getEnd() && i < 1; i++) {
+                Object[] data = getGrid().getModel().getRowData(getCurrent());
+                cont = getGrid().fireBeforeDrawEvent(row, pageSize, data);
+
+                if (cont) {
                     drawRow(data, row);
-                cont = getGrid().fireAfterDrawEvent(row, pageSize, data);
+                    cont = getGrid().fireAfterDrawEvent(row, pageSize, data);
+                }
+                
                 if (!cont)
                     break;
-                current++;
+                setCurrent(getCurrent() + 1);
             }
 
-            if (!cont || current > end)
+            if (!cont || getCurrent() > getEnd())
                 DOM.setStyleAttribute(getGrid().getBodyElement(), "display", "");
-            return cont && current <= end;
+            return cont && getCurrent() <= getEnd();
+        }
+
+        /**
+         * Getter for property 'start'.
+         *
+         * @return Value for property 'start'.
+         */
+        protected int getStart() {
+            return start;
+        }
+
+        /**
+         * Getter for property 'end'.
+         *
+         * @return Value for property 'end'.
+         */
+        protected int getEnd() {
+            return end;
+        }
+
+        /**
+         * Setter for property 'current'.
+         *
+         * @param current Value to set for property 'current'.
+         */
+        public void setCurrent(int current) {
+            this.current = current;
+        }
+
+        /**
+         * Getter for property 'current'.
+         *
+         * @return Value for property 'current'.
+         */
+        protected int getCurrent() {
+            return current;
         }
     }
 }

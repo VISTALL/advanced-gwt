@@ -17,7 +17,7 @@
 package org.gwt.advanced.client.datamodel;
 
 /**
- * This interface describes pageable object (usually row set of the grid).<p>
+ * This interface describes pageable object (normally a row set of the grid).<p>
  * Implementations of this inteface are usually used by pagers.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>

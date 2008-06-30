@@ -44,22 +44,7 @@ public class LazyHierarchicalGridDataModel extends HierarchicalGridDataModel imp
     }
 
     /** {@inheritDoc} */
-    public DataModelCallbackHandler getHandler () {
-        return getDelegate().getHandler();
-    }
-
-    /** {@inheritDoc} */
-    public void update (Object[][] data) {
-        getDelegate().update(data);
-    }
-
-    /** {@inheritDoc} */
     public void setTotalRowCount (int totalRowCount) {
         ((LazyLoadable)getDelegate()).setTotalRowCount(totalRowCount);
-    }
-
-    /** {@inheritDoc} */
-    public void setHandler (DataModelCallbackHandler handler) {
-        getDelegate().setHandler(handler);
     }
 }
