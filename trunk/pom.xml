@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.gwt.advanced</groupId>
+  <artifactId>advanced-components-root</artifactId>
+  <packaging>pom</packaging>
+  <name>Advanced GWT Components Root Script</name>
+  <version>no.version</version>
+
+  <description>This script builds the whole project.</description>
+  <inceptionYear>2008</inceptionYear>
+
+  <developers>
+    <developer>
+      <id>sskladchikov</id>
+      <name>Sergey Skladchikov</name>
+      <email>sskladchikov@gmail.com</email>
+      <roles>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+      <timezone>+3</timezone>
+    </developer>
+  </developers>
+
+  <modules>
+        <module>advanced-components.jar</module>
+        <module>advanced-components-demo.war</module>
+  </modules>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>gwt-maven</id>
+      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

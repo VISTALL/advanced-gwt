@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>		
+  	<groupId>org.gwt.advanced</groupId>		
+  	<artifactId>advanced-components-root</artifactId>		
+  	<version>no.version</version>		
+  	<relativePath>../pom.xml</relativePath>	
+  </parent>
+
+  <artifactId>advanced-components</artifactId>
+  <packaging>jar</packaging>
+  <name>Advanced GWT Components</name>
+  <version>1.4.1</version>
+
+  <description>The set of useful GWT components</description>
+  <inceptionYear>2008</inceptionYear>
+
+  <developers>
+    <developer>
+      <id>sskladchikov</id>
+      <name>Sergey Skladchikov</name>
+      <email>sskladchikov@gmail.com</email>
+      <roles>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+      <timezone>+3</timezone>
+    </developer>
+  </developers>
+  <build>
+    <defaultGoal>install</defaultGoal>
+
+	<resources>
+    	<resource>
+        	<directory>src/main/java</directory>
+            <filtering>true</filtering>
+		</resource>
+	</resources>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0</version>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>1.4.60</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.2</version>
+    </dependency>
+  </dependencies>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

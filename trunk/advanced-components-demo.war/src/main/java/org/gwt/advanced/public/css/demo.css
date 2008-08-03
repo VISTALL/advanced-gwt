@@ -1,0 +1,71 @@
+.gwt-TabPanel {
+    width: 100%;
+}
+
+.gwt-TabBar {
+    width: 100%;
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+.gwt-TabBarItem {
+    padding: 5px 5px 5px 5px;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    background-color: #BBBBBB;
+    cursor: pointer;
+}
+
+.gwt-TabBarFirst {
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    cursor: default;
+}
+
+.gwt-TabBarRest {
+    border-bottom: 1px solid black;
+    cursor: default;
+}
+
+.gwt-TabBarItem-selected {
+    background-color: white;
+    cursor: default;
+    border-bottom: 1px solid white;
+}
+
+.gwt-TabPanelBottom {
+    width: 100%;
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.demo-HintLabel {
+    border: 1px solid gray;
+    background-color: azure;
+    font-size: 12px;
+    font-family: sans-serif;
+    padding: 2px;
+}
+
+.demo-ControlLabel {
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+.demo-Table {
+    width: 100%;
+    padding: 2px;
+}
+
+.demo-Theme {
+    font-size: 12px;
+    font-family: sans-serif;
+    padding: 2px;
+}
+
+.demo-Theme select {
+    font-size: 12px;
+    font-family: sans-serif;
+}
