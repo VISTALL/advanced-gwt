@@ -3,6 +3,18 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.4.1 includes:
+
+Bug fixes:
+1. JavaScript error on focus lost event in the TreeGrid
+2. Tree grid row can't be collapsed if the tree cell is activated
+3. Demo application looks ugly in Safary
+
+New features:
+1. Paging supoport for subtrees in the TreeGrid component
+2. Quick page switching for the main Pager widget
+
+====================================================================================================================
 Release 1.4.0 includes:
 
 Bug fixes:

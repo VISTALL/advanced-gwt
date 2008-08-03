@@ -131,6 +131,7 @@ public class Demo implements EntryPoint {
         GridPanel gridPanel =
                 new GridPanelFactoryImpl().create(DemoModelFactory.createEployeesModel(-1)); //-1 means "display all"
         panel.add(gridPanel, "Editable Grid");
+        gridPanel.setPageNumberBoxDisplayed(true);
         gridPanel.display();
         return gridPanel;
     }
@@ -174,6 +175,7 @@ public class Demo implements EntryPoint {
         GridPanel gridPanel = new GridPanelFactoryImpl().create(editable);
         ((ServiceEmulationModelHandler)editable.getHandler()).setPanel(gridPanel);
         panel.add(gridPanel, "Lazy Loadable Grid");
+        gridPanel.setPageNumberBoxDisplayed(true);
         gridPanel.display();
         return gridPanel;
     }
@@ -197,6 +199,7 @@ public class Demo implements EntryPoint {
         );
         gridPanel.setInvisibleColumn(3, true);
         panel.add(gridPanel, "Tree Grid");
+        gridPanel.setPageNumberBoxDisplayed(true);
         gridPanel.display();
         return gridPanel;
     }
@@ -252,6 +255,8 @@ public class Demo implements EntryPoint {
         panel.setWidget(2, 0, createHintLabel("Type any European country name:"));
         panel.setWidget(3, 0, createHintLabel("Type any European country name to see the flag:"));
 
+        panel.getColumnFormatter().setWidth(0, "50%");
+
         ComboBox comboBox = new ComboBox();
         comboBox.setWidth("100%");
         ComboBoxDataModel model = DemoModelFactory.createsCountriesModel();
@@ -276,6 +281,9 @@ public class Demo implements EntryPoint {
         panel.setWidget(1, 1, picker);
         panel.setWidget(2, 1, suggestionBox);
         panel.setWidget(3, 1, complexSuggestionBox);
+
+        panel.getColumnFormatter().setWidth(1, "50%");
+
         tab.add(panel, "Other Controls");
 
         comboBox.display();

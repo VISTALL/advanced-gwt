@@ -62,6 +62,8 @@ public class DemoModelFactory {
 
         TreeGridRow president = (TreeGridRow) model.getRow(0);
         president.setExpanded(true);
+        president.setPageSize(3);
+        president.setPagerEnabled(true);
         model.addRow(president, employees[10]);
         model.addRow(president, employees[11]);
         model.addRow(president, employees[2]);
@@ -72,6 +74,8 @@ public class DemoModelFactory {
 
         //developers
         TreeGridRow projectManager = model.getRow(president, 0);
+        projectManager.setPageSize(3);
+        projectManager.setPagerEnabled(true);
         model.addRow(projectManager, employees[9]);
         model.addRow(projectManager, employees[6]);
         model.addRow(projectManager, employees[7]);

@@ -18,6 +18,8 @@ package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.DockPanel;
 import org.gwt.advanced.client.datamodel.TreeGridRow;
 
 /**
@@ -31,6 +33,8 @@ public class TreeCell extends ExpandableCellImpl implements ExpandableCell {
     public static final int INDENT = 10;
     /** gridRow gridRow */
     private TreeGridRow gridRow;
+    /** subtree pager widget */
+    private Widget pager;
 
     /** {@inheritDoc} */
     protected void createImage() {
@@ -46,7 +50,6 @@ public class TreeCell extends ExpandableCellImpl implements ExpandableCell {
         getPanel().remove(getImage());
         createImage();
         displayActive(false);
-        getImage().removeClickListener(getImageClickListener());
     }
 
     /** {@inheritDoc} */
@@ -61,5 +64,29 @@ public class TreeCell extends ExpandableCellImpl implements ExpandableCell {
      */
     public void setGridRow(TreeGridRow gridRow) {
         this.gridRow = gridRow;
+    }
+
+    /**
+     * This method adds a pager widget into the cell.
+     *
+     * @param widget is a pager widget.
+     */
+    public void putPager(Widget widget) {
+        if (widget != null) {
+            getPanel().add(widget, DockPanel.EAST);
+            getPanel().setCellWidth(widget, "1%");
+            getPanel().setCellWidth((Widget) getValue(), "98%");
+            this.pager = widget;
+        }
+    }
+
+    /**
+     * This method removes a pager.
+     */
+    public void removePager() {
+        if (this.pager != null) {
+            getPanel().remove(this.pager);
+            this.pager = null;
+        }
     }
 }

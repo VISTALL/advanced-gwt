@@ -306,6 +306,22 @@ public class TreeGridDataModel implements Composite {
     }
 
     /** {@inheritDoc} */
+    public int getStartRow(TreeGridRow parent) {
+        if (parent == null)
+            return getStartRow();
+        return getCurrentPageNumber(parent) * getPageSize(parent);
+    }
+
+    /** {@inheritDoc} */
+    public int getEndRow(TreeGridRow parent) {
+        if (parent == null)
+            return getEndRow();
+        return parent.isPagerEnabled()
+                ? Math.min(getStartRow(parent) + getPageSize(parent) - 1, getTotalRowCount(parent) - 1)
+                : getTotalRowCount(parent) - 1;
+    }
+
+    /** {@inheritDoc} */
     public void addRow(int beforeRow, Object[] row) throws IllegalArgumentException {
         getDelegate().addRow(beforeRow, row);
         remapIndexes(null);

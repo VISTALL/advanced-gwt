@@ -32,6 +32,8 @@ import org.gwt.advanced.client.util.ThemeHelper;
  * @since 1.0.0
  */
 public class Pager extends SimplePanel implements AdvancedWidget {
+    /** integer number pattern */
+    protected static final String INTEGER_PATTERN = "([+-]?[0-9]+)|([0-9]*)";
     /** this flag defines whether the arrows must be displayed */
     private boolean arrowsVisible = true;
     /** pager table */
@@ -48,6 +50,12 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     private Image right = new Image();
     /** a grid panel */
     private GridPanel gridPanel;
+    /** a page number box */
+    private TextBox pageNumber;
+    /** submit button image */
+    private Image submit;
+    /** a flag that means whether the page number box must be displayed */
+    private boolean pageNumberBoxDisplayed;
 
     /**
      * Creates an instance of this class and initialie core elements.
@@ -92,7 +100,7 @@ public class Pager extends SimplePanel implements AdvancedWidget {
         this.arrowsVisible = arrowsVisible;
     }
 
-    /**
+    /**                        
      * Invoke this method to displayActive the pager.
      */
     public void display() {
@@ -108,6 +116,14 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
             addArrows();
             addLinks();
+
+            if (isPageNumberBoxDisplayed()) {
+                int column = table.getCellCount(0);
+                table.setWidget(0, column, getPageNumber());
+                getPageNumber().setText(String.valueOf(getModel().getCurrentPageNumber() + 1));
+                column = table.getCellCount(0);
+                table.setWidget(0, column, getSubmit());
+            }
 
             int column = table.getCellCount(0);
             table.setText(0, column, "");
@@ -136,6 +152,60 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     }
 
     /**
+     * Getter for property 'pageNumberBoxDisplayed'.
+     *
+     * @return Value for property 'pageNumberBoxDisplayed'.
+     */
+    public boolean isPageNumberBoxDisplayed() {
+        return pageNumberBoxDisplayed;
+    }
+
+    /**
+     * Setter for property 'pageNumberBoxDisplayed'.
+     *
+     * @param pageNumberBoxDisplayed Value to set for property 'pageNumberBoxDisplayed'.
+     */
+    public void setPageNumberBoxDisplayed(boolean pageNumberBoxDisplayed) {
+        this.pageNumberBoxDisplayed = pageNumberBoxDisplayed;
+    }
+
+    /**
+     * Getter for property 'pageNumber'.
+     *
+     * @return Value for property 'pageNumber'.
+     */
+    protected TextBox getPageNumber() {
+        if (pageNumber == null) {
+            pageNumber = new TextBox();
+            pageNumber.addFocusListener(new PageBoxListener());
+        }
+        return pageNumber;
+    }
+
+    /**
+     * Getter for property 'submit'.
+     *
+     * @return Value for property 'submit'.
+     */
+    public Image getSubmit() {
+        if (submit == null) {
+            submit = new Image();
+            DOM.setElementAttribute(
+                submit.getElement(), "src",
+                ThemeHelper.getInstance().getFullImageName("arrow_right_16.gif")
+            );
+            final Pager pager = this;
+            submit.addClickListener(new ClickListener(){
+                public void onClick(Widget sender) {
+                    setCurrentPageNumber(Integer.valueOf(getPageNumber().getText()).intValue() - 1);
+                    getGridPanel().getMediator().firePageChangeEvent(pager, getModel().getCurrentPageNumber());
+                }
+            });
+        }
+        return submit;
+    }
+
+    /**
      * Setter for property 'currentPageNumber'.
      *
      * @param page Value to set for property 'currentPageNumber'.
@@ -144,6 +214,8 @@ public class Pager extends SimplePanel implements AdvancedWidget {
         Pageable pageable = getModel();
         if (page < pageable.getTotalPagesNumber())
             pageable.setCurrentPageNumber(page);
+        if (isPageNumberBoxDisplayed())
+            getPageNumber().setText(String.valueOf(page + 1));
         display();
     }
 
@@ -267,6 +339,43 @@ public class Pager extends SimplePanel implements AdvancedWidget {
                     right.getElement(), "src",
                     ThemeHelper.getInstance().getFullImageName("arrow_right_16_d.gif")
                 );
+            }
+        }
+    }
+
+    /**
+     * This listener restores the previous value in the text box if the new one doesn't match restrictions required
+     * for the page number values.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+     */
+    protected class PageBoxListener implements FocusListener {
+        /** previous page number */
+        private int previousValue;
+
+        /** {@inheritDoc} */
+        public void onFocus(Widget sender) {
+            TextBox box = (TextBox) sender;
+            String text = box.getText();
+
+            if (text != null && text.length() > 0)
+                this.previousValue = Integer.valueOf(text).intValue();
+            else
+                this.previousValue = 1;    
+        }
+
+        /** {@inheritDoc} */
+        public void onLostFocus(Widget sender) {
+            TextBox box = (TextBox) sender;
+            String text = box.getText();
+
+            if (
+                text != null
+                && (!text.matches(INTEGER_PATTERN)
+                   || Integer.valueOf(text).intValue() < 1
+                   || Integer.valueOf(text).intValue() > getModel().getTotalPagesNumber())
+            ) {
+                box.setText(String.valueOf(this.previousValue));
             }
         }
     }

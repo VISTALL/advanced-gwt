@@ -34,15 +34,12 @@ import java.util.Set;
 /**
  * This class renders tree grid content.<p/>
  * The {@link TreeGrid} uses this implementation by default.<br/>
- * Note that this renderer implementation doesn't support subtree paging. To add this feature you should extend this
- * class and override the {@link #drawPager(org.gwt.advanced.client.datamodel.TreeGridRow, String)} method and other
- * methods if necessary.
- * 
+ *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.0
  */
 public class TreeGridRenderer extends DefaultGridRenderer {
-    /** this field contains a stack of rows which were already drawn */
+    /** this field contains a stack of rows which have already been drawn */
     private Stack currentRows;
     /** grid to model row mapping */
     private Map rowMapping = new HashMap();
@@ -124,44 +121,44 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         drawRow(row.getData(), rowNumber);
         if (row.getParent() != null)
             getGrid().getRowFormatter().addStyleName(rowNumber, "grid-subrow");
+        drawPager(((TreeGrid)getGrid()).getTreeCell(rowNumber));
         rowNumber++;
 
         Composite model = (Composite) getGrid().getModel();
         if (row.isExpanded()) {
-            if (drawPager(row, "top-panel"))
-                rowNumber++;
-            
             getCurrentRows().add(row);
 
             try {
                 ((TreeGrid)getGrid()).sortOnClient(row);
 
-                TreeGridRow[] children = model.getRows(row);
-                for (int i = 0; i < children.length; i++) {
-                    TreeGridRow child = children[i];
-                    rowNumber = drawRow(child, rowNumber);
-                }
+                int start = model.getStartRow(row);
+                int end = model.getEndRow(row);
+
+                for (int i = start; i <= end; i++)
+                    rowNumber = drawRow(model.getRow(row, i), rowNumber);
             } finally {
                 getCurrentRows().remove();
             }
-            
-            drawPager(row, "bottom-panel");
         }
 
         return rowNumber;
     }
 
     /**
-     * This method renders a pager assotiated with the parent row.<p/>
-     * NOTE: Currently this method does nothing. It;s implementation postponed till next releases.
+     * This method renders a pager assotiated with the parent row.
      *
-     * @param row is a parent row.
-     * @param styleName is a CSS class name.
+     * @param cell is a parent expandable cell.
      *
      * @return <code>true</code> if the pager has been displayed.
      */
-    protected boolean drawPager(TreeGridRow row, String styleName) {
-        return false;
+    protected boolean drawPager(TreeCell cell) {
+        TreeGridRow gridRow = cell.getGridRow();
+        boolean draw = gridRow.isExpanded() && gridRow.isPagerEnabled();
+        if (draw) {
+            SubtreePager pager = new SubtreePager((TreeGrid) getGrid(), cell.getGridRow(), "subtree-pager");
+            cell.putPager(pager);
+        }
+        return draw;
     }
 
     /**
@@ -173,29 +170,31 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         TreeGridRow gridRow = parent.getGridRow();
         Composite composite = (Composite) getGrid().getModel();
         ((TreeGrid)getGrid()).sortOnClient(gridRow);
-        TreeGridRow[] children = composite.getRows(gridRow);
+        int start = composite.getStartRow(gridRow);
+        int end = composite.getEndRow(gridRow);
+
         getGrid().dropSelection();
         getGrid().setCurrentRow(parent.getRow());
 
-        parent.setLeaf(children.length == 0);
+        parent.setLeaf(start > end);
+        parent.setExpanded(!parent.isLeaf());
+        parent.getGridRow().setExpanded(parent.isExpanded());
+
+        drawPager(parent);
 
         int nextRow = parent.getRow() + 1;
-        if (drawPager(parent.getGridRow(), "top-panel"))
-            nextRow++;
-
+        
         getCurrentRows().add(gridRow);
         try {
-            for (int i = 0; i < children.length; i++) {
-                TreeGridRow child = children[i];
-                nextRow = drawRow(child, nextRow);
+            for (int i = start; i <= end; i++) {
                 remapIndexes(nextRow, 1);
+                nextRow = drawRow(composite.getRow(gridRow, i), nextRow);
             }
 
             getGrid().increaseRowNumbers(nextRow, nextRow - parent.getRow() - 1);
         } finally {
             getCurrentRows().remove();
         }
-        drawPager(parent.getGridRow(), "bottom-panel");
     }
 
     /**
@@ -231,6 +230,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         getGrid().setCurrentRow(parent.getRow());
         int level = parent.getGridRow().getLevel();
         int row = parent.getRow() + 1;
+        parent.removePager();
 
         if (row < getGrid().getRowCount()) {
             TreeGrid grid = (TreeGrid) getGrid();

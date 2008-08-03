@@ -66,12 +66,49 @@ public class LazyTreeGridDataModel extends TreeGridDataModel implements LazyLoad
             ((LazyLoadable) gridRow).setTotalRowCount(totalRowCount);
     }
 
+    /** {@inheritDoc} */
+    public int addRow (TreeGridRow parent, Object[] row) throws IllegalArgumentException {
+        int index = super.addRow(parent, row);
+        setTotalRowCount(parent, getTotalRowCount(parent) + 1);
+        return index;
+    }
+
+    /** {@inheritDoc} */
+    public void update(TreeGridRow parent, Object[][] children) {
+        super.update(parent, children);
+        if (children != null)
+            setTotalRowCount(parent, getTotalRowCount(parent) + children.length);    
+    }
+
+    /** {@inheritDoc} */
+    public void removeRow (TreeGridRow parent, int rowNumber) throws IllegalArgumentException {
+        super.removeRow(parent, rowNumber - getStartRow());
+        setTotalRowCount(parent, getTotalRowCount(parent) - 1);
+    }
+
+    /** {@inheritDoc} */
+    public int getEndRow (TreeGridRow parent) {
+        if (!parent.isPagerEnabled())
+            return getTotalRowCount(parent) - 1;
+        
+        if (getTotalRowCount(parent) > super.getTotalRowCount(parent)) {
+            return getStartRow(parent) + Math.min(getPageSize(parent) - 1, super.getTotalRowCount(parent) - 1);
+        } else
+            return super.getEndRow(parent);
+    }
+
+    /** {@inheritDoc} */
+    public void removeAll (TreeGridRow parent) {
+        super.removeAll(parent);
+        setTotalRowCount(parent, 0);
+    }
+
     /**
      * This is a delegate class for lazy tree rows creation.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
-    protected class DelegateLazyGridDataModel extends DelegateEditableGridDataModel {
+    protected class DelegateLazyGridDataModel extends LazyGridDataModel {
         /**
          * Creates a new instance of the delegate.
          *

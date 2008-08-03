@@ -28,9 +28,11 @@ public class TreeGridRow extends GridRow implements Pageable {
     /** expanded node flag */
     private boolean expanded;
     /** row owner, i.e. grid model that contains the row */
-    private transient Composite model;
+    private Composite model;
     /** pageable delegate */
-    private transient Pageable pageable;
+    private Pageable pageable;
+    /** pager enabled flag */
+    private boolean pagerEnabled;
 
     /**
      * Always throws <code>UnsupportedOperationException</code>.
@@ -44,10 +46,15 @@ public class TreeGridRow extends GridRow implements Pageable {
      *
      * @param model is a grid data model that contains this row.
      */
-    protected TreeGridRow(Composite model) {
+    protected TreeGridRow(final Composite model) {
         super();
         setModel(model);
-        setPageable(new GridPagerModel(model));
+        final TreeGridRow row = this;
+        setPageable(new GridPagerModel(new SimpleGridDataModel(null) {
+            public int getTotalRowCount() {
+                return model.getTotalRowCount(row);
+            }
+        }));
     }
 
     /**
@@ -99,6 +106,24 @@ public class TreeGridRow extends GridRow implements Pageable {
      */
     public void setExpanded(boolean expanded) {
         this.expanded = expanded;
+    }
+
+    /**
+     * Getter for property 'pagerEnabled'.
+     *
+     * @return Value for property 'pagerEnabled'.
+     */
+    public boolean isPagerEnabled() {
+        return pagerEnabled;
+    }
+
+    /**
+     * Setter for property 'pagerEnabled'.
+     *
+     * @param pagerEnabled Value to set for property 'pagerEnabled'.
+     */
+    public void setPagerEnabled(boolean pagerEnabled) {
+        this.pagerEnabled = pagerEnabled;
     }
 
     /** {@inheritDoc} */

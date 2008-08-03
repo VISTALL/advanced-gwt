@@ -233,4 +233,20 @@ public interface Composite extends Editable {
      * @param child is a child row to be linked to.
      */
     void setParent(TreeGridRow parent, TreeGridRow child);
+
+    /**
+     * Returns a subgrid start row number.
+     *
+     * @param parent is a parent row of the subgrid.
+     * @return a start row number.
+     */
+    int getStartRow(TreeGridRow parent);
+
+    /**
+     * Returns an end row number of the subgrid.
+     *
+     * @param parent is a parent row of the subgrid.
+     * @return an end row number.
+     */
+    int getEndRow(TreeGridRow parent);
 }

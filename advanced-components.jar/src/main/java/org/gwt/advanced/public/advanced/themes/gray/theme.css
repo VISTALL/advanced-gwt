@@ -62,6 +62,15 @@
     cursor: pointer;
 }
 
+/** page number text box styles */
+.advanced-Pager input {
+    width: 25px;
+    font-family: sans-serif;
+    font-size: 10px;
+    font-weight: normal;
+    border: 1px solid gainsboro;
+}
+
 /*********************
  * Grid toolbar styles
  */
@@ -282,6 +291,16 @@
 /** date cell additional styles */
 .advanced-Grid .date-cell div {
     white-space: nowrap;
+}
+
+/** subtree pager left arrow style */
+.advanced-Grid .subtree-pager .arrow-left {
+    cursor: pointer;
+}
+
+/** subtree pager right arrow style */
+.advanced-Grid .subtree-pager .arrow-right {
+    cursor: pointer;
 }
 
 /*********************
@@ -584,6 +603,7 @@
     font-family: sans-serif;
     font-size: 10px;
     color: black;
+    height: 19px;
 }
 
 /** selected text box style */

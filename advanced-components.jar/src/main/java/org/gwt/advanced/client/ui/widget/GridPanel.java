@@ -186,6 +186,18 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     }
 
     /**
+     * Sets the page number boxes visible.
+     *
+     * @param value is a falg value.
+     */
+    public void setPageNumberBoxDisplayed(boolean value) {
+        if (isTopPagerVisible())
+            getTopPager().setPageNumberBoxDisplayed(value);
+        if (isBottomPagerVisible())
+            getBottomPager().setPageNumberBoxDisplayed(value);
+    }
+
+    /**
      * This method displays the panel and adds nexted widgets.
      */
     public void display() {
