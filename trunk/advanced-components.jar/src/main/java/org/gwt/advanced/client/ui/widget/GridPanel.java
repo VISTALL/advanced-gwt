@@ -20,6 +20,10 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowResizeListener;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import org.gwt.advanced.client.datamodel.Composite;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.Hierarchical;
@@ -28,6 +32,7 @@ import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.GridToolbarListener;
 import org.gwt.advanced.client.ui.PagerListener;
+import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -82,6 +87,8 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     private FocusPanel focusPanel;
     /** a grid key event manager instance */
     private GridEventManager gridEventManager;
+    /** a listener to be invoked on window resize */
+    private WindowResizeListener resizeListener;
 
     /** Constructs a new GridPanel. */
     public GridPanel () {
@@ -234,6 +241,15 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
         getGrid().addTableListener(getGridEventManager());
         getFocusPanel().addFocusListener(getGridEventManager());
         getFocusPanel().addKeyboardListener(getGridEventManager());
+
+        Window.removeWindowResizeListener(getResizeListener());
+        Window.addWindowResizeListener(getResizeListener());
+    }
+
+    /** {@inheritDoc} */
+    protected void onLoad() {
+        super.onLoad();
+        resize();
     }
 
     /**
@@ -581,6 +597,27 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     }
 
     /**
+     * This method resizes nested components to make them fix as much space as possible.
+     */
+    public void resize() {
+        Element parent = DOM.getParent(getElement());
+        if (parent != null)
+            GWTUtil.adjustWidgetSize(this, parent, false);
+        getGrid().resize();
+    }
+
+    /**
+     * Getter for property 'resizeListener'.
+     *
+     * @return Value for property 'resizeListener'.
+     */
+    protected WindowResizeListener getResizeListener() {
+        if (resizeListener == null)
+            resizeListener = new ResizeListener();
+        return resizeListener;
+    }
+
+    /**
      * This method displays a top panel and adds top pager and toolbar into it.
      */
     protected void packTopPanel() {
@@ -825,5 +862,22 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     protected void removeChildGridPanel(GridPanel child) {
         getGrid().removeSelectRowListener(getMediator());
         getChildGridPanels().remove(child);
+    }
+
+    /**
+     * This listener is invoked every time when anything makes the window to be resized.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+     */
+    protected class ResizeListener implements WindowResizeListener {
+        /**
+         * Resizes nested components.
+         *
+         * @param width never used.
+         * @param height never used.
+         */
+        public void onWindowResized(int width, int height) {
+            resize();
+        }
     }
 }

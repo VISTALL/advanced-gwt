@@ -18,8 +18,9 @@ package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
-import org.gwt.advanced.client.ui.widget.EditableGrid;
 import org.gwt.advanced.client.ui.widget.AdvancedFlexTable;
+import org.gwt.advanced.client.ui.widget.SimpleGrid;
+import org.gwt.advanced.client.ui.widget.EditableGrid;
 import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
@@ -91,10 +92,14 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
 
     /** {@inheritDoc} */
     protected void addListeners(Widget widget) {
-        if (isSortable())
-            DOM.setEventListener(getLabel().getElement(), new SortListener());
+        if (isSortable()) {
+            SortListener listener = new SortListener();
+            getLabel().addClickListener(listener);
+            getImage().addClickListener(listener);
+        }
 
         Element thead = ((AdvancedFlexTable) getGrid()).getTHeadElement();
+        DOM.sinkEvents(thead, Event.MOUSEEVENTS);
         DOM.setEventListener(thead, new ResizeListener());
     }
 
@@ -214,17 +219,14 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
-    protected class SortListener implements EventListener {
+    protected class SortListener implements ClickListener {
         /**
          * Starts column sorting.
          *
-         * @param event an event.
+         * @param sender is a event source widget.
          */
-        public void onBrowserEvent(Event event) {
-            if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
-                sort();
-            }
-            DOM.sinkEvents(((AdvancedFlexTable)getGrid()).getTHeadElement(), Event.MOUSEEVENTS);
+        public void onClick(Widget sender) {
+            sort();
         }
     }
 
@@ -238,6 +240,10 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
         private Element th;
         /** start mouse position */
         private int startX;
+        /** current X position of the cursor */
+        private int currentX;
+        /** the timer that check current cursor position and resizes columns */
+        private ResizeTimer timer = new ResizeTimer(this);
 
         /**
          * This method handles all mouse events related to resizing.
@@ -251,14 +257,13 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
                 if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
                     startResizing(event);
                 } else if (DOM.eventGetType(event) == Event.ONMOUSEUP && th != null) {
-                    stopResizing(event);
+                    stopResizing();
                 } else if (DOM.eventGetType(event) == Event.ONMOUSEOUT && th != null) {
                     interruptResizing(event);
                 }
             }
-            if (DOM.eventGetType(event) == Event.ONMOUSEMOVE) {
+            if (DOM.eventGetType(event) == Event.ONMOUSEMOVE)
                 setCursor(event);
-            }
         }
 
         /**
@@ -269,9 +274,10 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
         protected void setCursor(Event event) {
             EditableGrid grid = (EditableGrid) getGrid();
             Element th = getTh(event);
-            if (this.th != null || grid.isColumnResizingAllowed() && isOverBorder(event, th))
+            if (this.th != null || grid.isColumnResizingAllowed() && isOverBorder(event, th)) {
                 DOM.setStyleAttribute(DOM.eventGetTarget(event), "cursor", "e-resize");
-            else if (isSortable())
+                this.currentX = getPositionX(event);
+            } else if (isSortable())
                 DOM.setStyleAttribute(DOM.eventGetTarget(event), "cursor", "pointer");
             else
                 DOM.setStyleAttribute(DOM.eventGetTarget(event), "cursor", "default");
@@ -292,17 +298,26 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
             int width = getElementWidth(thead);
             int height = getElementHeight(thead);
 
-            if (positionX < left || positionX > left + width || positionY < top || positionY > top + height)
+            if (positionX < left || positionX > left + width || positionY < top || positionY > top + height) {
                 th = null;
+                timer.cancel();
+            }
         }
 
         /**
          * This method normally stops resisng and changes column width.
-         *
-         * @param event is an event.
          */
-        protected void stopResizing(Event event) {
-            int position = getPositionX(event);
+        protected void stopResizing() {
+            resize();
+            timer.cancel();
+            th = null;
+        }
+
+        /**
+         * Resizes selected and sibling columns.
+         */
+        protected void resize() {
+            int position = this.currentX;
             int delta = position - startX;
             Element tr = DOM.getParent(th);
             int left = DOM.getAbsoluteLeft(th);
@@ -310,19 +325,40 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
 
             Element sibling = null;
             int sign = 0;
+            int thIndex = DOM.getChildIndex(tr, th);
+
             if (startX <= left + 1) {
                 sign = 1;
-                sibling = DOM.getChild(tr, DOM.getChildIndex(tr, th) - 1);
+                sibling = DOM.getChild(tr, thIndex - 1);
             } else if (startX >= left + width - 1) {
                 sign = -1;
-                sibling = DOM.getChild(tr, DOM.getChildIndex(tr, th) + 1);
+                sibling = DOM.getChild(tr, thIndex + 1);
+            }
+
+            SimpleGrid grid = ((SimpleGrid) getGrid());
+            int thExpectedWidth = width - sign * delta;
+            int siblingExpectedWidth = getElementWidth(sibling) + sign * delta;
+            int siblingIndex = DOM.getChildIndex(tr, sibling);
+
+            //interrupt immediately 
+            if (thExpectedWidth < 3 || siblingExpectedWidth < 3) {
+                th = null;
+                return;
             }
 
             if (sibling != null) {
-                DOM.setStyleAttribute(th, "width", (width - sign * delta) + "px");
-                DOM.setStyleAttribute(sibling, "width", (getElementWidth(sibling) + sign * delta) + "px");
+                grid.setColumnWidth(thIndex, thExpectedWidth);
+                grid.setColumnWidth(siblingIndex, siblingExpectedWidth);
             }
-            th = null;
+
+            int thWidthNow = getElementWidth(th);
+            int siblingWidthNow = getElementWidth(sibling);
+
+            if (thWidthNow > thExpectedWidth)
+                grid.setColumnWidth(thIndex, 2 * thExpectedWidth - thWidthNow);
+            if (siblingWidthNow > siblingExpectedWidth)
+                grid.setColumnWidth(siblingIndex, 2 * siblingExpectedWidth - siblingWidthNow);
+            this.startX = position;
         }
 
         /**
@@ -334,8 +370,11 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
             if ("e-resize".equalsIgnoreCase(DOM.getStyleAttribute(DOM.eventGetTarget(event), "cursor"))) {
                 th = getTh(event);
                 startX = getPositionX(event);
+                currentX = startX;
                 if (!isOverBorder(event, th))
                     th = null;
+                else
+                    timer.schedule(20);    
             }
         }
 
@@ -407,6 +446,35 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
 
             return position <= left + 1 && index > 0
                    || position >= left + width - 1 && index < DOM.getChildCount(DOM.getParent(th)) - 1;
+        }
+    }
+
+    /**
+     * This timer is invoked every time when column resizing might happen.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+     */
+    protected static class ResizeTimer extends Timer {
+        /** resize listener that starts this timer */
+        private ResizeListener listener;
+
+        /**
+         * Creates the timer.
+         *
+         * @param listener is a resize listener.
+         */
+        public ResizeTimer(ResizeListener listener) {
+            this.listener = listener;
+        }
+
+        /**
+         * See class docs.
+         */
+        public void run() {
+            if (listener.th != null) {
+                listener.resize();
+                schedule(100);
+            }
         }
     }
 }

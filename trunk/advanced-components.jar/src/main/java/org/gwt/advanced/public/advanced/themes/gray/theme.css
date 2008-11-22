@@ -235,12 +235,12 @@
 .advanced-Grid .text-cell {
     text-align: left;
     vertical-align: top;
-    white-space: normal;
+    white-space: nowrap;
 }
 
 /** textual cell additional styles */
 .advanced-Grid .text-cell div {
-    white-space: normal;
+    white-space: nowrap;
 }
 
 /** numeric cell additional styles */

@@ -339,6 +339,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
      * @return the resulting list box.
      */
     protected ListBox prepareTimeListBox(ListBox box, String format, int start, int end) {
+        box.clear();
         int count = 0;
         String selected = DateTimeFormat.getFormat(format).format(getDate());
         for (int i = start; i <= end; i++) {
@@ -360,6 +361,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
      * @return the result list box.
      */
     protected ListBox prepareAmPmListBox(ListBox box) {
+        box.clear();
         String selected = DateTimeFormat.getFormat("a").format(getDate());
         box.addItem("AM", "AM");
         box.addItem("PM", "PM");

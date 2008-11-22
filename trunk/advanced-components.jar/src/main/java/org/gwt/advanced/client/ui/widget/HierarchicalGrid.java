@@ -16,17 +16,20 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HTMLTable;
-import org.gwt.advanced.client.datamodel.Hierarchical;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.Editable;
+import org.gwt.advanced.client.datamodel.Hierarchical;
+import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
 import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.GridPanelFactory;
-import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
 import org.gwt.advanced.client.ui.widget.cell.ExpandableCellFactory;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
+import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.*;
 
@@ -163,6 +166,30 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
     }
 
     /** {@inheritDoc} */
+    public void resize() {
+        super.resize();
+        for (Iterator iterator = getGridPanelCache().values().iterator(); iterator.hasNext();) {
+            GridPanel gridPanel = (GridPanel) iterator.next();
+            gridPanel.resize();
+        }
+    }
+
+    /** {@inheritDoc} */
+    public void setColumnWidth(int column, int size) {
+        super.setColumnWidth(column, size);
+        for (int i = 0; i < getRowCount(); i++) {
+            if (!SUBGRID_ROW_STYLE.equals(getRowFormatter().getStyleName(i))) {
+                GridPanel panel = getGridPanel(i, column);
+                if (panel != null) {
+                  DOM.setStyleAttribute(panel.getGrid().getElement(), "display", "none");
+                  panel.resize();
+                  DOM.setStyleAttribute(panel.getGrid().getElement(), "display", "");
+                }
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
     protected void removeRow() {
         Editable dataModel = getModel();
         if (dataModel instanceof Hierarchical) {
@@ -200,6 +227,12 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      */
     protected void expandCell (int parentRow, int parentColumn) {
         ((HierarchicalGridRenderer)getGridRenderer()).renderSubgrid(parentRow, parentColumn);
+        if (isResizable()) {
+            GridPanel panel = getGridPanel(parentRow, parentColumn);
+            Element td = getCellFormatter().getElement(getGridRowNumber(parentRow, parentColumn), parentColumn);
+            GWTUtil.adjustWidgetSize(panel, td, false);
+            panel.resize();
+        }
     }
 
     /**

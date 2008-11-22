@@ -21,7 +21,7 @@ package org.gwt.advanced.client.util;
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
- */
+ */                                                
 public class ThemeHelper {
     /** default name of the CSS link element */
     public static final String LINK_ELEMENT_ID = "advancedTheme";
@@ -29,6 +29,8 @@ public class ThemeHelper {
     private static final ThemeHelper instance = new ThemeHelper();
     /** theme name */
     private String themeName = "default";
+    /** base directory name (a subfolder to store themes) that can include a context name if starts with '/' */
+    private String baseDirectory;
 
     /**
      * Creates an instance of this class.
@@ -47,7 +49,7 @@ public class ThemeHelper {
     /** {@inheritDoc} */
     public void setThemeName (String name) {
         themeName = name;
-        StyleUtil.setLinkHref(LINK_ELEMENT_ID, "advanced/themes/" + name + "/theme.css");
+        StyleUtil.setLinkHref(LINK_ELEMENT_ID, getBaseDirectory() + "advanced/themes/" + name + "/theme.css");
     }
 
     /** {@inheritDoc} */
@@ -62,6 +64,28 @@ public class ThemeHelper {
      * @return is a full name.
      */
     public String getFullImageName(String shortName) {
-        return "advanced/themes/" + getThemeName() + "/images/" + shortName;
+        return getBaseDirectory() + "advanced/themes/" + getThemeName() + "/images/" + shortName;
+    }
+
+    /**
+     * Setter for property 'baseDirectory'.
+     *
+     * @param baseDirectory Value to set for property 'baseDirectory'.
+     */
+    public void setBaseDirectory(String baseDirectory) {
+        this.baseDirectory = baseDirectory;
+    }
+
+    /**
+     * This method returns a base directory that ends with '/' if it's specified and an empty string
+     * if it's not set.
+     *
+     * @return a base directory name (never <code>null</code>).
+     */
+    protected String getBaseDirectory() {
+        if (baseDirectory != null && baseDirectory.length() > 0)
+            return baseDirectory + "/";
+        else
+            return "";
     }
 }

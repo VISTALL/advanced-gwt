@@ -21,7 +21,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.IncrementalCommand;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -112,11 +111,7 @@ public class DefaultGridRenderer implements GridRenderer {
                 setCellText(formatString(data), row, column, "text-cell");
             else if (ImageCell.class.equals(columnType))
                 setCellWidget((Widget) data, row, column, "image-cell");
-            else if (BooleanCell.class.equals(columnType)) {
-                CheckBox checkBox = new CheckBox();
-                checkBox.setChecked(Boolean.valueOf(String.valueOf(data)).booleanValue());
-                setCellWidget(checkBox, row, column, "boolean-cell");
-            } else
+            else 
                 getCellFactory().create(row, column, data).displayActive(false);
         }
     }

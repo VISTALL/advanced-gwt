@@ -16,16 +16,15 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwt.advanced.client.datamodel.*;
+import org.gwt.advanced.client.datamodel.DataModelCallbackHandler;
+import org.gwt.advanced.client.datamodel.Editable;
+import org.gwt.advanced.client.datamodel.GridDataModel;
+import org.gwt.advanced.client.datamodel.LazyLoadable;
 import org.gwt.advanced.client.ui.*;
 import org.gwt.advanced.client.ui.widget.cell.*;
-import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.*;
 
@@ -35,7 +34,7 @@ import java.util.*;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
+public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * this is a grid data model
      */
@@ -97,17 +96,9 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      */
     private GridRowDrawCallbackHandler rowDrawHandler;
     /**
-     * a timer for automated grid resizing
-     */
-    private Timer resizeTimer = new ResizeTimer();
-    /**
      * a flag meaning whether the grid has resizable columns
      */
     private boolean columnResizingAllowed = true;
-    /**
-     * a falg that means whether the grid columns are resizable
-     */
-    private boolean resizable;
     /**
      * a current column number
      */
@@ -137,10 +128,9 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * @param resizable           is a flag that means columns resizability (by default is <code>true</code>).
      */
     public EditableGrid (String[] headers, Class[] columnWidgetClasses, boolean resizable) {
-        super();
+        super(resizable);
         this.columnWidgetClasses = columnWidgetClasses;
         this.headers = headers;
-        this.resizable = resizable;
 
         for (int i = 0; headers != null && i < headers.length; i++) {
             sortableHeaders.put(new Integer(i), Boolean.TRUE);
@@ -448,7 +438,6 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      * Use this method to displayActive the grid.
      */
     public void display() {
-        setStyleName("advanced-Grid");
         drawHeaders();
         sortOnClient();
         drawContent();
@@ -544,26 +533,6 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
-     * Getter for property 'resizable'.
-     *
-     * @return Value for property 'resizable'.
-     */
-    public boolean isResizable() {
-        return resizable;
-    }
-
-    /**
-     * Sets the resizability of column flag.<p/>
-     * This method also sets table-layout style.
-     *
-     * @param resizable resizability flag value.
-     */
-    public void setResizable(boolean resizable) {
-        this.resizable = resizable;
-        makeResizable(resizable);
-    }
-
-    /**
      * This method fires the sort event
      *
      * @param header is a header cell of the sortable column.
@@ -649,31 +618,6 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
      */
     protected Widget getOriginalWidget(int row, int column) {
         return super.getWidget(row, column);
-    }
-
-    /**
-     * This method resizes the grid making it to fit as much space as possible.
-     */
-    protected void resize() {
-        Element parent = DOM.getParent(getElement());
-        int parentWidth = 0;
-        if (parent != null) {
-            if (isScrollable() && GWTUtil.isIE()) {
-                Element superParent = DOM.getParent(parent);
-                if (superParent != null)
-                    DOM.setStyleAttribute(parent, "width", DOM.getElementPropertyInt(superParent, "offsetWidth") + "px");
-                else
-                    DOM.setStyleAttribute(parent, "width", (Window.getClientWidth() - 20) + "px");
-            }
-
-            if (GWTUtil.isIE())
-                parentWidth = DOM.getElementPropertyInt(parent, "offsetWidth");
-            else
-                parentWidth = DOM.getElementPropertyInt(parent, "offsetWidth") - 2; 
-        }
-        if (parentWidth == 0)
-            parentWidth = Window.getClientWidth() - 20;
-        DOM.setStyleAttribute(getElement(), "width", parentWidth + "px");
     }
 
     /**
@@ -1131,21 +1075,6 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
     }
 
     /**
-     * Enables or disables columns resizability.
-     *
-     * @param resizable a flag to enable or disable resizable columns.
-     */
-    protected void makeResizable(boolean resizable) {
-        if (resizable){
-            DOM.setStyleAttribute(getElement(), "table-layout", "fixed");
-            resizeTimer.scheduleRepeating(10);
-        } else {
-            DOM.setStyleAttribute(getElement(), "table-layout", "");
-            resizeTimer.cancel();
-        }
-    }
-
-    /**
      * Overrides this method to make it accessible for this package and server side renderers.
      *
      * @return a body element.
@@ -1154,17 +1083,6 @@ public class EditableGrid extends AdvancedFlexTable implements AdvancedWidget {
         return super.getBodyElement();
     }
 
-    /**
-     * This timer automatically resizes the grid.
-     *
-     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
-     */
-    protected class ResizeTimer extends Timer {
-        /** {@inheritDoc} */
-        public void run() {
-            resize();
-        }
-    }
 }
 
 
