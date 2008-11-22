@@ -3,6 +3,23 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.4.5-beta includes:
+
+Bug fixes:
+1. Themes broken when contained in different root directory
+2. BooleanCell Update Doesn't Work
+3. Leaf nodes appear with [+] in TreeGrid
+4. Grid Sorting borked in GWT 1.5.2
+5. AdvancedFlexTable header widget isn't attached
+6. Each opening of calendar adds one more full list of values in time-related drop-downs
+
+New features:
+1. Improvements in scrolling / column resizing features  
+
+New widgets:
+1. SimpleGrid
+
+====================================================================================================================
 Release 1.4.1 includes:
 
 Bug fixes:

@@ -84,6 +84,12 @@ public class Demo implements EntryPoint {
             }
 
             public void onTabSelected (SourcesTabEvents sender, int tabIndex) {
+                Widget widget = ((TabPanel) sender).getWidget(tabIndex);
+                if (widget instanceof GridPanel)
+                  ((GridPanel)widget).resize();
+                else if (widget instanceof MasterDetailPanel)
+                  ((MasterDetailPanel)widget).resize();
+
                 if (tabIndex == 1) {
                     scrollableGrid.setHeight(((int)(Window.getClientHeight() * 0.5)) + "px");
                     scrollableGrid.enableVerticalScrolling(true);

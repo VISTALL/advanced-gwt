@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>		
-  	<groupId>org.gwt.advanced</groupId>		
-  	<artifactId>advanced-components-root</artifactId>		
-  	<version>no.version</version>		
-  	<relativePath>../pom.xml</relativePath>	
+  <parent>
+    <groupId>org.gwt.advanced</groupId>
+    <artifactId>advanced-components-root</artifactId>
+    <version>no.version</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>advanced-components</artifactId>
   <packaging>jar</packaging>
   <name>Advanced GWT Components</name>
-  <version>1.4.1</version>
+  <version>1.4.5-beta</version>
 
   <description>The set of useful GWT components</description>
   <inceptionYear>2008</inceptionYear>
@@ -32,12 +33,12 @@
   <build>
     <defaultGoal>install</defaultGoal>
 
-	<resources>
-    	<resource>
-        	<directory>src/main/java</directory>
-            <filtering>true</filtering>
-		</resource>
-	</resources>
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
 
     <plugins>
       <plugin>
@@ -55,7 +56,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>1.4.60</version>
+      <version>1.5.3</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

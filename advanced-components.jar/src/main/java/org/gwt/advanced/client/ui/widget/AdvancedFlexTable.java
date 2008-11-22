@@ -19,6 +19,7 @@ package org.gwt.advanced.client.ui.widget;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -27,6 +28,7 @@ import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * This is an advanced flex table.<p/>
@@ -102,6 +104,17 @@ public class AdvancedFlexTable extends FlexTable {
     public void enableVerticalScrolling(boolean enabled) {
         prepareScrolling(enabled);
         setScrollable(enabled);
+    }
+
+    /** {@inheritDoc} */
+    public Iterator iterator() {
+        List notAttachedWidgets = new ArrayList();
+        for (Iterator iterator = getHeaderWidgets().iterator(); iterator.hasNext();) {
+            Widget widget = (Widget) iterator.next();
+            if (!widget.isAttached())
+                notAttachedWidgets.add(widget);
+        }
+        return new AdvancedWidgetIterator(super.iterator(), notAttachedWidgets.iterator());
     }
 
     /**
@@ -280,6 +293,94 @@ public class AdvancedFlexTable extends FlexTable {
     }
 
     /**
+     * Overrides this method to make it accessible for this package and server side renderers.
+     *
+     * @return a body element.
+     */
+    protected Element getBodyElement() {
+        return super.getBodyElement();
+    }
+
+    /** {@inheritDoc} */
+    protected void prepareCell(int row, int column) {
+        super.prepareCell(row, column);
+    }
+
+    /** {@inheritDoc} */
+    protected void prepareRow(int row) {
+        super.prepareRow(row);
+    }
+
+    /** {@inheritDoc} */
+    protected void checkCellBounds(int row, int column) {
+        super.checkCellBounds(row, column);
+    }
+
+    /** {@inheritDoc} */
+    protected void checkRowBounds(int row) {
+        super.checkRowBounds(row);
+    }
+
+    /** {@inheritDoc} */
+    protected Element createCell() {
+        return super.createCell();
+    }
+
+    /** {@inheritDoc} */
+    protected int getDOMCellCount(Element tableBody, int row) {
+        return super.getDOMCellCount(tableBody, row);
+    }
+
+    /** {@inheritDoc} */
+    protected int getDOMCellCount(int row) {
+        return super.getDOMCellCount(row);
+    }
+
+    /** {@inheritDoc} */
+    protected int getDOMRowCount() {
+        return super.getDOMRowCount();
+    }
+
+    /** {@inheritDoc} */
+    protected int getDOMRowCount(Element elem) {
+        return super.getDOMRowCount(elem);
+    }
+
+    /** {@inheritDoc} */
+    protected Element getEventTargetCell(Event event) {
+        return super.getEventTargetCell(event);
+    }
+
+    /** {@inheritDoc} */
+    protected void insertCells(int row, int column, int count) {
+        super.insertCells(row, column, count);
+    }
+
+    /** {@inheritDoc} */
+    protected boolean internalClearCell(Element td, boolean clearInnerHTML) {
+        return super.internalClearCell(td, clearInnerHTML);
+    }
+
+    /** {@inheritDoc} */
+    protected void prepareColumn(int column) {
+        super.prepareColumn(column);
+    }
+
+    /** {@inheritDoc} */
+    protected void setCellFormatter(CellFormatter cellFormatter) {
+        super.setCellFormatter(cellFormatter);
+    }
+
+    /** {@inheritDoc} */
+    protected void setColumnFormatter(ColumnFormatter formatter) {
+        super.setColumnFormatter(formatter);
+    }
+
+    /** {@inheritDoc} */
+    protected void setRowFormatter(RowFormatter rowFormatter) {
+        super.setRowFormatter(rowFormatter);
+    }
+    /**
      * This is a scroll panel extension designed especially for rows scrolling.
      */
     protected class RowsScrollPanel extends ScrollPanel {
@@ -312,6 +413,64 @@ public class AdvancedFlexTable extends FlexTable {
             int rowCount = DOM.getChildCount(getTHeadElement());
             for(int i = 0; i < rowCount; i++)
                 DOM.setStyleAttribute(DOM.getChild(getTHeadElement(), i), name, value);
+        }
+    }
+
+    /**
+     * This is an implementation of widget iterator for the advanced table.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+     */
+    protected class AdvancedWidgetIterator implements Iterator {
+        /** parent flex table iterator */
+        private Iterator parentIterator;
+        /** header widget collection iterator */
+        private Iterator headersIterator;
+        /** end of headers collection reached flag */
+        private boolean endOfHeadersReached;
+
+        /**
+         * Creates a new instance of this class.
+         *
+         * @param parentIterator is a parent flex table iterator.
+         * @param headerIterator is a header iterator.
+         */
+        public AdvancedWidgetIterator(Iterator parentIterator, Iterator headerIterator) {
+            this.parentIterator = parentIterator;
+            this.headersIterator = headerIterator;
+        }
+
+        /**
+         * Returns <code>true</code> if a least one of nested iterators returns <code>true</code>.
+         *
+         * @return a value meaning that there is a least one widget exists.
+         */
+        public boolean hasNext() {
+            return parentIterator.hasNext() || headersIterator.hasNext();
+        }
+
+        /**
+         * Returns the next widget attached to the table.<p/>
+         * Header widgets are followed by cell widgets.
+         *
+         * @return a next widget link.
+         */
+        public Object next() {
+            if (!headersIterator.hasNext()) {
+                endOfHeadersReached = true;
+                return parentIterator.next();
+            } else
+                return headersIterator.next();
+        }
+
+        /**
+         * Removes a currently selected widget.
+         */
+        public void remove() {
+            if (!endOfHeadersReached)
+                headersIterator.remove();
+            else
+                parentIterator.remove();
         }
     }
 }
