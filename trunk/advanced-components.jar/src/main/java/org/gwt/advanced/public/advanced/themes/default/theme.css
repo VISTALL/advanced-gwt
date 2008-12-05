@@ -46,7 +46,7 @@
     font-family: sans-serif;
     font-size: 12px;
     font-weight: bold;
-    color: gold;
+    color: #003366;
     text-align: center;
     vertical-align: middle;
     padding: 1px;
@@ -182,7 +182,7 @@
 
 /** grid selected row styles */
 .advanced-Grid .selected-row {
-    background-color: lightgoldenrodyellow;
+    background-color: #D7E9FF;
 }
 
 /** grid selected cell styles */
@@ -191,7 +191,7 @@
 
 /** grid selected cell */
 .advanced-Grid .selected-cell {
-    background-color: burlywood;
+    background-color: #99ccff;
 }
 
 /** grid column styles */
@@ -455,15 +455,15 @@
 
 /** today cell styles */
 .advanced-Calendar .today-cell {
-    border: 1px dashed lightgray;
+    border: 1px dashed #99ccff;
 }
 
 /** selected day styles */
 .advanced-Calendar .selected-day-cell {
     font-weight: bold;
-    background-color: lightgoldenrodyellow;
+    background-color: #D7E9FF;
     cursor: default;
-    border: 1px solid lightgray;
+    border: 1px solid #99ccff;
 }
 
 /** holiday cell styles */
@@ -506,7 +506,7 @@
 }
 
 /*********************
- * Master-details panel styles
+ * Master-detail panel styles
  */
 
 /** main panel style */
@@ -538,14 +538,14 @@
 /** caption label styles */
 .advanced-masterDetailPanel .grid-panel-layout .layout-caption div {
     width: 100%;
-    background-color: lightgoldenrodyellow;
+    background-color: #D7E9FF;
     padding: 1px;
-    color: black;
+    color: #003366;
     font-family: sans-serif;
     font-size: 14px;
     font-weight: bold;
     cursor: default;
-    border: 0;
+    border: 1px solid #99ccff;
 }
 
 /** layout body styles */
