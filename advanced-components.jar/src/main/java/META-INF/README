@@ -3,6 +3,17 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.4.5 includes:
+
+Bug fixes:
+1. Demo application must include source code
+2. Project modules can't be rebuilt without the root module
+
+New features:
+1. Reworked default theme required
+2. Remake project site
+
+====================================================================================================================
 Release 1.4.5-beta includes:
 
 Bug fixes:
@@ -80,5 +91,5 @@ New features:
 Release 1.2.2 includes:
 
 1. Emergency fix for the bug #1932694
-2. Minor improvements related to grids, combo box, suggestion box and grid panel usability: some methods have been added to avaoid getModel() invocation every time when data change required
+2. Minor improvements related to grids, combo box, suggestion box and grid panel usability: some methods have been added to avoid getModel() invocation every time when data change required
 3. License file was added into the package

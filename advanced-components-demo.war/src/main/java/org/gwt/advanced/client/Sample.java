@@ -16,17 +16,20 @@
 
 package org.gwt.advanced.client;
 
-import org.gwt.advanced.client.ui.widget.*;
-import org.gwt.advanced.client.ui.widget.cell.LabelCell;
-import org.gwt.advanced.client.ui.widget.cell.IntegerCell;
-import org.gwt.advanced.client.ui.widget.cell.AbstractCell;
-import org.gwt.advanced.client.ui.widget.cell.GridCell;
-import org.gwt.advanced.client.ui.*;
-import org.gwt.advanced.client.datamodel.*;
-import org.gwt.advanced.client.util.ThemeHelper;
-import com.google.gwt.user.client.ui.*;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+import org.gwt.advanced.client.datamodel.*;
+import org.gwt.advanced.client.ui.EditCellListener;
+import org.gwt.advanced.client.ui.GridListenerAdapter;
+import org.gwt.advanced.client.ui.GridPanelFactory;
+import org.gwt.advanced.client.ui.SelectRowListener;
+import org.gwt.advanced.client.ui.widget.*;
+import org.gwt.advanced.client.ui.widget.cell.*;
+import org.gwt.advanced.client.util.ThemeHelper;
 
 import java.util.Date;
 
@@ -145,7 +148,7 @@ public class Sample {
     }
 
     public static void sample7() {
-        Editable model = new HierarchicalGridDataModel(null);
+        Editable hierarchicalModel = new HierarchicalGridDataModel(null);
 
         // create a new grid panel
         GridPanel panel = new GridPanel();
@@ -154,7 +157,7 @@ public class Sample {
         HierarchicalGrid grid = (HierarchicalGrid) panel.createEditableGrid (
             new String[]{"Department", "Number of Employees"},
             new Class[]{LabelCell.class, IntegerCell.class},
-            model
+            hierarchicalModel
         );
 
         // add a grid panel factory to the second column
@@ -174,6 +177,8 @@ public class Sample {
 
         // display all
         panel.display();
+
+        RootPanel.get().add(panel);
     }
 
     public static void sample8() {
@@ -194,12 +199,16 @@ public class Sample {
 
         GridPanel masterPanel = new GridPanel();
         panel.addGridPanel(masterPanel, null, "Departments");
+
         // initialize the master grid here
+
         masterPanel.display();
 
         GridPanel detailPanel = new GridPanel();
         panel.addGridPanel(detailPanel, masterPanel, "Employees");
+
         // initialize the detail grid here
+
         detailPanel.display();
 
         // apply styles
@@ -225,6 +234,119 @@ public class Sample {
 
         // diaplay a name of the current theme again
         Window.alert("Current theme is " + helper.getThemeName());
+    }
+
+    public static void sample12() {
+        Editable model = new EditableGridDataModel(null);
+
+        // create a new grid panel
+        GridPanel panel = new GridPanel();
+
+        // create a new editable grid and put it into the panel
+        EditableGrid grid = panel.createEditableGrid (
+            new String[]{"First Name", "Surname"},
+            new Class[]{LabelCell.class, LabelCell.class},
+            model
+        );
+
+        // display all
+        panel.display();
+
+        RootPanel.get().add(panel);
+    }
+
+    public static void sample13() {
+        //create a new model and add one root item
+        TreeGridDataModel model = new TreeGridDataModel(new Object[][]{new String[]{"President"}});
+        model.setAscending(false);
+        model.setPageSize(3);
+
+        //create second level items
+        TreeGridRow president = (TreeGridRow) model.getRow(0);
+        president.setExpanded(true);
+        president.setPageSize(3);
+        president.setPagerEnabled(true);
+        model.addRow(president, new String[]{"Financial Department Director"});
+        model.addRow(president, new String[]{"Marketing Department Director"});
+        model.addRow(president, new String[]{"Chief Security Officer"});
+        model.addRow(president, new String[]{"Development Department Director"});
+
+        //create third level items for the first department
+        TreeGridRow financialDirector = model.getRow(president, 0);
+        model.addRow(financialDirector, new String[]{"Accountant"});
+        model.addRow(financialDirector, new String[]{"Financial Manager"});
+
+        //create third level items for the second department
+        TreeGridRow marketingDirector = model.getRow(president, 0);
+        model.addRow(marketingDirector, new String[]{"Brand Manager"});
+        model.addRow(marketingDirector, new String[]{"Sales manager"});
+        model.addRow(marketingDirector, new String[]{"Promouter"});
+
+        //create third level items for the last department and configure paging
+        TreeGridRow developmentDirector = model.getRow(president, 0);
+        president.setPageSize(3);
+        president.setPagerEnabled(true);
+        model.addRow(marketingDirector, new String[]{"Database Developer"});
+        model.addRow(marketingDirector, new String[]{"UI Developer"});
+        model.addRow(marketingDirector, new String[]{"Support Engeneer"});
+        model.addRow(marketingDirector, new String[]{"Tester"});
+
+        //create a grid panel
+        GridPanel panel = new GridPanel();
+
+        //create and put the tree grid in the panel
+        panel.createEditableGrid(new String[]{"Posts"}, new Class[]{TextBoxCell.class}, model);
+
+        //prepare the grid for diplaying
+        panel.display();
+
+        RootPanel.get().add(panel);
+    }
+
+    public static void sample14() {
+        SimpleGrid grid = new SimpleGrid();
+
+        // create headers and put them in the thead tag
+        grid.setHeaderWidget(0, new Label("First Name"));
+        grid.setHeaderWidget(1, new Label("Surname"));
+
+        // enable verticall scrolling
+        grid.enableVerticalScrolling(true);
+
+        //set column widths in pixels
+        grid.setColumnWidth(0, 200);
+        grid.setColumnWidth(0, 100);
+    }
+
+    public static void sample15() {
+        //create the model and callback handler
+        SuggestionBoxDataModel model = new SuggestionBoxDataModel(new ListCallbackHandler(){
+            public void fill(ListDataModel model) {
+                if ("John".equals(((SuggestionBoxDataModel)model).getExpression())) {
+                    //remove old values
+                    model.clear();
+
+                    //add Johns
+                    model.add("john1", "John Doe");
+                    model.add("john2", "John Parkinson");
+                    model.add("john3", "John Todd");  
+                } else {
+                    //remove old values
+                    model.clear();
+
+                    //add default item
+                    model.add("", "Nobody");
+                }
+            }
+        });
+
+        //initilize the suggestion box
+        SuggestionBox box = new SuggestionBox();
+        box.setModel(model);
+        box.setMaxLength(3);
+
+        //display the box
+        box.display();
     }
 
     public static void quickstart() {
