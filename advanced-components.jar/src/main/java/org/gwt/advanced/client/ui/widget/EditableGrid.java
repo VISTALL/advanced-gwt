@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,18 @@ package org.gwt.advanced.client.ui.widget;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwt.advanced.client.datamodel.DataModelCallbackHandler;
-import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.datamodel.GridDataModel;
-import org.gwt.advanced.client.datamodel.LazyLoadable;
-import org.gwt.advanced.client.ui.*;
-import org.gwt.advanced.client.ui.widget.cell.*;
+import org.gwt.advanced.client.datamodel.*;
+import org.gwt.advanced.client.ui.AdvancedWidget;
+import org.gwt.advanced.client.ui.EditCellListener;
+import org.gwt.advanced.client.ui.GridDecorator;
+import org.gwt.advanced.client.ui.GridRenderer;
+import org.gwt.advanced.client.ui.GridRowDrawCallbackHandler;
+import org.gwt.advanced.client.ui.SelectRowListener;
+import org.gwt.advanced.client.ui.widget.cell.DefaultCellComparator;
+import org.gwt.advanced.client.ui.widget.cell.DefaultGridCellFactory;
+import org.gwt.advanced.client.ui.widget.cell.GridCell;
+import org.gwt.advanced.client.ui.widget.cell.GridCellFactory;
+import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
 
 import java.util.*;
 
@@ -95,10 +101,6 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * a callback handler for the row drawing events
      */
     private GridRowDrawCallbackHandler rowDrawHandler;
-    /**
-     * a flag meaning whether the grid has resizable columns
-     */
-    private boolean columnResizingAllowed = true;
     /**
      * a current column number
      */
@@ -342,24 +344,6 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      */
     public int getCurrentRow () {
         return currentRow;
-    }
-
-    /**
-     * This method returns column resizability flag.
-     *
-     * @return a flag value.
-     */
-    public boolean isColumnResizingAllowed() {
-        return columnResizingAllowed;
-    }
-
-    /**
-     * This method switches on / off column resizability.
-     *
-     * @param columnResizingAllowed is a flag value.
-     */
-    public void setColumnResizingAllowed(boolean columnResizingAllowed) {
-        this.columnResizingAllowed = columnResizingAllowed;
     }
 
     /**
@@ -607,6 +591,59 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      */
     public void setDefaultSelectedRow(int defaultSelectedRow) {
         this.defaultSelectedRow = defaultSelectedRow;
+    }
+
+    /**
+     * Gets a grid row specified by the index.
+     *
+     * @param index is an index of the row.
+     * @return a grid row instance.
+     */
+    public GridRow getGridRow(int index) {
+        if (getModel().getRows().length > index)
+            return getModel().getRow(index);
+        else
+            return null;
+    }
+
+    /**
+     * Gets a list of grid rows currently loaded into the model.
+     *
+     * @return a list of grid rows.
+     */
+    public GridRow[] getGridRows() {
+        return getModel().getRows();
+    }
+
+    /**
+     * Gets a grid row column specified by the index.
+     *
+     * @param index is a column number.
+     * @return a grid column instance.
+     */
+    public GridColumn getGridColumn(int index) {
+        if (getModel().getColumns().length > index)
+            return getModel().getGridColumn(index);
+        else
+            return null;
+    }
+
+    public GridColumn getGridColumn(String name) {
+        List names = Arrays.asList(getModel().getColumnNames());
+        int index = names.indexOf(name);
+        if (index != -1)
+            return getModel().getGridColumn(index);
+        else
+            return null;
+    }
+
+    /**
+     * gets a list of grid columns currently exisiting in the model (including invisible ones).
+     *
+     * @return a list of grid columns.
+     */
+    public GridColumn[] getGridColumns() {
+        return getModel().getColumns();
     }
 
     /**

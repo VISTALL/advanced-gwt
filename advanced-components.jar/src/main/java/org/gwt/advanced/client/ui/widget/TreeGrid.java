@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,20 @@
  */
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.user.client.ui.Widget;
+import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
-import org.gwt.advanced.client.ui.widget.cell.*;
-import org.gwt.advanced.client.datamodel.*;
+import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
+import org.gwt.advanced.client.ui.widget.cell.GridCell;
+import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
+import org.gwt.advanced.client.ui.widget.cell.TreeCell;
+import org.gwt.advanced.client.ui.widget.cell.TreeCellFactory;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This class is a tree grid widget implentation that is able to display composite data models
@@ -104,6 +107,37 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         if (widget instanceof ExpandableCell)
             widget = (Widget) ((ExpandableCell) widget).getValue();
         return widget;
+    }
+
+    /**
+     * Gets a tree grid row by parent and child row indexes.
+     *
+     * @param parentIndex is a parent row index.
+     * @param rowIndex is a row index.
+     * @return a tree grid row instance.
+     */
+    public TreeGridRow getGridRow(int parentIndex, int rowIndex) {
+        if (getModel() instanceof Composite) {
+            TreeGridRow parent = (TreeGridRow) getGridRow(parentIndex);
+            if (parent != null && getGridRows(parentIndex).length > rowIndex)
+                return ((Composite)getModel()).getRow(parent, rowIndex);
+        }
+        return null;
+    }
+
+    /**
+     * Gets a list of tree grid rows by the parent index.
+     *
+     * @param parentIndex is a parent row index.
+     * @return a list of tree grid rows.
+     */
+    public TreeGridRow[] getGridRows(int parentIndex) {
+        if (getModel() instanceof Composite) {
+            TreeGridRow parent = (TreeGridRow) getGridRow(parentIndex);
+            if (parent != null)
+                return ((Composite)getModel()).getRows(parent);
+        }
+        return new TreeGridRow[0];
     }
 
     /** {@inheritDoc} */

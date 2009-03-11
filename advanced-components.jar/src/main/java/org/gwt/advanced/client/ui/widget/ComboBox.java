@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,21 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.user.client.ui.ChangeListenerCollection;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.ClickListenerCollection;
+import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.FocusListenerCollection;
+import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.KeyboardListenerCollection;
+import com.google.gwt.user.client.ui.SourcesChangeEvents;
+import com.google.gwt.user.client.ui.SourcesClickEvents;
+import com.google.gwt.user.client.ui.SourcesFocusEvents;
+import com.google.gwt.user.client.ui.SourcesKeyboardEvents;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.ui.widget.combo.DefaultListItemFactory;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;

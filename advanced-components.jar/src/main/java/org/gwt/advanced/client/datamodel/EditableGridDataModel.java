@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,12 @@
 
 package org.gwt.advanced.client.datamodel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This is a model for editable grids.<p>

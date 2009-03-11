@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,12 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.ChangeListenerCollection;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.CalendarListener;
 
 import java.util.Date;
@@ -42,6 +47,12 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
     private Date date;
     /** time visibility flag */
     private boolean timeVisible = false;
+
+    /**
+     * Creates an instance of this class and does nothing else.
+     */
+    public DatePicker() {
+    }
 
     /**
      * Creates an instance of this class.
@@ -92,7 +103,16 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
     public Date getDate() {
         return date;
     }
-    
+
+    /**
+     * Sets a date for this date picker.
+     *
+     * @param date is a date to set.
+     */
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     /** {@inheritDoc} */
     public void display() {
         super.display();
@@ -105,7 +125,10 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
      * @return textual representation.
      */
     public String getTextualDate() {
-        return getFormat().format(getDate());
+        if (getDate() != null)
+            return getFormat().format(getDate());
+        else
+            return "";
     }
 
     /** {@inheritDoc} */
@@ -150,7 +173,10 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
     protected Calendar getCalendar () {
         if (calendar == null) {
             calendar = new Calendar();
-            calendar.setSelectedDate(getDate());
+            if (getDate() != null)
+                calendar.setSelectedDate(getDate());
+            else
+                calendar.setSelectedDate(new Date());
         }
 
         return calendar;

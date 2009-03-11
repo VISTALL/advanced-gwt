@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.gwt.advanced.client.datamodel;
 
 /**
  * This interface describes a list data model.<p/> Each list data model should implement it.
- * The interface provides sevarl methods for list items manipulation. Each list item is a pair of
+ * The interface provides sevaral methods for list items manipulation. Each list item is a pair of
  * unique <code>String</code> ID and an object to be displayed in the list.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>

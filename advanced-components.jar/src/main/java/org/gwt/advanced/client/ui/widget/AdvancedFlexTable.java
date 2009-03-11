@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
@@ -27,8 +27,8 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This is an advanced flex table.<p/>
@@ -49,6 +49,27 @@ public class AdvancedFlexTable extends FlexTable {
     /** a scrollable flag value */
     private boolean scrollable;
 
+    /**
+     * Creates an instance of this class.
+     */
+    public AdvancedFlexTable() {
+    }
+
+    /**
+     * Creates an instance of this class and initializes the THEAD element if the flag is <code>true</code>.<p/>
+     * Otheriwse initialization happens only if the first header widget is added.
+     *
+     * @param initializeThead is an initilization flag.
+     */
+    public AdvancedFlexTable(boolean initializeThead) {
+        if (initializeThead) {
+            tHeadElement = DOM.createTHead();
+            tHeadElement = DOM.createElement("thead");
+            DOM.insertChild(getElement(), getTHeadElement(), 0);
+            Element tr = DOM.createTR();
+            DOM.insertChild(getTHeadElement(), tr, 0);
+        }
+    }
 
     /**
      * This method sets a widget for the specified header cell.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.Editable;
@@ -31,7 +31,11 @@ import org.gwt.advanced.client.ui.widget.cell.ExpandableCellFactory;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
 import org.gwt.advanced.client.util.GWTUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This is a hierarchical grid implementation.
@@ -108,7 +112,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      * @param cell is an expanded / collapsed cell.
      */
     public void fireExpandCell (ExpandableCell cell) {
-        setCurrentRow(cell.getRow());
+        setCurrentCell(cell.getRow(), cell.getColumn());
         if (cell.isExpanded()) {
             expandCell(cell.getRow(), cell.getColumn());
         } else {
@@ -176,14 +180,28 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
 
     /** {@inheritDoc} */
     public void setColumnWidth(int column, int size) {
-        super.setColumnWidth(column, size);
-        for (int i = 0; i < getRowCount(); i++) {
-            if (!SUBGRID_ROW_STYLE.equals(getRowFormatter().getStyleName(i))) {
-                GridPanel panel = getGridPanel(i, column);
-                if (panel != null) {
-                  DOM.setStyleAttribute(panel.getGrid().getElement(), "display", "none");
-                  panel.resize();
-                  DOM.setStyleAttribute(panel.getGrid().getElement(), "display", "");
+        HTMLTable.RowFormatter rowFormatter = getRowFormatter();
+        
+        if (isResizable()) {
+            Element th = getThElement(column);
+            DOM.setStyleAttribute(th, "width", size + "px");
+            if (getRowCount() > 0) {
+                HTMLTable.CellFormatter formatter = getBodyTable().getCellFormatter();
+                Element td = formatter.getElement(0, column);
+                DOM.setStyleAttribute(td, "width", size + "px");
+
+                for (int i = 1; !GWTUtil.isIE() && i < getRowCount(); i++) {
+                    if (!SUBGRID_ROW_STYLE.equals(rowFormatter.getStyleName(i)) || column < getCellCount(i)) {
+                        td = formatter.getElement(i, column);
+                        DOM.setStyleAttribute(td, "width", size + "px");
+                    }
+                }
+            }
+            for (int i = 0; i < getRowCount(); i++) {
+                if (!SUBGRID_ROW_STYLE.equals(rowFormatter.getStyleName(i))) {
+                    GridPanel panel = getGridPanel(i, column);
+                    if (panel != null)
+                      panel.resize();
                 }
             }
         }
@@ -231,7 +249,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
             GridPanel panel = getGridPanel(parentRow, parentColumn);
             Element td = getCellFormatter().getElement(getGridRowNumber(parentRow, parentColumn), parentColumn);
             GWTUtil.adjustWidgetSize(panel, td, false);
-            panel.resize();
+            panel.getGrid().resize();
         }
     }
 

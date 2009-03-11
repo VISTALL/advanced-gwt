@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,22 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FocusListener;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.Pageable;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.PagerListener;
-import org.gwt.advanced.client.util.ThemeHelper;
+import org.gwt.advanced.client.ui.resources.PagerConstants;
+import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
 
 /**
  * This is pager widget implementation.<p>
@@ -32,6 +42,8 @@ import org.gwt.advanced.client.util.ThemeHelper;
  * @since 1.0.0
  */
 public class Pager extends SimplePanel implements AdvancedWidget {
+    /** widget resource bundle */
+    private static final PagerConstants RESOURCE = (PagerConstants) GWT.create(PagerConstants.class);
     /** integer number pattern */
     protected static final String INTEGER_PATTERN = "([+-]?[0-9]+)|([0-9]*)";
     /** this flag defines whether the arrows must be displayed */
@@ -45,9 +57,9 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     /** right arrow click listener */
     private ClickListener rightClickListener;
     /** left arrow image */
-    private Image left = new Image();
+    private Image left = new ThemeImage();
     /** right arrow image */
-    private Image right = new Image();
+    private Image right = new ThemeImage();
     /** a grid panel */
     private GridPanel gridPanel;
     /** a page number box */
@@ -56,6 +68,8 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     private Image submit;
     /** a flag that means whether the page number box must be displayed */
     private boolean pageNumberBoxDisplayed;
+    /** a flag that means whether the total page count label must be displayed */
+    private boolean totalCountDisplayed;
 
     /**
      * Creates an instance of this class and initialie core elements.
@@ -100,8 +114,9 @@ public class Pager extends SimplePanel implements AdvancedWidget {
         this.arrowsVisible = arrowsVisible;
     }
 
-    /**                        
+    /**
      * Invoke this method to displayActive the pager.
+     * @see org.gwt.advanced.client.ui.AdvancedWidget#display()
      */
     public void display() {
         setStyleName("advanced-Pager");
@@ -116,18 +131,8 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
             addArrows();
             addLinks();
-
-            if (isPageNumberBoxDisplayed()) {
-                int column = table.getCellCount(0);
-                table.setWidget(0, column, getPageNumber());
-                getPageNumber().setText(String.valueOf(getModel().getCurrentPageNumber() + 1));
-                column = table.getCellCount(0);
-                table.setWidget(0, column, getSubmit());
-            }
-
-            int column = table.getCellCount(0);
-            table.setText(0, column, "");
-            table.getColumnFormatter().setWidth(column, "100%");
+            addPageNumberBox();
+            addTotalCountLabel();
         }
     }
 
@@ -170,6 +175,25 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     }
 
     /**
+     * Method isTotalCountDisplayed returns the totalCountDisplayed of this Pager object.
+     *
+     * @return the totalCountDisplayed (type boolean) of this Pager object.
+     */
+    public boolean isTotalCountDisplayed() {
+        return totalCountDisplayed;
+    }
+
+    /**
+     * Method setTotalCountDisplayed sets the totalCountDisplayed of this Pager object.
+     *
+     * @param totalCountDisplayed the totalCountDisplayed of this Pager object.
+     *
+     */
+    public void setTotalCountDisplayed(boolean totalCountDisplayed) {
+        this.totalCountDisplayed = totalCountDisplayed;
+    }
+
+    /**
      * Getter for property 'pageNumber'.
      *
      * @return Value for property 'pageNumber'.
@@ -189,20 +213,66 @@ public class Pager extends SimplePanel implements AdvancedWidget {
      */
     public Image getSubmit() {
         if (submit == null) {
-            submit = new Image();
-            DOM.setElementAttribute(
-                submit.getElement(), "src",
-                ThemeHelper.getInstance().getFullImageName("arrow_right_16.gif")
-            );
+            submit = new ThemeImage();
+            submit.setUrl("right.gif");
+            submit.setTitle(RESOURCE.getJumpTo());
+        }
+        return submit;
+    }
+
+    /**
+     * This method adds a total page count label into the pager if the {@link #isTotalCountDisplayed()} method
+     * returns <code>true</code>.<p/>
+     * Otherwise it displays an empty cell.
+     */
+    protected void addTotalCountLabel() {
+        int column = table.getCellCount(0);
+        if (isTotalCountDisplayed()) {
+            Label label = new Label();
+            label.setText(RESOURCE.getTotalCount(String.valueOf(getModel().getTotalPagesNumber())));
+            label.setStyleName("label");
+            table.setWidget(0, column, label);
+        } else {
+            table.setText(0, column, "");
+        }
+        table.getCellFormatter().setWidth(0, column, "100%");
+    }
+
+    /**
+     * This method adds a page number box and the submit button if the {@link #isPageNumberBoxDisplayed()} method
+     * returns <code>true</code>.<p/>
+     * Otherwise it does nothing.
+     */
+    protected void addPageNumberBox() {
+        if (isPageNumberBoxDisplayed()) {
+            int column = table.getCellCount(0);
+
+            ToggleButton button = new ToggleButton(getSubmit());
             final Pager pager = this;
-            submit.addClickListener(new ClickListener(){
+            button.addClickListener(new ClickListener(){
+                /** @see com.google.gwt.user.client.ui.ClickListener#onClick(Widget) */
                 public void onClick(Widget sender) {
                     setCurrentPageNumber(Integer.valueOf(getPageNumber().getText()).intValue() - 1);
                     getGridPanel().getMediator().firePageChangeEvent(pager, getModel().getCurrentPageNumber());
+                    ((ToggleButton)sender).setDown(false);
                 }
             });
+            button.setStyleName("button");
+
+            SimplePanel panel = new SimplePanel();
+            panel.setWidget(getPageNumber());
+            panel.setStyleName("page-number");
+
+            Label label = new Label();
+            label.setStyleName("label");
+            label.setText(RESOURCE.getDisplayPage());
+            table.setWidget(0, column, label);
+            column = table.getCellCount(0);
+            table.setWidget(0, column, panel);
+            getPageNumber().setText(String.valueOf(getModel().getCurrentPageNumber() + 1));
+            column = table.getCellCount(0);
+            table.setWidget(0, column, button);
         }
-        return submit;
     }
 
     /**
@@ -228,6 +298,7 @@ public class Pager extends SimplePanel implements AdvancedWidget {
         if (leftClickListener == null) {
             final Pager pager = this;
             leftClickListener = new ClickListener() {
+                /** @see com.google.gwt.user.client.ui.ClickListener#onClick(Widget) */
                 public void onClick (Widget sender) {
                     Pageable pageable = getModel();
 
@@ -238,6 +309,7 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
                     setCurrentPageNumber(startPage);
                     getGridPanel().getMediator().firePageChangeEvent(pager, startPage);
+                    ((ToggleButton)sender).setDown(false);
                 }
             };
         }
@@ -254,6 +326,7 @@ public class Pager extends SimplePanel implements AdvancedWidget {
         if (rightClickListener == null) {
             final Pager pager = this;
             rightClickListener = new ClickListener() {
+                /** @see com.google.gwt.user.client.ui.ClickListener#onClick(Widget) */
                 public void onClick (Widget sender) {
                     Pageable pageable = getModel();
 
@@ -266,6 +339,7 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
                     setCurrentPageNumber(startPage);
                     getGridPanel().getMediator().firePageChangeEvent(pager, startPage);
+                    ((ToggleButton)sender).setDown(false);
                 }
             };
         }
@@ -286,6 +360,7 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
                 final int page = i;
                 hyperlink.addClickListener(new ClickListener() {
+                    /** @see com.google.gwt.user.client.ui.ClickListener#onClick(Widget) */
                     public void onClick (Widget sender) {
                         setCurrentPageNumber(page);
                         getGridPanel().getMediator().firePageChangeEvent(pager, page);
@@ -310,35 +385,29 @@ public class Pager extends SimplePanel implements AdvancedWidget {
         table.setText(0, pages, "");
 
         if (isArrowsVisible()) {
-            table.setWidget(0, 0, left);
-            table.setWidget(0, pages, right);
+            ToggleButton leftButton = new ToggleButton(left);
+            leftButton.setStyleName("button");
+            left.setTitle(RESOURCE.getPreviousPage());
+            table.setWidget(0, 0, leftButton);
+            ToggleButton rightButton = new ToggleButton(right);
+            rightButton.setStyleName("button");
+            right.setTitle(RESOURCE.getNextPage());
+            table.setWidget(0, pages, rightButton);
 
-            left.removeClickListener(getLeftClickListener());
             if (pageable.getCurrentPageNumber() >= pageable.getDisplayedPages()) {
-                DOM.setElementAttribute(
-                    left.getElement(), "src",
-                    ThemeHelper.getInstance().getFullImageName("arrow_left_16.gif")
-                );
-                left.addClickListener(getLeftClickListener());
+                left.setUrl("left.gif");
+                leftButton.addClickListener(getLeftClickListener());
             } else {
-                DOM.setElementAttribute(
-                    left.getElement(), "src",
-                    ThemeHelper.getInstance().getFullImageName("arrow_left_16_d.gif")
-                );
+                left.setUrl("left-disabled.gif");
+                leftButton.setEnabled(false);
             }
 
-            right.removeClickListener(getRightClickListener());
             if (pageable.getStartPage() + pageable.getDisplayedPages() <= pageable.getTotalPagesNumber()) {
-                DOM.setElementAttribute(
-                    right.getElement(), "src",
-                    ThemeHelper.getInstance().getFullImageName("arrow_right_16.gif")
-                );
-                right.addClickListener(getRightClickListener());
+                right.setUrl("right.gif");
+                rightButton.addClickListener(getRightClickListener());
             } else {
-                DOM.setElementAttribute(
-                    right.getElement(), "src",
-                    ThemeHelper.getInstance().getFullImageName("arrow_right_16_d.gif")
-                );
+                right.setUrl("right-disabled.gif");
+                rightButton.setEnabled(false);
             }
         }
     }

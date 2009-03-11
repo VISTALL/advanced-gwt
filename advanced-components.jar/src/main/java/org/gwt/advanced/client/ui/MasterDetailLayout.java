@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.gwt.advanced.client.ui.widget.GridPanel;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.1.0
  */
-public interface MasterDetailLayout {
+public interface MasterDetailLayout extends Resizable {
     /**
      * This method adds a grid panel into the master-detail panel automatically choosing a cell to put it in.
      *

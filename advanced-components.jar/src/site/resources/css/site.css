@@ -167,6 +167,7 @@ dt {
 #breadcrumbs a {
   color: white;
   font-weight: bold;
+  vertical-align: bottom;
 }
 
 #breadcrumbs a:hover {
@@ -200,6 +201,11 @@ dt {
 
 .poweredBy {
   text-align: center;
+}
+
+.navigator {
+  text-align: center;
+  padding-top: 10px;
 }
 
 

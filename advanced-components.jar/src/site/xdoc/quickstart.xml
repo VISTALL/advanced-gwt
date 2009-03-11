@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <properties>
-        <title>Advanced GWT Components - Quick Start</title>
+        <title>Quick Start</title>
     </properties>
     <body>
-        <section name="Step by Step Guide">
+        <section name="Quick Start Guide">
             <p>
                 This instruction explains minimal set of steps you should do to start working with the library. For more
                 detailed instructions and how-to dcoumentation please visit the <a href="faq.html">FAQ</a> page.

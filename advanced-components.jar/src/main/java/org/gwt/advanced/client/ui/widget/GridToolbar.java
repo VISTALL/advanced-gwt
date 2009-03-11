@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,14 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.AdvancedWidget;
-import org.gwt.advanced.client.util.ThemeHelper;
+import org.gwt.advanced.client.ui.resources.GridToolbarConstants;
+import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
 
 /**
  * This is a grid toolbar widget.<p>
@@ -29,6 +34,8 @@ import org.gwt.advanced.client.util.ThemeHelper;
  * @since 1.0.0
  */
 public class GridToolbar extends FlowPanel implements AdvancedWidget {
+    /** toolbar resource bundle */
+    private static final GridToolbarConstants RESOURCE = (GridToolbarConstants) GWT.create(GridToolbarConstants.class);
     /** a flag meaning whether the Add button should be displayed */
     private boolean addButtonVisible = true;
     /** a flag meaning whether the Remove button should be displayed */
@@ -60,51 +67,74 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
             remove(getWidgetCount() - 1);
 
         if (isAddButtonVisible()) {
-            addButton("document_new_lined_16.gif", new ClickListener(){
-                public void onClick (Widget sender) {
-                    getGridPanel().getMediator().fireAddRowEvent();
+            addButton(
+                "new.gif", RESOURCE.getAddNew(),
+                new ClickListener(){
+                    public void onClick (Widget sender) {
+                        getGridPanel().getMediator().fireAddRowEvent();
+                        ((ToggleButton)sender).setDown(false);
+                    }
                 }
-            });
+            );
         }
 
         if (isSaveButtonVisible()) {
-            addButton("save_16.gif", new ClickListener(){
-                public void onClick (Widget sender) {
-                    getGridPanel().getMediator().fireSaveEvent();
+            addButton(
+                "save.gif", RESOURCE.getSaveChanges(),
+                new ClickListener(){
+                    public void onClick (Widget sender) {
+                        getGridPanel().getMediator().fireSaveEvent();
+                        ((ToggleButton)sender).setDown(false);
+                    }
                 }
-            });
+            );
         }
 
         if (isRemoveButtonVisible()) {
-            addButton("stop_16.gif", new ClickListener(){
-                public void onClick (Widget sender) {
-                    getGridPanel().getMediator().fireRemoveRowEvent();
-                }
-            });
+            addButton(
+                "delete.gif", RESOURCE.getRemoveRow(),
+                new ClickListener(){
+                    public void onClick (Widget sender) {
+                        getGridPanel().getMediator().fireRemoveRowEvent();
+                        ((ToggleButton)sender).setDown(false);
+                    }
+              }
+            );
         }
         
         if (isClearButtonVisible()) {
-            addButton("delete_16.gif", new ClickListener(){
-                public void onClick (Widget sender) {
-                    getGridPanel().getMediator().fireClearEvent();
+            addButton(
+                "delete-all.gif", RESOURCE.getRemoveAll(),
+                new ClickListener(){
+                    public void onClick (Widget sender) {
+                        getGridPanel().getMediator().fireClearEvent();
+                        ((ToggleButton)sender).setDown(false);
+                    }
                 }
-            });
+            );
         }
 
         if (isMoveLeftButtonVisible()) {
-            addButton("arrow-left.gif", new ClickListener(){
-                public void onClick (Widget sender) {
-                    getGridPanel().getMediator().fireMoveLeftEvent();
+            addButton(
+              "level-up.gif", RESOURCE.getLevelUp(),
+                new ClickListener(){
+                    public void onClick (Widget sender) {
+                        getGridPanel().getMediator().fireMoveLeftEvent();
+                        ((ToggleButton)sender).setDown(false);
+                    }
                 }
-            });
+            );
         }
 
         if (isMoveRightButtonVisible()) {
-            addButton("arrow-right.gif", new ClickListener(){
-                public void onClick (Widget sender) {
-                    getGridPanel().getMediator().fireMoveRightEvent();
+            addButton(
+                "level-down.gif", RESOURCE.getLevelDown(), 
+                new ClickListener(){
+                    public void onClick (Widget sender) {
+                        getGridPanel().getMediator().fireMoveRightEvent();
+                    }
                 }
-            });
+            );
         }
     }
 
@@ -217,20 +247,27 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
     }
 
     /**
-     * This method adds an image button into the toolbar.
+     * This method adds an image button into the toolbar and doesn't specify hint text.
      *
      * @param image is an image of the button.
      * @param listener is a listener to be invoked on button click.
      */
     protected void addButton(String image, ClickListener listener) {
-        Image separator = new Image("advanced/images/single.gif");
-        ThemeHelper helper = ThemeHelper.getInstance();
-        separator.setStyleName("advanced-GridToolbar-button-separator");
-        add(separator);
+      addButton(image, null, listener);
+    }
 
-        ToggleButton button = new ToggleButton(new Image(helper.getFullImageName(image)));
+    /**
+     * This method adds an image button into the toolbar.
+     *
+     * @param image is an image of the button.
+     * @param hint is a popup hint of the button.
+     * @param listener is a listener to be invoked on button click.
+     */
+    protected void addButton(String image, String hint, ClickListener listener) {
+        ToggleButton button = new ToggleButton(new ThemeImage(image));
         button.setStyleName("advanced-GridToolbar-button");
         button.addClickListener(listener);
+        button.setTitle(hint);
         add(button);
     }
 

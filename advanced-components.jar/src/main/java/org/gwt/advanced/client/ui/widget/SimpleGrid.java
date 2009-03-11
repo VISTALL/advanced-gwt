@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
+import org.gwt.advanced.client.ui.Resizable;
+import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.List;
-
-import org.gwt.advanced.client.util.GWTUtil;
 
 /**
  * This is a super class for all advanced grids.<p/>
@@ -30,7 +30,7 @@ import org.gwt.advanced.client.util.GWTUtil;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.5
  */
-public class SimpleGrid extends AdvancedFlexTable {
+public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     /** header container */
     private AdvancedFlexTable headerTable;
     /** body container */
@@ -40,9 +40,13 @@ public class SimpleGrid extends AdvancedFlexTable {
     /** flag meaning that the grid has already benen initialized */
     private boolean initialized;
     /**
-     * a falg that means whether the grid columns are resizable
+     * a flag that means whether the grid columns are resizable
      */
-    protected boolean resizable;
+    private boolean resizable;
+    /**
+     * a flag meaning whether the grid has resizable columns
+     */
+    private boolean columnResizingAllowed = true;
 
     /** Constructs a new SimpleGrid. */
     public SimpleGrid() {
@@ -66,8 +70,11 @@ public class SimpleGrid extends AdvancedFlexTable {
         DOM.setStyleAttribute(td, "margin", "0");
         getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP);
         getHeaderTable().setStyleName("advanced-Grid");
+        getHeaderTable().setCellSpacing(0);
+        getHeaderTable().setCellPadding(0);
 
-        super.setWidget(1, 0, getBodyTable());
+        super.setWidget(1, 0, getScrollPanel());
+        ((ScrollPanel)getScrollPanel()).setWidget(getBodyTable());
         tr = getRowFormatter().getElement(1);
         DOM.setStyleAttribute(tr, "border", "0");
         DOM.setStyleAttribute(tr, "padding", "0");
@@ -78,13 +85,24 @@ public class SimpleGrid extends AdvancedFlexTable {
         DOM.setStyleAttribute(td, "margin", "0");
         getCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_TOP);
         getBodyTable().setStyleName("advanced-Grid");
+        getBodyTable().setCellSpacing(0);
+        getBodyTable().setCellPadding(0);
 
         DOM.setStyleAttribute(getElement(), "border", "0");
         DOM.setStyleAttribute(getElement(), "padding", "0");
         DOM.setStyleAttribute(getElement(), "margin", "0");
         DOM.setStyleAttribute(getElement(), "borderCollapse", "collapse");
-        
+
+        setCellSpacing(0);
+        setCellPadding(0);
         setResizable(resizable);
+
+        if (isResizable()) {
+            Element thead = getTHeadElement();
+            DOM.sinkEvents(thead, Event.MOUSEEVENTS);
+            DOM.setEventListener(thead, new ResizeListener(this));
+        }
+
         this.initialized  = true;
     }
 
@@ -93,14 +111,17 @@ public class SimpleGrid extends AdvancedFlexTable {
      */
     public void resize() {
         Element parent = DOM.getParent(getElement());
-        if (parent == null || !isResizable())
+        if (parent == null || !isResizable() || !isAttached())
             return;
 
-        if (isScrollable()) {
-            GWTUtil.adjustWidgetSize(this, parent, true);
-            GWTUtil.adjustWidgetSize(getScrollPanel(), getBodyElement(), true);
-            parent = getScrollPanel().getElement();
-        } 
+        GWTUtil.adjustWidgetSize(this, parent, false);
+        getScrollPanel().remove(getBodyTable());
+        GWTUtil.adjustWidgetSize(getScrollPanel(), DOM.getParent(getScrollPanel().getElement()), isScrollable());
+        getScrollPanel().add(getBodyTable());
+        parent = getScrollPanel().getElement();
+
+        GWTUtil.adjustWidgetSize(getHeaderTable(), DOM.getParent(getHeaderTable().getElement()), false);
+        GWTUtil.adjustWidgetSize(getBodyTable(), parent, false);
 
         if (getBodyTable().getRowCount() > 0) {
             int parentWidth = DOM.getElementPropertyInt(parent, "offsetWidth");
@@ -108,15 +129,56 @@ public class SimpleGrid extends AdvancedFlexTable {
             int size = parentWidth / count;
             for (int i = 0; i < count; i++)
                 setColumnWidth(i, size);
-            if (!GWTUtil.isIE()) {
-                int widthNow = Math.max(
-                    DOM.getElementPropertyInt(getBodyTable().getElement(), "offsetWidth"),
-                    DOM.getElementPropertyInt(getHeaderTable().getElement(), "offsetWidth")
-                );
-                if (count > 0 && size * count < widthNow)
-                    setColumnWidth(count - 1, size - widthNow + size * count);
+
+            int offsetWidth = 0;
+            for (int i = 0; i < count - 1; i++) {
+                Element th = DOM.getChild(DOM.getChild(getTHeadElement(), 0), i);
+                offsetWidth += DOM.getElementPropertyInt(th, "offsetWidth");
             }
+
+            setColumnWidth(count - 1, parentWidth - offsetWidth);
         }
+    }
+
+    /**
+     * Sets header width property to the specified value.<p/>
+     * Use this method only for those grids that mustn't be auto resisable (see {@link #setResizable(boolean)}).
+     *
+     * @param width is a value of the property.
+     */
+    public void setHeaderWidth(String width) {
+        DOM.setStyleAttribute(DOM.getParent(getScrollPanel().getElement()), "width", width);
+    }
+
+    /**
+     * Sets header height property to the specified value.<p/>
+     * This method is rather rarely used. Typically you don't have to invoke it.
+     *
+     * @param height is a value of the property.
+     */
+    public void setHeaderHeight(String height) {
+        DOM.setStyleAttribute(DOM.getParent(getHeaderTable().getElement()), "height", height);
+    }
+
+    /**
+     * Sets body width property to the specified value.<p/>
+     * Use this method only for those grids that mustn't be auto resisable (see {@link #setResizable(boolean)}).
+     *
+     * @param width is a value of the property.
+     */
+    public void setBodyWidth(String width) {
+        DOM.setStyleAttribute(DOM.getParent(getScrollPanel().getElement()), "width", width);
+    }
+
+    /**
+     * Sets body height property to the specified value.<p/>
+     * This method might be very useful when you need to enebale vertical scrolling
+     * (see {@link #enableVerticalScrolling(boolean)}).
+     *
+     * @param height is a value of the property.
+     */
+    public void setBodyHeight(String height) {
+        DOM.setStyleAttribute(DOM.getParent(getScrollPanel().getElement()), "height", height);
     }
 
     /** {@inheritDoc} */
@@ -145,17 +207,18 @@ public class SimpleGrid extends AdvancedFlexTable {
 
     /** {@inheritDoc} */
     protected void prepareScrolling(boolean enabled) {
-        this.initialized = false;
-        removeCell(1, 0);
         if (enabled) {
-            setWidget(1, 0, getScrollPanel());
+            DOM.setStyleAttribute(getScrollPanel().getElement(), "overflowY", "auto");
         } else {
-            setWidget(1, 0, getBodyTable());
+            DOM.setStyleAttribute(getScrollPanel().getElement(), "overflowX", "visible");
         }
+
+        this.initialized = false;
         Element td = getCellFormatter().getElement(1, 0);
         DOM.setStyleAttribute(td, "border", "0");
         DOM.setStyleAttribute(td, "padding", "0");
         DOM.setStyleAttribute(td, "margin", "0");
+
         getCellFormatter().setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_TOP);
         this.initialized = true;
     }
@@ -442,17 +505,33 @@ public class SimpleGrid extends AdvancedFlexTable {
      *
      * @param column is a column number.
      * @param size is a size value in pixels.
-     */
+     */                                          
     public void setColumnWidth(int column, int size) {
         if (isResizable()) {
-            Element tr = DOM.getChild(getHeaderTable().getTHeadElement(), 0);
-            Element th = DOM.getChild(tr, column);
+            Element th = getThElement(column);
             DOM.setStyleAttribute(th, "width", size + "px");
             if (getRowCount() > 0) {
-                Element td = getBodyTable().getCellFormatter().getElement(0, column);
+                HTMLTable.CellFormatter formatter = getBodyTable().getCellFormatter();
+                Element td = formatter.getElement(0, column);
                 DOM.setStyleAttribute(td, "width", size + "px");
+
+                for (int i = 1; !GWTUtil.isIE() && i < getRowCount(); i++) {
+                    td = formatter.getElement(i, column);
+                    DOM.setStyleAttribute(td, "width", size + "px");
+                }
             }
         }
+    }
+
+    /**
+     * This method gets a TH element.
+     *
+     * @param column is a column number.
+     * @return an element.
+     */
+    protected Element getThElement(int column) {
+        Element tr = DOM.getChild(getHeaderTable().getTHeadElement(), 0);
+        return DOM.getChild(tr, column);
     }
 
     /**
@@ -591,7 +670,7 @@ public class SimpleGrid extends AdvancedFlexTable {
      */
     protected AdvancedFlexTable getHeaderTable() {
         if (headerTable == null)
-            headerTable = new AdvancedFlexTable();
+            headerTable = new AdvancedFlexTable(true);
         return headerTable;
     }
 
@@ -634,12 +713,296 @@ public class SimpleGrid extends AdvancedFlexTable {
     protected void makeResizable(boolean resizable) {
         if (resizable){
             DOM.setStyleAttribute(getBodyTable().getElement(), "tableLayout", "fixed");
-            DOM.setStyleAttribute(getBodyTable().getElement(), "width", "0");
             DOM.setStyleAttribute(getHeaderTable().getElement(), "tableLayout", "fixed");
-            DOM.setStyleAttribute(getHeaderTable().getElement(), "width", "0");
+            DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
         } else {
             DOM.setStyleAttribute(getBodyTable().getElement(), "tableLayout", "");
             DOM.setStyleAttribute(getHeaderTable().getElement(), "tableLayout", "");
+            DOM.setStyleAttribute(getElement(), "tableLayout", "");
+        }
+    }
+
+    /**
+     * This method returns column resizability flag.
+     *
+     * @return a flag value.
+     */
+    public boolean isColumnResizingAllowed() {
+        return isResizable() && columnResizingAllowed;
+    }
+
+    /**
+     * This method switches on / off column resizability.
+     *
+     * @param columnResizingAllowed is a flag value.
+     */
+    public void setColumnResizingAllowed(boolean columnResizingAllowed) {
+        this.columnResizingAllowed = columnResizingAllowed;
+    }
+
+    /**
+     * This listener is invoked on different column resizing events.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+     */
+    protected class ResizeListener implements EventListener {
+        /** currently selected TH element */
+        private Element th;
+        /** start mouse position */
+        private int startX;
+        /** current X position of the cursor */
+        private int currentX;
+        /** the timer that check current cursor position and resizes columns */
+        private ResizeTimer timer = new ResizeTimer(this);
+        /** link to the simple grid */
+        private SimpleGrid grid;
+
+        /**
+         * Creates an instnace of this class and saves the grid into the internal field.
+         *
+         * @param grid is a link to the owner.
+         */
+        public ResizeListener(SimpleGrid grid) {
+            this.grid = grid;
+        }
+
+        /**
+         * This method handles all mouse events related to resizing.
+         *
+         * @param event is an event.
+         */
+        public void onBrowserEvent(Event event) {
+            SimpleGrid grid = getGrid();
+
+            if (grid.isColumnResizingAllowed()) {
+                if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
+                    startResizing(event);
+                } else if (DOM.eventGetType(event) == Event.ONMOUSEUP && th != null) {
+                    stopResizing();
+                } else if (DOM.eventGetType(event) == Event.ONMOUSEOUT && th != null) {
+                    interruptResizing(event);
+                }
+            }
+            if (DOM.eventGetType(event) == Event.ONMOUSEMOVE)
+                setCursor(event);
+        }
+
+        /**
+         * Sets a cursor style.
+         *
+         * @param event is an event.
+         */
+        protected void setCursor(Event event) {
+            SimpleGrid grid = getGrid();
+            Element th = getTh(event);
+            if (this.th != null || grid.isColumnResizingAllowed() && isOverBorder(event, th)) {
+                DOM.setStyleAttribute(DOM.eventGetTarget(event), "cursor", "e-resize");
+                this.currentX = getPositionX(event);
+            } else
+                DOM.setStyleAttribute(DOM.eventGetTarget(event), "cursor", "");
+        }
+
+        /**
+         * This method interrupts resiszing.
+         *
+         * @param event is an event.
+         */
+        protected void interruptResizing(Event event) {
+            SimpleGrid grid = getGrid();
+            int positionX = getPositionX(event);
+            int positionY = getPositionY(event);
+            Element thead = grid.getTHeadElement();
+            int left = DOM.getAbsoluteLeft(thead);
+            int top = DOM.getAbsoluteTop(thead);
+            int width = getElementWidth(thead);
+            int height = getElementHeight(thead);
+
+            if (positionX < left || positionX > left + width || positionY < top || positionY > top + height) {
+                th = null;
+                timer.cancel();
+            }
+        }
+
+        /**
+         * This method normally stops resisng and changes column width.
+         */
+        protected void stopResizing() {
+            resize();
+            timer.cancel();
+            th = null;
+        }
+
+        /**
+         * Resizes selected and sibling columns.
+         */
+        protected void resize() {
+            int position = this.currentX;
+            int delta = position - startX;
+            Element tr = DOM.getParent(th);
+            int left = DOM.getAbsoluteLeft(th);
+            int width = getElementWidth(th);
+
+            Element sibling = null;
+            int sign = 0;
+            int thIndex = DOM.getChildIndex(tr, th);
+
+            if (startX <= left + 1) {
+                sign = 1;
+                sibling = DOM.getChild(tr, thIndex - 1);
+            } else if (startX >= left + width - 1) {
+                sign = -1;
+                sibling = DOM.getChild(tr, thIndex + 1);
+            }
+
+            SimpleGrid grid = getGrid();
+            int thExpectedWidth = width - sign * delta;
+            int siblingExpectedWidth = getElementWidth(sibling) + sign * delta;
+            int siblingIndex = DOM.getChildIndex(tr, sibling);
+
+            //interrupt immediately
+            if (thExpectedWidth < 3 || siblingExpectedWidth < 3) {
+                th = null;
+                return;
+            }
+
+            if (sibling != null) {
+                grid.setColumnWidth(thIndex, thExpectedWidth);
+                grid.setColumnWidth(siblingIndex, siblingExpectedWidth);
+            }
+
+            int thWidthNow = getElementWidth(th);
+            int siblingWidthNow = getElementWidth(sibling);
+
+            if (thWidthNow > thExpectedWidth)
+                grid.setColumnWidth(thIndex, 2 * thExpectedWidth - thWidthNow);
+            if (siblingWidthNow > siblingExpectedWidth)
+                grid.setColumnWidth(siblingIndex, 2 * siblingExpectedWidth - siblingWidthNow);
+            this.startX = position;
+        }
+
+        /**
+         * This method starts column resizing.
+         *
+         * @param event is an event.
+         */
+        protected void startResizing(Event event) {
+            if ("e-resize".equalsIgnoreCase(DOM.getStyleAttribute(DOM.eventGetTarget(event), "cursor"))) {
+                th = getTh(event);
+                startX = getPositionX(event);
+                currentX = startX;
+                if (!isOverBorder(event, th))
+                    th = null;
+                else
+                    timer.schedule(20);
+            }
+        }
+
+        /**
+         * Gets element width.
+         *
+         * @param element is an element
+         * @return width in pixels
+         */
+        protected int getElementWidth(Element element) {
+            return DOM.getElementPropertyInt(element, "offsetWidth");
+        }
+
+        /**
+         * Gets element height.
+         *
+         * @param element is an element
+         * @return height in pizels.
+         */
+        protected int getElementHeight(Element element) {
+            return DOM.getElementPropertyInt(element, "offsetHeight");
+        }
+
+        /**
+         * Gets mouse X position.
+         *
+         * @param event is an event.
+         * @return X position in pixels.
+         */
+        protected int getPositionY(Event event) {
+            return DOM.eventGetClientY(event);
+        }
+
+        /**
+         * Gets mouse Y position.
+         *
+         * @param event is an event.
+         * @return Y position in pixels.
+         */
+        protected int getPositionX(Event event) {
+            return DOM.eventGetClientX(event);
+        }
+
+        /**
+         * This method looks for the TH element starting from the element which produced the event.
+         *
+         * @param event is an event.
+         * @return a TH element or <code>null</code> if there is no such element.
+         */
+        protected Element getTh(Event event) {
+            Element element = DOM.eventGetTarget(event);
+            while (element != null && !DOM.getElementProperty(element, "tagName").equalsIgnoreCase("th"))
+                element = DOM.getParent(element);
+            return element;
+        }
+
+        /**
+         * This method detects whether the cursor is over the border between columns.
+         *
+         * @param event is an event.
+         * @param th is TH element.
+         * @return a result of check.
+         */
+        protected boolean isOverBorder(Event event, Element th) {
+            int position = getPositionX(event);
+            int left = DOM.getAbsoluteLeft(th);
+            int width = getElementWidth(th);
+            int index = DOM.getChildIndex(DOM.getParent(th), th);
+
+            return position <= left + 1 && index > 0
+                   || position >= left + width - 1 && index < DOM.getChildCount(DOM.getParent(th)) - 1;
+        }
+
+        /**
+         * Gets a link to the grid.
+         *
+         * @return a grid that initializes this listener.
+         */
+        public SimpleGrid getGrid() {
+            return grid;
+        }
+    }
+
+    /**
+     * This timer is invoked every time when column resizing might happen.
+     *
+     * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
+     */
+    protected static class ResizeTimer extends Timer {
+        /** resize listener that starts this timer */
+        private ResizeListener listener;
+
+        /**
+         * Creates the timer.
+         *
+         * @param listener is a resize listener.
+         */
+        public ResizeTimer(ResizeListener listener) {
+            this.listener = listener;
+        }
+
+        /**
+         * See class docs.
+         */
+        public void run() {
+            if (listener.th != null) {
+                listener.resize();
+                schedule(100);
+            }
         }
     }
 }

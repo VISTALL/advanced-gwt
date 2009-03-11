@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ public class MasterDetailPanel extends FlexTable implements MasterDetailLayout, 
     /** Constructs a new MasterDetailPanel with 2 rows and 1 column. */
     public MasterDetailPanel() {
         this(2, 1);
+        setCellSpacing(0);
+        setCellPadding(0);
     }
 
     /**
@@ -131,6 +133,8 @@ public class MasterDetailPanel extends FlexTable implements MasterDetailLayout, 
      */
     protected void setGridPanel(int row, int column, GridPanel panel, GridPanel parent, String caption) {
         FlexTable layout = new FlexTable();
+        layout.setCellPadding(0);
+        layout.setCellSpacing(0);
         layout.setStyleName("grid-panel-layout");
         layout.getCellFormatter().setStyleName(0, 0, "layout-caption");
         layout.getCellFormatter().setStyleName(1, 0, "layout-body");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
 import org.gwt.advanced.client.ui.widget.GridPanel;
 

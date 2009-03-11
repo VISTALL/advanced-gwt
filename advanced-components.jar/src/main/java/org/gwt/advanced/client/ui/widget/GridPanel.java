@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,19 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowResizeListener;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import org.gwt.advanced.client.datamodel.Composite;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.Hierarchical;
 import org.gwt.advanced.client.datamodel.TreeGridRow;
-import org.gwt.advanced.client.ui.AdvancedWidget;
-import org.gwt.advanced.client.ui.GridEventManager;
-import org.gwt.advanced.client.ui.GridToolbarListener;
-import org.gwt.advanced.client.ui.PagerListener;
+import org.gwt.advanced.client.ui.*;
 import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.ArrayList;
@@ -46,7 +43,7 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class GridPanel extends DockPanel implements AdvancedWidget {
+public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
     /** an editable grid */
     private EditableGrid grid;
     /** a top pager */
@@ -195,13 +192,25 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
     /**
      * Sets the page number boxes visible.
      *
-     * @param value is a falg value.
+     * @param value is a flag value.
      */
     public void setPageNumberBoxDisplayed(boolean value) {
         if (isTopPagerVisible())
             getTopPager().setPageNumberBoxDisplayed(value);
         if (isBottomPagerVisible())
             getBottomPager().setPageNumberBoxDisplayed(value);
+    }
+
+    /**
+     * Sets the page count label visible.
+     *
+     * @param value is a value to be set.
+     */
+    public void setTotalCountDisplayed(boolean value) {
+        if (isTopPagerVisible())
+            getTopPager().setTotalCountDisplayed(value);
+        if (isBottomPagerVisible())
+            getBottomPager().setTotalCountDisplayed(value);
     }
 
     /**
@@ -244,12 +253,6 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
 
         Window.removeWindowResizeListener(getResizeListener());
         Window.addWindowResizeListener(getResizeListener());
-    }
-
-    /** {@inheritDoc} */
-    protected void onLoad() {
-        super.onLoad();
-        resize();
     }
 
     /**
@@ -600,6 +603,18 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
      * This method resizes nested components to make them fix as much space as possible.
      */
     public void resize() {
+        boolean visible = isVisible();
+        setVisible(false);
+        adjust();
+        setVisible(visible);
+        adjust();
+    }
+
+    /**
+     * Makes the widget take as much space as possible inside a parent element and resizes
+     * the nested grid.
+     */
+    protected void adjust() {
         Element parent = DOM.getParent(getElement());
         if (parent != null)
             GWTUtil.adjustWidgetSize(this, parent, false);
@@ -838,8 +853,10 @@ public class GridPanel extends DockPanel implements AdvancedWidget {
      * @return Value for property 'focusPanel'.
      */
     protected FocusPanel getFocusPanel() {
-        if (focusPanel == null)
+        if (focusPanel == null) {
             focusPanel = new FocusPanel();
+            focusPanel.setStyleName("advanced-FocusPanel");
+        }
         return focusPanel;
     }
 

@@ -38,6 +38,21 @@
   #end
 #end
 
+#macro (search $id)
+<div id="$id">
+<form action="http://advanced-gwt.sourceforge.net/search.html" id="cse-search-box">
+<div>
+<input type="hidden" name="cx" value="partner-pub-9000622932994109:cyhfrydmysw" />
+<input type="hidden" name="cof" value="FORID:10" />
+<input type="hidden" name="ie" value="UTF-8" />
+Site Search: <input type="text" name="q" size="31" />
+<input type="submit" name="sa" value="Search" />
+</div>
+</form>
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=cse-search-box&amp;lang=en"></script>
+</div>
+#end
+
 #macro ( links $links )
   #set ( $counter = 0 )
   #foreach( $item in $links )
@@ -162,7 +177,9 @@
 #end
 
 #macro ( publishDate $position $publishDate $version )
-
+#set ( $imageHref = $PathTool.calculateLink( "/images/feed.png", $relativePath ) )
+#set ( $imageHref = $imageHref.replaceAll( "\\", "/" ) )
+<div class="xleft"><a href="http://feedproxy.google.com/AdvancedGwtComponents-ProjectNews" alt="Project News Subscription" title="Subscribe"><img src="$imageHref"/> Project News</a></div>
 #end
 
 #macro ( poweredByLogo $poweredBy )
@@ -187,7 +204,7 @@ alt="SpyLOG" width="88" height="31" /></a>
 #end
 
 #macro (placeContent)
-$bodyContent.replaceAll('<google-ads-horizontal-banner>','
+#set ($bodyContent = $bodyContent.replaceAll('<google-ads-horizontal-banner>','
 <script type="text/javascript"><!--
 google_ad_client = "pub-9000622932994109";
 /* 728x90, created 25.11.08 */
@@ -199,7 +216,19 @@ google_ad_height = 90;
 <script type="text/javascript"
 src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
-')
+'))
+#set ($bodyContent = $bodyContent.replaceAll('<google-search-results>','
+<div id="cse-search-results"></div>
+<script type="text/javascript">
+  var googleSearchIframeName = "cse-search-results";
+  var googleSearchFormName = "cse-search-box";
+  var googleSearchFrameWidth = 800;
+  var googleSearchDomain = "www.google.com";
+  var googleSearchPath = "/cse";
+</script>
+<script type="text/javascript" src="http://www.google.com/afsonline/show_afs_search.js"></script>
+'))
+$bodyContent
 #end
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -209,10 +238,13 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
       @import url("$relativePath/css/maven-base.css");
       @import url("$relativePath/css/site.css");
     </style>
+    <link rel="alternate"  type="application/rss+xml" href="http://feedproxy.google.com/AdvancedGwtComponents-ProjectNews" title="Advanced GWT Components - Project News"/>
     <link rel="stylesheet" href="$relativePath/css/print.css" type="text/css" media="print" />
     #foreach( $author in $authors )
       <meta name="author" content="$author" />
     #end
+    <meta name="description" content="Advanced GWT Components is an extension of the standard Google Web Toolkit library. It allows making rich web interfaces extremely quickly even if you're not skilled in DHTML and JavaScript programming. Currently the library supports such popular browsers like Internet Explorer, Firefox, Safary, Opera and Chrome."/>
+    <meta name="keywords" content="GWT, AJAX, Java, widget, component, library, web 2.0, web UI, rich web, editable grid, hiererchical grid, tree grid, combo box, suggestion box, date picker, grid panel, toolbar, pager"/>
     <meta http-equiv="Content-Type" content="text/html; charset=${outputEncoding}" />
     #if ( $decoration.body.head )
       #foreach( $item in $decoration.body.head.getChildren() )
@@ -232,24 +264,22 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   <body class="composite">
     <div id="banner">
       #banner( $decoration.bannerLeft "bannerLeft" )
-      #banner( $decoration.bannerRight "bannerRight" )
+      #search( "bannerRight" )
       <div class="clear">
         <hr/>
       </div>
     </div>
     <div id="breadcrumbs">
       #publishDate( "left" $decoration.publishDate $decoration.version )
-      <div class="xright">#links( $decoration.body.links )#publishDate( "right" $decoration.publishDate $decoration.version )</div>
+      <div class="xright">#links( $decoration.body.links )</div>
       <div class="clear">
         <hr/>
       </div>
     </div>
     <div id="leftColumn">
       <div id="navcolumn">
-       #publishDate( "navigation-top" $decoration.publishDate $decoration.version )
        #mainMenu( $decoration.body.menus )
        #poweredByLogo( $decoration.poweredBy )
-       #publishDate( "navigation-bottom" $decoration.publishDate $decoration.version )
       </div>
     </div>
     <div id="bodyColumn">
@@ -261,10 +291,18 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
       <hr/>
     </div>
     <div id="footer">
-      <div class="xright">&#169;#copyright()#publishDate( "bottom" $decoration.publishDate $decoration.version )</div>
+      <div class="xright">&#169;#copyright()</div>
       <div class="clear">
         <hr/>
       </div>
     </div>
-  </body>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-6639698-1");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script></body>
 </html>

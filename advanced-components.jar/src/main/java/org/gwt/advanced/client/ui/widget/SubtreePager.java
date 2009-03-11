@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.TreeGridRow;
-import org.gwt.advanced.client.util.ThemeHelper;
-import com.google.gwt.user.client.ui.*;
+import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
 
 /**
  * This is a pager implementation for the subtree rows.<p/>
@@ -121,23 +125,22 @@ public class SubtreePager extends SimplePanel {
      */
     protected void setArrows() {
         int currentPage = getRow().getCurrentPageNumber();
-        String leftImage = ThemeHelper.getInstance().getFullImageName("bullet-left.gif");
-        String rightImage = ThemeHelper.getInstance().getFullImageName("bullet-right.gif");
 
         if (currentPage <= 0)
-            leftImage = "advanced/images/single.gif";
-        if (currentPage >= getRow().getEndPage())
-            rightImage = "advanced/images/single.gif";
-
-        left = new Image(leftImage);
-        left.setStyleName("arrow-left");
-        right = new Image(rightImage);
-        right.setStyleName("arrow-right");
-
-        if (currentPage > 0)
+            left = new Image("advanced/images/single.gif");
+        else {
+            left = new ThemeImage("bullet-left.gif");
+            left.setStyleName("arrow-left");
             left.addClickListener(getArrowClickListener());
-        if (currentPage < getRow().getEndPage())
+        }
+
+        if (currentPage >= getRow().getEndPage())
+            right = new Image("advanced/images/single.gif");
+        else {
+            right = new ThemeImage("bullet-right.gif");
+            right.setStyleName("arrow-right");
             right.addClickListener(getArrowClickListener());
+        }
     }
 
     /**

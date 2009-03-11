@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,12 @@
 
 package org.gwt.advanced.client.util;
 
+import org.gwt.advanced.client.ui.widget.theme.ThemeApplicable;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * This sigleton is used to centrilize and simplify theme management.
  *
@@ -31,6 +37,8 @@ public class ThemeHelper {
     private String themeName = "default";
     /** base directory name (a subfolder to store themes) that can include a context name if starts with '/' */
     private String baseDirectory;
+    /** the list of widgets which must do anything on theme change (see {@link ThemeApplicable}) */  
+    private List applicables = new ArrayList();
 
     /**
      * Creates an instance of this class.
@@ -46,13 +54,27 @@ public class ThemeHelper {
         return instance;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Sets current theme name and changes it.
+     *
+     * @param name is a bew theme name.
+     */
     public void setThemeName (String name) {
-        themeName = name;
-        StyleUtil.setLinkHref(LINK_ELEMENT_ID, getBaseDirectory() + "advanced/themes/" + name + "/theme.css");
+        if (name != null && !name.equals(themeName)) {
+          themeName = name;
+          StyleUtil.setLinkHref(LINK_ELEMENT_ID, getBaseDirectory() + "advanced/themes/" + name + "/theme.css");
+          for (Iterator iterator = applicables.iterator(); iterator.hasNext();) {
+            ThemeApplicable applicable = (ThemeApplicable) iterator.next();
+            applicable.apply(themeName);
+          }
+        }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Gets current theme name.
+     *
+     * @return is a theme name.
+     */
     public String getThemeName () {
         return themeName;
     }
@@ -74,6 +96,25 @@ public class ThemeHelper {
      */
     public void setBaseDirectory(String baseDirectory) {
         this.baseDirectory = baseDirectory;
+    }
+
+    /**
+     * Registers a new applicable widget.
+     *
+     * @param applicable is a theme applicable widget.
+     */
+    public void register(ThemeApplicable applicable) {
+        this.applicables.add(applicable);
+    }
+
+    /**
+     * Unregisters the specified applicable widget if it was registered.<p/>
+     * Otherwise does nothing.
+     *
+     * @param applicable is an applicable widget to be unregistered. 
+     */
+    public void unregister(ThemeApplicable applicable) {
+        this.applicables.remove(applicable);
     }
 
     /**

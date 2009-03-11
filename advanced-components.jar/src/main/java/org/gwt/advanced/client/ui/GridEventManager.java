@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package org.gwt.advanced.client.ui;
 
-import org.gwt.advanced.client.ui.widget.GridPanel;
 import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.TableListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.TableListener;
+import org.gwt.advanced.client.ui.widget.GridPanel;
 
 /**
  * This is an interface of grid event managers.<p/>

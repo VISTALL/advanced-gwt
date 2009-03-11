@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,20 @@ public class GWTUtil {
      * @param adjustHeight is a flag that specifies whether widget height must be adjusted.
      */
     public static void adjustWidgetSize(Widget widget, Element parent, boolean adjustHeight) {
+        adjustElementSize(widget.getElement(), parent, adjustHeight);
+    }
+
+    /**
+     * This method adjusts widget size to make it smaller then the parent element.<p/>
+     * Note that this element can be a value returne by <code>widget.getParent().getElement()</code> or
+     * another container element like {@link org.gwt.advanced.client.ui.widget.AdvancedFlexTable#getBodyElement()}.
+     * This method doesn't check whether it's really a parent.
+     *
+     * @param element is an element which size must be adjusted.
+     * @param parent is a parent container element.
+     * @param adjustHeight is a flag that specifies whether widget height must be adjusted.
+     */
+    public static void adjustElementSize(Element element, Element parent, boolean adjustHeight) {
         int originalHeight = DOM.getElementPropertyInt(parent, "offsetHeight");
         int originalWidth = DOM.getElementPropertyInt(parent, "offsetWidth");
 
@@ -59,14 +73,14 @@ public class GWTUtil {
 
         boolean completed;
         do {
-            widget.setWidth(width + "px");
+            DOM.setStyleAttribute(element, "width", width + "px");
             int widthNow = DOM.getElementPropertyInt(parent, "offsetWidth");
             completed = widthNow <= originalWidth;
             if (!completed)
                 width = width + originalWidth - widthNow;
 
             if (adjustHeight) {
-                widget.setHeight(height + "px");
+                DOM.setStyleAttribute(element, "height", height + "px");
                 int heightNow = DOM.getElementPropertyInt(parent, "offsetHeight");
                 completed = completed && heightNow <= originalHeight;
                 if (heightNow > originalHeight)

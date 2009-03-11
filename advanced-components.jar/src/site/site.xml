@@ -42,9 +42,10 @@
     </menu>
     <menu name="Documentation">
       <item name="Quick Start" href="/quickstart.html"/>
-      <item name="JavaDocs API" href="/apidocs/index.html"/>
-      <item name="Decision Maker" href="/decision-maker.html"/>
+      <item name="Tutorial" href="/tutorial/index.html"/>
       <item name="FAQ" href="/faq.html"/>
+      <item name="Decision Maker" href="/decision-maker.html"/>
+      <item name="JavaDocs API" href="/apidocs/index.html"/>
     </menu>
     <menu name="Support">
       <item name="Forum" href="http://advancedgwt.freeforums.org/"/>

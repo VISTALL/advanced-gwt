@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
-import org.gwt.advanced.client.util.ThemeHelper;
+import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
 
 /**
  * This is a basic expandable cell implementation.
@@ -153,9 +153,9 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
             setImage(image);
         }
         if (isExpanded())
-            setImage(new Image(ThemeHelper.getInstance().getFullImageName("expanded.gif")));
+            setImage(new ThemeImage("expanded.gif"));
         else if (!isLeaf())
-            setImage(new Image(ThemeHelper.getInstance().getFullImageName("collapsed.gif")));
+            setImage(new ThemeImage("collapsed.gif"));
         addListeners(getImage());
     }
 

@@ -3,6 +3,23 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.4.6 includes:
+
+Bug fixes:
+1. Grid Resize Does Not Collapse Properly
+2. SimpleGrid resizing issues
+3. Issues with GWT embedded browser 
+
+New features:
+1. Implement basic borders API
+2. Implement advanced tab panel
+3. Columns resizing feature must be implemented in the SimpleGrid
+4. Add setDate() to DatePicker
+5. New demo application required
+6. Add grid methods to provide an ability to get grid rows, columns, etc
+7. Make user manual
+
+====================================================================================================================
 Release 1.4.5 includes:
 
 Bug fixes:

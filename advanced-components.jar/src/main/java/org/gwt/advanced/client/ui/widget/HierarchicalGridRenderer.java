@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import org.gwt.advanced.client.datamodel.Hierarchical;
-import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.datamodel.GridDataModel;
-import org.gwt.advanced.client.ui.widget.cell.GridCell;
-import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
-import org.gwt.advanced.client.ui.GridPanelFactory;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwt.advanced.client.datamodel.Editable;
+import org.gwt.advanced.client.datamodel.GridDataModel;
+import org.gwt.advanced.client.datamodel.Hierarchical;
+import org.gwt.advanced.client.ui.GridPanelFactory;
+import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
+import org.gwt.advanced.client.ui.widget.cell.GridCell;
 
 /**
  * This is an extension for hierarchical grid rendering.<p/>

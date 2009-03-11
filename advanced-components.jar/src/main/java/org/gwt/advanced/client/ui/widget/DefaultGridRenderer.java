@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,18 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.GridDataModel;
 import org.gwt.advanced.client.ui.GridRenderer;
-import org.gwt.advanced.client.ui.widget.cell.*;
+import org.gwt.advanced.client.ui.widget.cell.DateCell;
+import org.gwt.advanced.client.ui.widget.cell.DoubleCell;
+import org.gwt.advanced.client.ui.widget.cell.FloatCell;
+import org.gwt.advanced.client.ui.widget.cell.GridCellFactory;
+import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
+import org.gwt.advanced.client.ui.widget.cell.ImageCell;
+import org.gwt.advanced.client.ui.widget.cell.IntegerCell;
+import org.gwt.advanced.client.ui.widget.cell.LabelCell;
+import org.gwt.advanced.client.ui.widget.cell.ListCell;
+import org.gwt.advanced.client.ui.widget.cell.LongCell;
+import org.gwt.advanced.client.ui.widget.cell.ShortCell;
+import org.gwt.advanced.client.ui.widget.cell.TextBoxCell;
 
 import java.util.Date;
 

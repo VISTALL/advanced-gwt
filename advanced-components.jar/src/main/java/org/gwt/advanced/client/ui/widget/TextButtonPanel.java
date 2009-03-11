@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Sergey Skladchikov
+ * Copyright 2009 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ToggleButton;
 import org.gwt.advanced.client.ui.AdvancedWidget;
-import org.gwt.advanced.client.util.ThemeHelper;
+import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
 
 /**
  * This is a basic class for all text boxs with a button.
@@ -201,8 +205,11 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
      * @return Value for property 'layout'.
      */
     protected FlexTable getLayout() {
-        if (layout == null)
+        if (layout == null) {
             layout = new FlexTable();
+            layout.setCellPadding(0);
+            layout.setCellSpacing(0);
+        }
         return layout;
     }
 
@@ -235,7 +242,7 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
      */
     protected Image getChoiceButtonImage() {
         if (choiceButtonImage == null)
-            choiceButtonImage = new Image(ThemeHelper.getInstance().getFullImageName(getDefaultImageName()));
+            choiceButtonImage = new ThemeImage(getDefaultImageName());
         return choiceButtonImage;
     }
 
