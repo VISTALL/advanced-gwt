@@ -57,7 +57,7 @@ public class GridColumn implements IndexedEntity {
             throw new IllegalStateException("Column index is out of total column count range");
         
         Object[][] data = model.getData();
-        Object[] result = new Object[model.getTotalColumnCount()];
+        Object[] result = new Object[model.getTotalRowCount()];
         for (int i = 0; i < data.length; i++) {
             Object[] row = data[i];
             if (row != null)

@@ -67,4 +67,8 @@ public interface ResourceBundle extends Constants {
     String otherControlsDemo();
 
     String bordersDemo();
+
+    String simpleGridDemo();
+
+    String mvpDemo();
 }

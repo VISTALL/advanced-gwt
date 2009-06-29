@@ -581,6 +581,18 @@ panel.addGridPanel(detailPanel, masterPanel, </span><span style="color:#008000;b
                 </p>
             </answer>
         </faq>
+        <faq id="how_to_enable_multiple">
+            <question>How to enable multiple row selection?</question>
+            <answer>
+                <p>
+                    The EditableGrid and other subclasses support multiple row selection mode. To enable it
+                    you should invoke the <i>EditableGrid.setMultiRowModeEnabled()</i> method.
+                </p>
+                <p>
+                    Using this mode you can choose more than one row if you press Shift or Ctrl button.
+                </p>
+            </answer>
+        </faq>
         <faq id="how_to_set_default_row">
             <question>How to set default row selection?</question>
             <answer>
@@ -820,6 +832,17 @@ panel.addGridPanel(detailPanel, masterPanel, </span><span style="color:#008000;b
             <answer>
                 <p>
                     Use the <i>TreeGridRow.setPagingEnabled()</i> method.
+                </p>
+            </answer>
+        </faq>
+        <faq id="how_grids_update_view">
+            <question>How the grids update view on data change?</question>
+            <answer>
+                <p>
+                    Every time you programmatically change data in the data model the <i>EventMediator</i> receives
+                    the <i>EditableGridModelEvent</i>. This event contains all required information regarding what
+                    was changed and how. According to these values the mediator invokes an appropriate protected
+                    methods of the grid.
                 </p>
                 <div class="googleAds"><google-ads-horizontal-banner/></div>
             </answer>

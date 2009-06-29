@@ -7,12 +7,16 @@ import org.gwt.advanced.client.ui.widget.SimpleGrid;
 import org.gwt.advanced.client.ui.widget.AdvancedTabPanel;
 
 /**
+ * This sample demonstrates basic grids functionality: rendering, columns resizing and scrolling.
+ * 
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.6
  */
 public class SimpleGridShowcase extends AbstractShowcase {
+    /** sample widget */
     private SimpleGrid grid;
 
+    /** {@inheritDoc} */
     protected Widget getWidget() {
         grid = new SimpleGrid();
 
@@ -29,10 +33,12 @@ public class SimpleGridShowcase extends AbstractShowcase {
         return grid;
     }
 
+    /** {@inheritDoc} */
     protected String getHint() {
-        return null;
+        return RESOURCES.simpleGridDemo();
     }
 
+    /** {@inheritDoc} */
     protected String getName() {
         return "Simple Grid";
     }

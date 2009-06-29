@@ -24,6 +24,9 @@ import org.gwt.advanced.client.datamodel.Hierarchical;
 import org.gwt.advanced.client.ui.GridPanelFactory;
 import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
+import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
+
+import java.util.Iterator;
 
 /**
  * This is an extension for hierarchical grid rendering.<p/>
@@ -99,7 +102,31 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
         return super.getModelRow(row) - getSubgridRowsBefore(row);
     }
 
-     /**
+    /** {@inheritDoc} */
+    public int getRowByModelRow(int modelRow) {
+        for (int i = 0; i < getGrid().getRowCount(); i++) {
+            if (!HierarchicalGrid.SUBGRID_ROW_STYLE.equals(getGrid().getRowFormatter().getStyleName(i))
+                    && getModelRow(i) == modelRow)
+                return i;
+        }
+        return -1;
+    }
+
+    /** {@inheritDoc} */
+    public void drawColumn(Object[] data, int column, boolean overwrite) {
+        if (!overwrite && column < getGrid().getHeaderWidgets().size())
+            getGrid().insertHeaderCell(column);
+        HeaderCell cell = getCellFactory().create(column, getGrid().getHeaders()[column]);
+        cell.displayActive(false);
+
+        for (int i = 0; i < data.length && i < getGrid().getRowCount(); i++) {
+            Object cellData = data[i];
+            if (!HierarchicalGrid.SUBGRID_ROW_STYLE.equals(getGrid().getRowFormatter().getStyleName(i)))
+                drawCell(cellData, i, column, false);
+        }
+    }
+
+    /**
      * This method calculates subgrid rows number before the specified row.
      *
      * @param row is a row number.
@@ -138,12 +165,11 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
         }
 
         if (factory != null) {
-            ((Hierarchical)model).setExpanded(modelRow, parentColumn, true);
             int thisRow = grid.getGridRowNumber(parentRow, parentColumn);
             grid.increaseRowNumbers(thisRow, 1);
             grid.insertRow(thisRow);
-            if (grid.getCurrentRow() > parentRow)
-                grid.setCurrentRow(grid.getCurrentRow() + 1);
+
+            dropWrongSelection(parentRow, 1);
 
             for (int i = 0; i < parentColumn; i++)
                 grid.setText(thisRow, i, "");
@@ -158,7 +184,12 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
                 grid.getGridPanelCache().put(submodel, gridPanel);
             }
 
-            grid.getFlexCellFormatter().setColSpan(thisRow, parentColumn, grid.getCellCount(parentRow) - parentColumn);
+            int invisibleColumns = 0;
+            for (Iterator iterator = grid.getInvisibleColumns().iterator(); iterator.hasNext();) {
+                if (((Integer)iterator.next()).intValue() > parentColumn)
+                    invisibleColumns++;
+            }
+            grid.getFlexCellFormatter().setColSpan(thisRow, parentColumn, grid.getCellCount(parentRow) - parentColumn - invisibleColumns);
             grid.getRowFormatter().setStyleName(thisRow, HierarchicalGrid.SUBGRID_ROW_STYLE);
             grid.getCellFormatter().setStyleName(thisRow, parentColumn, "subgrid-cell");
             grid.setWidget(thisRow, parentColumn, gridPanel);
@@ -175,14 +206,35 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
         HierarchicalGrid grid = (HierarchicalGrid) getGrid();
         GridDataModel dataModel = grid.getModel();
         if (dataModel instanceof Hierarchical) {
-            ((Hierarchical) dataModel).setExpanded(getModelRow(parentRow), parentColumn, false);
             int thisRow = grid.getGridRowNumber(parentRow, parentColumn);
             grid.increaseRowNumbers(thisRow, -1);
             grid.getGridPanel(parentRow, parentColumn).getFocusPanel().removeFocusListener(getDisablingFocusListener());
             grid.removeRow(thisRow);
-            if (grid.getCurrentRow() > parentRow)
-                grid.setCurrentRow(grid.getCurrentRow() - 1);
+
+            dropWrongSelection(parentRow, -1);
         }
+    }
+
+    /**
+     * This method drops selection if the specified row is less then one one currently selected rows.<p/>
+     * Then it sets a new row to be a current.
+     *
+     * @param parentRow is a row number to check.
+     * @param step is a difference between the selected row and newly selected row. May be negative.
+     */
+    protected void dropWrongSelection(int parentRow, int step) {
+        int[] indexes = getGrid().getCurrentRows();
+        int selection = -1;
+        for (int i = 0; i < indexes.length; i++) {
+            int row = indexes[i];
+            if (row > parentRow) {
+                selection = row;
+                break;
+            }
+        }
+
+        if (selection != -1)
+            getGrid().setCurrentRow(selection + step);
     }
 
     /**

@@ -6,7 +6,7 @@
     <body>
         <section name="Frequently Asked Questions">
             <p>
-                Please find your question below. If you can't find it ask in our
+                Please find your question below. If you can't find it ask for help in our
                 <a href="http://advancedgwt.freeforums.org/help-support-f1.html">community forum</a>.
             </p>
             <div class="googleAds"><google-ads-horizontal-banner/></div>
@@ -19,6 +19,7 @@
                         <li><a href="faq/common-faq.html#what_is_data_model">What is the Data Model?</a></li>
                         <li><a href="faq/common-faq.html#what_is_advanced_widget">What is the Advanced Widget?</a></li>
                         <li><a href="faq/common-faq.html#where_can_i_find_library_api">Where can I find library API documents?</a></li>
+                        <li><a href="faq/common-faq.html#what_is_mvp">What is MVP? Why do I need it?</a></li>
                     </ul>
                 </p>
             </section>
@@ -34,6 +35,7 @@
                         <li><a href="faq/data-model-faq.html#how_does_data_synchronization_work">How does data synchronization work?</a></li>
                         <li><a href="faq/data-model-faq.html#how_develop_custom_callback_handler">How to develop a custom callback handler?</a></li>
                         <li><a href="faq/data-model-faq.html#what_is_locking">What is locking and why is locking mandatory if I use server side synchronization?</a></li>
+                        <li><a href="faq/data-model-faq.html#what_are_events">What are data model events?</a></li>
                     </ul>
                 </p>
             </section>
@@ -57,6 +59,7 @@
                         <li><a href="faq/grid-faq.html#my_grid_doesnt_refresh_content">My grid doesn't refresh content on page change / sorting / saving. What can I do?</a></li>
                         <li><a href="faq/grid-faq.html#how_to_develop_custom_grid_panel_factory">How to develop a custom grid panel factory?</a></li>
                         <li><a href="faq/grid-faq.html#how_to_handle_row_selection">How to handle row selection?</a></li>
+                        <li><a href="faq/grid-faq.html#how_to_enable_multiple">How to enable multiple row selection?</a></li>
                         <li><a href="faq/grid-faq.html#how_to_set_default_row">How to set default row selection?</a></li>
                         <li><a href="faq/grid-faq.html#how_to_make_column_read_only">How to make a column be read only?</a></li>
                         <li><a href="faq/grid-faq.html#how_to_make_column_sortable">How to make a column be sortable?</a></li>
@@ -69,10 +72,32 @@
                         <li><a href="faq/grid-faq.html#do_grids_support_keyboard_events">Do the grids support keyboard events?</a></li>
                         <li><a href="faq/grid-faq.html#what_is_grid_event_manager">What is a grid event manager? How to customize it?</a></li>
                         <li><a href="faq/grid-faq.html#how_to_enable_paging_feature_for_subtrees">How to enable the paging feature for subtrees in the TreeGrid?</a></li>
+                        <li><a href="faq/grid-faq.html#how_grids_update_view">How the grids update view on data change?</a></li>
+                    </ul>
+                </p>
+            </section>
+            <section name="Advanced Tab Panel Questions">
+                <p>
+                    <ul>
+                        <li><a href="faq/advanced-tab-panel-faq.html#what_is_advanced_tab_panel">What is AdvancedTabPanel? Why do I need it?</a></li>
+                        <li><a href="faq/advanced-tab-panel-faq.html#how_to_use_advanced_tab_panel">How to use AdvancedTabPanel?</a></li>
+                        <li><a href="faq/advanced-tab-panel-faq.html#how_to_customize_advanced_tab_panel">How to customize AdvancedTabPanel look &amp; feel?</a></li>
+                        <li><a href="faq/advanced-tab-panel-faq.html#how_to_make_my_tabs_band_renderer">How to make my tabs band renderer?</a></li>
                     </ul>
                 </p>
             </section>
             <div class="googleAds"><google-ads-horizontal-banner/></div>
+            <section name="Borders API Questions">
+                <p>
+                    <ul>
+                        <li><a href="faq/borders-faq.html#what_is_borders_api">What is Borders API? What is it for?</a></li>
+                        <li><a href="faq/borders-faq.html#what_kinds_of_borders_provided">What kinds of the borders provided by the library?</a></li>
+                        <li><a href="faq/borders-faq.html#is_roundcornerborder_supported_by_browser">Is the RounCornerBorder supported by all browsers?</a></li>
+                        <li><a href="faq/borders-faq.html#how_to_use_borders">How to use borders?</a></li>
+                        <li><a href="faq/borders-faq.html#how_to_display_shadow">How to display a shadow under the border?</a></li>
+                    </ul>
+                </p>
+            </section>
             <section name="Date Picker Questions">
                 <p>
                     <ul>
@@ -108,6 +133,7 @@
                         <li><a href="faq/theme-helper-faq.html#what_is_theme_helper">What is the Theme Helper?</a></li>
                         <li><a href="faq/theme-helper-faq.html#how_to_create_custom_theme">How to create a custom theme?</a></li>
                         <li><a href="faq/theme-helper-faq.html#how_to_switch_look_and_feel">How to switch look &amp; feel using themes?</a></li>
+                        <li><a href="faq/theme-helper-faq.html#how_to_change_look_and_feel">How to change look &amp; feel of widgets that is not covered by CSS features?</a></li>
                     </ul>
                 </p>
             </section>

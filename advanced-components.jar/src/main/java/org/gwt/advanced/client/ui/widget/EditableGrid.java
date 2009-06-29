@@ -20,17 +20,8 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.*;
-import org.gwt.advanced.client.ui.AdvancedWidget;
-import org.gwt.advanced.client.ui.EditCellListener;
-import org.gwt.advanced.client.ui.GridDecorator;
-import org.gwt.advanced.client.ui.GridRenderer;
-import org.gwt.advanced.client.ui.GridRowDrawCallbackHandler;
-import org.gwt.advanced.client.ui.SelectRowListener;
-import org.gwt.advanced.client.ui.widget.cell.DefaultCellComparator;
-import org.gwt.advanced.client.ui.widget.cell.DefaultGridCellFactory;
-import org.gwt.advanced.client.ui.widget.cell.GridCell;
-import org.gwt.advanced.client.ui.widget.cell.GridCellFactory;
-import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
+import org.gwt.advanced.client.ui.*;
+import org.gwt.advanced.client.ui.widget.cell.*;
 
 import java.util.*;
 
@@ -78,10 +69,6 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      */
     private List decorators;
     /**
-     * a current selected row number
-     */
-    private int currentRow = -1;
-    /**
      * a cell comparator instance
      */
     private Comparator cellComparator;
@@ -105,12 +92,26 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * a current column number
      */
     private int currentColumn = -1;
-    /** active grid cell */
+    /**
+     * active grid cell
+     */
     private GridCell activeCell;
-    /** grid renderer instance */
+    /**
+     * grid renderer instance
+     */
     private GridRenderer gridRenderer;
-    /** a default selected row index */
+    /**
+     * a default selected row index
+     */
     private int defaultSelectedRow;
+    /**
+     * grid row selection model
+     */
+    private GridRowSelectDataModel selectionModel;
+    /**
+     * multi row selection mode enabling flag
+     */
+    private boolean multiRowModeEnabled;
 
     /**
      * Creates a new instance of this class.
@@ -118,7 +119,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * @param headers             is a list of header labels (including invisible).
      * @param columnWidgetClasses is a list of column widget classes.
      */
-    public EditableGrid (String[] headers, Class[] columnWidgetClasses) {
+    public EditableGrid(String[] headers, Class[] columnWidgetClasses) {
         this(headers, columnWidgetClasses, true);
     }
 
@@ -129,7 +130,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * @param columnWidgetClasses is a list of column widget classes.
      * @param resizable           is a flag that means columns resizability (by default is <code>true</code>).
      */
-    public EditableGrid (String[] headers, Class[] columnWidgetClasses, boolean resizable) {
+    public EditableGrid(String[] headers, Class[] columnWidgetClasses, boolean resizable) {
         super(resizable);
         this.columnWidgetClasses = columnWidgetClasses;
         this.headers = headers;
@@ -149,7 +150,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'gridCellFactory'.
      */
-    public GridCellFactory getGridCellFactory () {
+    public GridCellFactory getGridCellFactory() {
         return gridCellFactory;
     }
 
@@ -158,7 +159,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'columnWidgetClasses'.
      */
-    public Class[] getColumnWidgetClasses () {
+    public Class[] getColumnWidgetClasses() {
         return columnWidgetClasses;
     }
 
@@ -167,7 +168,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'headers'.
      */
-    public String[] getHeaders () {
+    public String[] getHeaders() {
         return headers;
     }
 
@@ -176,7 +177,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param gridCellFactory Value to set for property 'gridCellFactory'.
      */
-    public void setGridCellfactory (GridCellFactory gridCellFactory) {
+    public void setGridCellfactory(GridCellFactory gridCellFactory) {
         if (gridCellFactory != null)
             this.gridCellFactory = gridCellFactory;
     }
@@ -186,9 +187,22 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param model Value to set for property 'model'.
      */
-    public void setModel (Editable model) {
-        if (model != null)
+    public void setModel(Editable model) {
+        if (model != null) {
+            EventMediator eventMediator = getGridPanel().getMediator();
+            if (this.model != null)
+                this.model.removeListener(eventMediator);
             this.model = model;
+            this.model.addListener(eventMediator);
+
+            drawHeaders();
+            sortOnClient();
+
+            DataModelCallbackHandler handler = getModel().getHandler();
+            if (getModel() instanceof LazyLoadable && handler != null) {
+                handler.synchronize(getModel());
+            }
+        }
     }
 
     /**
@@ -196,7 +210,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param cellComparator is a cell comparator.
      */
-    public void setCellComparator (Comparator cellComparator) {
+    public void setCellComparator(Comparator cellComparator) {
         if (cellComparator != null)
             this.cellComparator = cellComparator;
     }
@@ -206,7 +220,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param listener is a listener instance.
      */
-    public void addEditCellListener (EditCellListener listener) {
+    public void addEditCellListener(EditCellListener listener) {
         removeEditCellListener(listener);
         getEditCellListeners().add(listener);
     }
@@ -216,7 +230,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param listener is a listener to be removed.
      */
-    public void removeEditCellListener (EditCellListener listener) {
+    public void removeEditCellListener(EditCellListener listener) {
         getEditCellListeners().remove(listener);
     }
 
@@ -225,9 +239,28 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param column is a column number.
      */
-    public void addInvisibleColumn (int column) {
-        removeInvisibleColumn(column);
-        getInvisibleColumns().add(new Integer(column));
+    public void addInvisibleColumn(int column) {
+        List columns = getInvisibleColumns();
+        columns.remove(new Integer(column));
+        columns.add(new Integer(column));
+
+        removeColumn(column);
+    }
+
+    /**
+     * This method removes the specified column from the grid<p/>
+     * Note that it doesn't remove the column from the data model.
+     *
+     * @param column is a column number to remove.
+     */
+    protected void removeColumn(int column) {
+        if (getHeaderWidgets().size() > column) {
+            removeHeaderWidget(column);
+
+            for (int i = 0; i < getRowCount(); i++) {
+                removeCell(i, column);
+            }
+        }
     }
 
     /**
@@ -235,8 +268,37 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param column is an invisible column number.
      */
-    public void removeInvisibleColumn (int column) {
-        getInvisibleColumns().remove(new Integer(column));
+    public void removeInvisibleColumn(int column) {
+        List columns = getInvisibleColumns();
+        columns.remove(new Integer(column));
+
+        drawColumn(column);
+    }
+
+    /**
+     * This method draws a column getting data from the data model<p/>
+     * If the data model is not specified it does nothing.
+     *
+     * @param column is a column number.
+     */
+    protected void drawColumn(int column) {
+        if (getModel() != null) {
+            Object[] data = getModel().getColumns()[column].getData();
+            Object[] pageData;
+            if (!(getModel() instanceof LazyLoadable)) {
+                int end = getModel().getEndRow();
+                int start = getModel().getStartRow();
+
+                pageData = new Object[end - start + 1];
+                int count = 0;
+                for (int i = start; i <= end; i++) {
+                    pageData[count] = data[i];
+                    count++;
+                }
+            } else
+                pageData = data;
+            getGridRenderer().drawColumn(pageData, column, false);
+        }
     }
 
     /**
@@ -262,12 +324,11 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * This method checks whether the specified column is read only.
      *
      * @param column is a column to check.
-     *
      * @return <code>true</code> if the column is read only.
      */
-    public boolean isReadOnly (int column) {
+    public boolean isReadOnly(int column) {
         return Boolean.valueOf(
-            String.valueOf(getReadOnlyColumns().get(new Integer(column)))
+                String.valueOf(getReadOnlyColumns().get(new Integer(column)))
         ).booleanValue();
     }
 
@@ -275,12 +336,11 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * This method checks whether the specified column is sortable.
      *
      * @param column is a column to check.
-     *
      * @return <code>true</code> if the column is sortable.
      */
-    public boolean isSortable (int column) {
+    public boolean isSortable(int column) {
         return Boolean.valueOf(
-            String.valueOf(getSortableHeaders().get(new Integer(column)))
+                String.valueOf(getSortableHeaders().get(new Integer(column)))
         ).booleanValue();
     }
 
@@ -288,10 +348,9 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * This method checks whether the specified column is sorted asceding.
      *
      * @param column is a column to check.
-     *
      * @return <code>true</code> if the column is sorted ascending.
      */
-    public boolean isAscending (int column) {
+    public boolean isAscending(int column) {
         return model == null || model.isAscending();
     }
 
@@ -299,10 +358,9 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * This method checks whether the specified column is sorted.
      *
      * @param column is a column to check.
-     *
      * @return <code>true</code> if the column is sorted.
      */
-    public boolean isSorted (int column) {
+    public boolean isSorted(int column) {
         return getModel().getSortColumn() == column;
     }
 
@@ -312,7 +370,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * @param column   is a column to be read only.
      * @param readOnly is a read only flag value.
      */
-    public void setReadOnly (int column, boolean readOnly) {
+    public void setReadOnly(int column, boolean readOnly) {
         getReadOnlyColumns().put(new Integer(column), Boolean.valueOf(readOnly));
     }
 
@@ -322,7 +380,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * @param column   is a column to be sortable.
      * @param sortable is a sortable flag value.
      */
-    public void setSortable (int column, boolean sortable) {
+    public void setSortable(int column, boolean sortable) {
         getSortableHeaders().put(new Integer(column), Boolean.valueOf(sortable));
     }
 
@@ -330,20 +388,48 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * This method detects whether the specified column is visible.
      *
      * @param column is a column number.
-     *
      * @return <code>true</code> if the column is visible.
      */
-    public boolean isVisible (int column) {
+    public boolean isVisible(int column) {
         return !getInvisibleColumns().contains(new Integer(column));
     }
 
     /**
-     * Getter for property 'currentRow'.
+     * Gets a currently selected row number<p/>
+     * If there are several rows selected it returns only the first row number.
      *
-     * @return Value for property 'currentRow'.
+     * @return a selected row number.
      */
-    public int getCurrentRow () {
-        return currentRow;
+    public int getCurrentRow() {
+        return getSelectionModel().firstIndex();
+    }
+
+    /**
+     * Gets a currently selected grid row.<p/>
+     * If there are several rows selected it returns only the first row.
+     *
+     * @return a current grid row.
+     */
+    public GridRow getCurrentGridRow() {
+        return getSelectionModel().firstRow();
+    }
+
+    /**
+     * Gets a list of selected row numbers.
+     *
+     * @return a list of selected row numbers.
+     */
+    public int[] getCurrentRows() {
+        return getSelectionModel().getIndexes();
+    }
+
+    /**
+     * Gets a list of selected grid rows.
+     *
+     * @return a list of selected grid rows.
+     */
+    public GridRow[] getCurrentGridRows() {
+        return getSelectionModel().getGridRows();
     }
 
     /**
@@ -351,21 +437,119 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param currentRow Value to set for property 'currentRow'.
      */
-    public void setCurrentRow (int currentRow) {
-        int oldRow = getCurrentRow();
-        
+    public void setCurrentRow(int currentRow) {
         HTMLTable.RowFormatter rowFormatter = getRowFormatter();
 
-        if (oldRow >= 0 && oldRow < getRowCount())
-            rowFormatter.removeStyleName(oldRow, "selected-row");
+        int[] oldRows = getCurrentRows();
+        boolean same = false;
+        for (int i = 0; i < oldRows.length; i++) {
+            int oldRow = oldRows[i];
+            if (oldRow >= 0 && oldRow < getRowCount())
+                rowFormatter.removeStyleName(oldRow, "selected-row");
+            if (oldRow == currentRow)
+                same = true;
+        }
 
-        if (currentRow >= 0 && currentRow < getRowCount())
-            rowFormatter.addStyleName(currentRow, "selected-row");
+        if (currentRow >= 0 && currentRow < getRowCount()) {
+            getSelectionModel().clear();
+            selectRow(currentRow);
+        }
 
-        this.currentRow = currentRow;
-        for (Iterator iterator = getSelectRowListeners().iterator(); oldRow != currentRow && iterator.hasNext();) {
+        for (Iterator iterator = getSelectRowListeners().iterator(); !same && iterator.hasNext();) {
             SelectRowListener selectRowListener = (SelectRowListener) iterator.next();
             selectRowListener.onSelect(this, currentRow);
+        }
+    }
+
+    /**
+     * This method marks the specified row as selected.<p/>
+     * It works similarly to the {@link #setCurrentRow(int)} method but doesn't clear a previous selection.
+     * If the multiple rows selection is disabled it checks whether there is at least one selected row and if no
+     * it makes selection. Otherwise it does nothing.<p/>
+     * If multiple mode is enabled it always selects a row.
+     *
+     * @param row is a row number to make selected.
+     */
+    public void selectRow(int row) {
+        if ((isMultiRowModeEnabled() || getSelectionModel().size() <= 0) && row >= 0 && row < getRowCount()) {
+            HTMLTable.RowFormatter rowFormatter = getRowFormatter();
+            rowFormatter.removeStyleName(row, "selected-row");
+            rowFormatter.addStyleName(row, "selected-row");
+            getSelectionModel().add(row, getGridRowByRowNumber(row));
+        }
+    }
+
+    /**
+     * This method deselects the specified cell.
+     *
+     * @param row    is a row number in the grid.
+     * @param column is a column number in the grid.
+     */
+    public void deselectCell(int row, int column) {
+        if (row >= 0 && row < getRowCount()) {
+            getSelectionModel().remove(row);
+            HTMLTable.RowFormatter rowFormatter = getRowFormatter();
+            rowFormatter.removeStyleName(row, "selected-row");
+
+            if (column > 0 && column < getCellCount(row)) {
+                getColumnFormatter().removeStyleName(column, "selected-column");
+                getCellFormatter().removeStyleName(row, column, "selected-cell");
+                this.currentColumn = -1;
+            }
+        }
+    }
+
+    /**
+     * This method checks whether the specified row is selected.
+     *
+     * @param row is a row number in the grid.
+     * @return <code>true</code> if the row is selected.
+     */
+    public boolean isSelected(int row) {
+        int[] indexes = getSelectionModel().getIndexes();
+        for (int i = 0; i < indexes.length; i++) {
+            int index = indexes[i];
+            if (row == index)
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets a grid row by a row number in the displayed page.
+     *
+     * @param row is a row number.
+     * @return a grid row of the data model.
+     */
+    public GridRow getGridRowByRowNumber(int row) {
+        return getGridRow(getModelRow(row));
+    }
+
+    /**
+     * This method selects the rows between the currently selected row and the specified one including both of them
+     * into the selection.<p/>
+     * The method works only if the multiple rows selection mode is enabled.
+     *
+     * @param toRow is a right border (a row number that will the end of selection).
+     */
+    public void selectRows(int toRow) {
+        if (isMultiRowModeEnabled() && toRow < getRowCount()) {
+            int currentRow = getCurrentRow();
+            if (currentRow == -1)
+                currentRow = 0;
+
+            setCurrentRow(currentRow);
+
+            int increment = 1;
+            if (currentRow > toRow)
+                increment = -1;
+
+            int row = currentRow + increment;
+            while (row >= 0 && row < getRowCount() && row != toRow) {
+                selectRow(row);
+                row += increment;
+            }
+            selectRow(toRow);
         }
     }
 
@@ -374,9 +558,11 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'gridPanel'.
      */
-    public GridPanel getGridPanel () {
-        if (gridPanel == null)
+    public GridPanel getGridPanel() {
+        if (gridPanel == null) {
             gridPanel = new GridPanel();
+            gridPanel.setGrid(this);
+        }
         return gridPanel;
     }
 
@@ -419,23 +605,78 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     }
 
     /**
+     * Gets a selection model.
+     *
+     * @return a selection model.
+     */
+    public GridRowSelectDataModel getSelectionModel() {
+        if (selectionModel == null)
+            selectionModel = new GridRowSelectDataModel();
+        return selectionModel;
+    }
+
+    /**
+     * Sets the selection model.
+     *
+     * @param selectionModel is a row selection model.
+     */
+    public void setSelectionModel(GridRowSelectDataModel selectionModel) {
+        this.selectionModel = selectionModel;
+    }
+
+    /**
+     * Checks whether the multi-row selection mode enabled for this grid.
+     *
+     * @return <code>true</code> if this mode has been enabled.
+     */
+    public boolean isMultiRowModeEnabled() {
+        return multiRowModeEnabled;
+    }
+
+    /**
+     * Enables or disbales the multi-row selection mode.
+     *
+     * @param multiRowModeEnabled <code>true</code> means that this grid will allow multiple row selection.
+     */
+    public void setMultiRowModeEnabled(boolean multiRowModeEnabled) {
+        this.multiRowModeEnabled = multiRowModeEnabled;
+        if (!multiRowModeEnabled)
+            setCurrentRow(getCurrentRow()); //refresh selection
+    }
+
+    /**
      * Use this method to displayActive the grid.
+     *
+     * @deprecated don't use this method anymore since it does nothing
      */
     public void display() {
-        drawHeaders();
-        sortOnClient();
-        drawContent();
-        runDecorators();
+    }
+
+    /**
+     * This method adds a new grid listener to be invoked on grid events.
+     *
+     * @param listener is a listener to add.
+     */
+    public void addGridListener(GridListener listener) {
+        getGridPanel().addGridListener(listener);
+    }
+
+    /**
+     * This method removes the specified grid listener.
+     *
+     * @param listener is a listener to remove.
+     */
+    public void removeGridListener(GridListener listener) {
+        getGridPanel().removeGridListener(listener);
     }
 
     /**
      * This method fires the start edit event.
      *
      * @param cell is a cell to be edited.
-     *
      * @return <code>true</code> if all listeners allow the edit operation.
      */
-    public boolean fireStartEdit (GridCell cell) {
+    public boolean fireStartEdit(GridCell cell) {
         boolean result = true;
         for (Iterator iterator = getEditCellListeners().iterator(); iterator.hasNext();) {
             EditCellListener editCellListener = (EditCellListener) iterator.next();
@@ -450,10 +691,9 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param cell     is a cell to be edited.
      * @param newValue is a new value to be applied.
-     *
      * @return <code>true</code> if all listeners allow finishing edit.
      */
-    public boolean fireFinishEdit (GridCell cell, Object newValue) {
+    public boolean fireFinishEdit(GridCell cell, Object newValue) {
         boolean result = true;
         for (Iterator iterator = getEditCellListeners().iterator(); iterator.hasNext();) {
             EditCellListener editCellListener = (EditCellListener) iterator.next();
@@ -461,21 +701,8 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
         }
 
         if (result) {
-            Editable dataModel = getModel();
             updateModel(cell, newValue);
-
-            Object oldValue = cell.getValue();
             cell.setValue(newValue);
-
-            if (
-                isClientSortEnabled()
-                && isSortable(cell.getColumn())
-                && isSorted(cell.getColumn())
-                && !cell.valueEqual(oldValue)
-            ) {
-                dataModel.setAscending(!dataModel.isAscending()); // to keep original sort order
-                fireSort(getCurrentSortColumn());
-            }
         } else {
             cell.setFocus(true);
         }
@@ -501,7 +728,8 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      */
     public void setSortColumn(int column) {
         getModel().setSortColumn(column);
-        display();
+        drawHeaders();
+        sortOnClient();
     }
 
     /**
@@ -513,7 +741,8 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      */
     public void setAscending(boolean ascending) {
         getModel().setAscending(ascending);
-        display();
+        drawHeaders();
+        sortOnClient();
     }
 
     /**
@@ -521,7 +750,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param header is a header cell of the sortable column.
      */
-    public void fireSort (HeaderCell header) {
+    public void fireSort(HeaderCell header) {
         getGridPanel().getMediator().fireSortEvent(header, getModel());
     }
 
@@ -530,7 +759,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'model'.
      */
-    public Editable getModel () {
+    public Editable getModel() {
         return model;
     }
 
@@ -556,7 +785,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * Overrides the super method to emulate grid cell presence.
      *
-     * @param row is a row number.
+     * @param row    is a row number.
      * @param column is a column number.
      * @return a grid cell widget.
      */
@@ -569,8 +798,8 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
                 data = getModel().getRowData(modelRow)[column];
 
             widget = (Widget) getGridCellFactory().create(row, column, data);
-            super.setWidget(row, column,  widget); //do it to avoid loops
-            ((GridCell)widget).displayActive(false);
+            super.setWidget(row, column, widget); //do it to avoid loops
+            ((GridCell) widget).displayActive(false);
         }
         return widget;
     }
@@ -596,11 +825,11 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * Gets a grid row specified by the index.
      *
-     * @param index is an index of the row.
+     * @param index is a number of the row in the data model.
      * @return a grid row instance.
      */
     public GridRow getGridRow(int index) {
-        if (getModel().getRows().length > index)
+        if (index >= 0 && getModel().getRows().length > index)
             return getModel().getRow(index);
         else
             return null;
@@ -628,6 +857,12 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
             return null;
     }
 
+    /**
+     * This method gets a grid column by its name.
+     *
+     * @param name is a name of the column.
+     * @return a link to grid column model.
+     */
     public GridColumn getGridColumn(String name) {
         List names = Arrays.asList(getModel().getColumnNames());
         int index = names.indexOf(name);
@@ -649,7 +884,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * Invokes the <code>getWidget()</code> moethod of the <code>FlexTable</code>.
      *
-     * @param row is a row number.
+     * @param row    is a row number.
      * @param column is a column number.
      * @return an original widget.
      */
@@ -661,8 +896,8 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * This method runs all attached decorators in the same order they have been added.
      */
     protected void runDecorators() {
-        for(Iterator iterator = getDecorators().iterator(); iterator.hasNext();) {
-            GridDecorator gridDecorator = (GridDecorator)iterator.next();
+        for (Iterator iterator = getDecorators().iterator(); iterator.hasNext();) {
+            GridDecorator gridDecorator = (GridDecorator) iterator.next();
             gridDecorator.decorate(this);
         }
     }
@@ -673,8 +908,24 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * @param row  is a row number.
      * @param data is a row data set.
      */
-    protected void addRow (int row, Object[] data) {
+    protected void addRow(int row, Object[] data) {
         getGridRenderer().drawRow(data, row);
+    }
+
+    /**
+     * This method refreshes all the content and headers.<p/>
+     * If the data model is not set it does nothing.
+     */
+    protected void refreshAll() {
+        if (getModel() != null) {
+            int size = getHeaderWidgets().size();
+            for (int i = 0; i < size; i++) {
+                removeHeaderWidget(0);
+            }
+            removeContent();
+
+            setModel(getModel()); //refresh the model
+        }
     }
 
     /**
@@ -682,7 +933,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'locked'.
      */
-    protected boolean isLocked () {
+    protected boolean isLocked() {
         return locked && getModel() instanceof LazyLoadable;
     }
 
@@ -691,7 +942,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param locked Value to set for property 'locked'.
      */
-    protected void setLocked (boolean locked) {
+    protected void setLocked(boolean locked) {
         this.locked = locked;
     }
 
@@ -717,7 +968,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * Sets a current column number and activates the cell that belong to this
      * column and {@link #getCurrentRow() the current row}.
      *
-     * @param row Value to set for property 'currentRow'.
+     * @param row    Value to set for property 'currentRow'.
      * @param column Value to set for property 'currentColumn'.
      */
     public void setCurrentCell(int row, int column) {
@@ -744,12 +995,13 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
         if (row < 0 && getRowCount() > 0)
             row = getRowCount() - 1;
         if (column < 0 && getCellCount(row) > 0)
-            column = getCellCount(row) -1;
-        
+            column = getCellCount(row) - 1;
+
+
         setCurrentRow(row);
         this.currentColumn = column;
 
-        if (row >=0 && column >= 0) {
+        if (row >= 0 && column >= 0) {
             getColumnFormatter().addStyleName(column, "selected-column");
             getCellFormatter().addStyleName(row, column, "selected-cell");
         }
@@ -758,14 +1010,14 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * This method updates the model with the new value of the cell on finish edit event.
      *
-     * @param cell is a cell that produced the event.
+     * @param cell     is a cell that produced the event.
      * @param newValue is a new value of the cell.
      */
     protected void updateModel(GridCell cell, Object newValue) {
         Editable dataModel = getModel();
         dataModel.update(getModelRow(cell.getRow()), cell.getColumn(), newValue);
     }
-    
+
     /**
      * This method drops cell selection.
      */
@@ -773,7 +1025,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
         int oldRow = getCurrentRow();
         int oldColumn = getCurrentColumn();
 
-        if (oldRow >= 0 && oldColumn >=0 && oldRow < getRowCount() && oldColumn < getCellCount(oldRow)) {
+        if (oldRow >= 0 && oldColumn >= 0 && oldRow < getRowCount() && oldColumn < getCellCount(oldRow)) {
             getColumnFormatter().removeStyleName(oldColumn, "selected-column");
             getCellFormatter().removeStyleName(oldRow, oldColumn, "selected-cell");
             this.currentColumn = -1;
@@ -785,7 +1037,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'editCellListeners'.
      */
-    protected List getEditCellListeners () {
+    protected List getEditCellListeners() {
         if (editCellListeners == null)
             editCellListeners = new ArrayList();
         return editCellListeners;
@@ -796,7 +1048,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'readOnlyColumns'.
      */
-    protected Map getReadOnlyColumns () {
+    protected Map getReadOnlyColumns() {
         return readOnlyColumns;
     }
 
@@ -805,7 +1057,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'sortableHeaders'.
      */
-    protected Map getSortableHeaders () {
+    protected Map getSortableHeaders() {
         return sortableHeaders;
     }
 
@@ -814,7 +1066,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return <code>true</code> if sorting is enabled.
      */
-    protected boolean isClientSortEnabled () {
+    protected boolean isClientSortEnabled() {
         return !(getModel() instanceof LazyLoadable);
     }
 
@@ -823,7 +1075,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'currentSortColumn'.
      */
-    public HeaderCell getCurrentSortColumn () {
+    public HeaderCell getCurrentSortColumn() {
         return getHeaderCell(getModel().getSortColumn());
     }
 
@@ -839,40 +1091,95 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
 
     /**
      * This method adds a new empty row into the grid.<p/>
-     * Grid cells must provide correct results to allow the grid to support this feature. 
+     * Grid cells must provide correct results to allow the grid to support this feature.
      */
-    protected void addRow() {
+    public void addRow() {
         Editable dataModel = getModel();
         Object[] emptyCells = new Object[getHeaders().length];
-
-        int position = getRowCount();
-        dataModel.addRow(getModelRow(position), emptyCells);
-        addRow(position, emptyCells);
-
+        int position = getModelRow(getRowCount());
+        dataModel.addRow(position, emptyCells);
         setCurrentRow(position);
     }
 
     /**
-     * This method removes the currently selected row.
+     * This method adds a new row into the grid end of the current page if the model row has been added.
+     *
+     * @param event is a model event containing a row number value.
+     */
+    protected void drawRow(EditableModelEvent event) {
+        Editable source = event.getSource();
+        if (source == getModel())
+            addRow(getRowByModelRow(event), source.getRow(event.getRow()).getData());
+    }
+
+    /**
+     * This method draws a concrete cell.<p/>
+     * If the cell has already been drawn the method renders it again.
+     *
+     * @param event is an event on which cell must be drawn.
+     */
+    protected void drawCell(EditableModelEvent event) {
+        Editable source = event.getSource();
+        if (source == getModel()) {
+            Object data = source.getRow(event.getRow()).getData()[event.getColumn()];
+            getGridRenderer().drawCell(data, getRowByModelRow(event), event.getColumn(), false);
+        }
+    }
+
+    /**
+     * This method removes the currently selected row or several rows if the multi row selection mode enabled.
      */
     protected void removeRow() {
         Editable model = getModel();
-        int currentRow = getCurrentRow();
-        
-        if (currentRow >= 0 && getRowCount() > 0) {
-            int modelRow = getModelRow(currentRow);
+
+        int[] indexes = getCurrentRows();
+        int last = -1;
+        if (indexes.length > 0)
+            last = indexes[indexes.length - 1];
+
+        for (int i = 0; i < indexes.length; i++) {
+            int row = indexes[i];
+            int modelRow = getModelRow(row);
+
             model.removeRow(modelRow);
-
-            int rowCount = getRowCount() - 1;
-            int selectRow = currentRow;
-            if (selectRow >= rowCount) {
-                selectRow = rowCount - 1;
-            }
-
-            removeRow(currentRow);
-            setCurrentRow(selectRow);
-            increaseRowNumbers(currentRow, -1);
         }
+
+        getSelectionModel().clear();
+        dropSelection();
+
+        if (last > getRowCount() - 1)
+            last = getRowCount() - 1;
+        if (last >= 0)
+            setCurrentRow(last);
+    }
+
+    /**
+     * Removes the grid row finding it by the model row number that was deleted.
+     *
+     * @param event is a model event containing a row number value.
+     */
+    protected void deleteRow(EditableModelEvent event) {
+        int[] indexes = getCurrentRows();
+
+        int row = getRowByModelRow(event);
+        removeRow(row);
+        increaseRowNumbers(row, -1);
+
+        for (int j = row; j < indexes.length; j++) {
+            int index = indexes[j];
+            if (index > row)
+                indexes[j] = index - 1;
+        }
+    }
+
+    /**
+     * This method draws a content on the specified model event.
+     *
+     * @param event is a model event.
+     */
+    protected void synchronizeView(EditableModelEvent event) {
+        drawContent();
+        runDecorators();
     }
 
     /**
@@ -886,16 +1193,17 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
             callbackHandler.synchronize(dataModel); //redisplay will be done automatically
         else
             drawContent(); //just redisplay the content if data synchronization is not required
+        runDecorators();
     }
-    
+
     /**
      * This method removes all content from the grid.
      */
-    protected void removeContent () {
+    protected void removeContent() {
         while (getRowCount() > 0) {
             removeRow(getRowCount() - 1);
         }
-        this.currentRow = -1;
+        getSelectionModel().clear();
         this.currentColumn = -1;
     }
 
@@ -903,11 +1211,21 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * This metod calculates a row number in the model.
      *
      * @param gridRow is a grid row.
-     *
      * @return a model row.
      */
-    public int getModelRow (int gridRow) {
+    public int getModelRow(int gridRow) {
         return getGridRenderer().getModelRow(gridRow);
+    }
+
+    /**
+     * Gets a grid row number on the displayed page by a model row number.
+     *
+     * @param event is a model event containing a row number value.
+     *
+     * @return a grid row number.
+     */
+    public int getRowByModelRow(EditableModelEvent event) {
+        return getGridRenderer().getRowByModelRow(event.getRow());
     }
 
     /**
@@ -915,7 +1233,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return a cell comparator.
      */
-    protected Comparator getCellComparator () {
+    protected Comparator getCellComparator() {
         if (cellComparator == null)
             setCellComparator(new DefaultCellComparator(this));
         return cellComparator;
@@ -924,7 +1242,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * This method draws a content of the grid.
      */
-    protected void drawContent () {
+    protected void drawContent() {
         dropSelection();
         GridDataModel model = getModel();
         if (model != null) {
@@ -933,7 +1251,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
             boolean empty = model.isEmpty();
 
             getGridRenderer().drawContent(model);
-            
+
             int count = end - start;
             if (empty) {
                 setCurrentRow(-1);
@@ -950,10 +1268,9 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * This method fires row drawing event before the row is drawn.
      *
-     * @param row is a row number.
+     * @param row      is a row number.
      * @param pageSize is a page size.
-     * @param data is row data.
-     *
+     * @param data     is row data.
      * @return <code>true</code> if the row must be drawn.
      */
     protected boolean fireBeforeDrawEvent(int row, int pageSize, Object[] data) {
@@ -964,9 +1281,9 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * This method fires row drawing event after the row is drawn.
      *
-     * @param row is a row number.
+     * @param row      is a row number.
      * @param pageSize is a page size.
-     * @param data is row data.
+     * @param data     is row data.
      * @return <code>true</code> if drawing must be continued.
      */
     protected boolean fireAfterDrawEvent(int row, int pageSize, Object[] data) {
@@ -977,7 +1294,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * This method draws header cells.
      */
-    protected void drawHeaders () {
+    protected void drawHeaders() {
         getGridRenderer().drawHeaders(getHeaders());
         detectCurrentSortColumn();
     }
@@ -985,9 +1302,10 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * This method performs client sorting.
      */
-    protected void sortOnClient () {
-        if (!isClientSortEnabled())
-            return;
+    protected void sortOnClient() {
+        if (!isClientSortEnabled()) {
+            return;      
+        }
 
         HeaderCell sortColumn = getCurrentSortColumn();
         if (sortColumn != null)
@@ -998,7 +1316,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * This method looks for the sort column in the header list.<p> The method is invoked by the
      * {@link #drawHeaders()}.
      */
-    protected void detectCurrentSortColumn () {
+    protected void detectCurrentSortColumn() {
         if (getCurrentSortColumn() == null) {
             GridDataModel model = getModel();
             Map sortableHeaders = getSortableHeaders();
@@ -1018,14 +1336,14 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     /**
      * This method activates / passivate the specified cell.
      *
-     * @param row is a row of the cell.
+     * @param row    is a row of the cell.
      * @param column is a column of the cell.
      * @param active is an activation flag.
      */
     protected void activateCell(int row, int column, boolean active) {
         if (row < 0 || column < 0 || row > getRowCount() || column > getCellCount(row))
             return;
-        
+
         Widget widget = getWidget(row, column);
         if (widget == null || !(widget instanceof GridCell) || isReadOnly(column))
             return;
@@ -1043,10 +1361,10 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     }
 
     /**
-     * This method adds grid specific listeners into the current widget.<p/> 
+     * This method adds grid specific listeners into the current widget.<p/>
      * You can override the method in your extensions.
      */
-    protected void addListeners () {
+    protected void addListeners() {
     }
 
     /**
@@ -1055,8 +1373,8 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * @param startRow is a start row number.
      * @param step     is an increase step.
      */
-    protected void increaseRowNumbers (int startRow, int step) {
-        for (int i = startRow; i >=0 && i < getRowCount(); i++) {
+    protected void increaseRowNumbers(int startRow, int step) {
+        for (int i = startRow; i >= 0 && i < getRowCount(); i++) {
             for (int j = 0; j < getCellCount(i); j++) {
                 if (getOriginalWidget(i, j) != null) {
                     Widget widget = getWidget(i, j);
@@ -1074,7 +1392,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @return Value for property 'invisibleColumns'.
      */
-    protected List getInvisibleColumns () {
+    protected List getInvisibleColumns() {
         if (invisibleColumns == null)
             invisibleColumns = new ArrayList();
         return invisibleColumns;
@@ -1096,8 +1414,11 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      *
      * @param gridPanel Value to set for property 'gridPanel'.
      */
-    protected void setGridPanel (GridPanel gridPanel) {
-        this.gridPanel = gridPanel;
+    protected void setGridPanel(GridPanel gridPanel) {
+        if (gridPanel != null) {
+            this.gridPanel = gridPanel;
+            this.gridPanel.setGrid(this);
+        }
     }
 
     /**
@@ -1119,7 +1440,6 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
     protected Element getBodyElement() {
         return super.getBodyElement();
     }
-
 }
 
 

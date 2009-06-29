@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.Hierarchical;
+import org.gwt.advanced.client.datamodel.EditableModelEvent;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
 import org.gwt.advanced.client.ui.GridEventManager;
@@ -104,6 +105,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      */
     public void addGridPanelFactory(int column, GridPanelFactory factory) {
         getGridPanelFactories().put(new Integer(column), factory);
+        getGridRenderer().drawColumn(getModel().getGridColumn(column).getData(), column, true);
     }
 
     /**
@@ -112,6 +114,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      * @param cell is an expanded / collapsed cell.
      */
     public void fireExpandCell (ExpandableCell cell) {
+        dropSelection();
         setCurrentCell(cell.getRow(), cell.getColumn());
         if (cell.isExpanded()) {
             expandCell(cell.getRow(), cell.getColumn());
@@ -208,19 +211,51 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
     }
 
     /** {@inheritDoc} */
+    public void selectRows(int toRow) {
+        super.selectRows(toRow);
+
+        HTMLTable.RowFormatter formatter = getRowFormatter();
+        int from = Math.min(getCurrentRow(), toRow);
+        int to = Math.max(getCurrentRow(), toRow);
+        for (int i = from; i <= to; i++) {
+            if (formatter.getStyleName(i).indexOf(HierarchicalGrid.SUBGRID_ROW_STYLE) != -1) {
+                formatter.removeStyleName(i,"selected-row");
+                getSelectionModel().remove(i);
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    protected void removeColumn(int column) {
+        if (getHeaderWidgets().size() > column) {
+            removeHeaderWidget(column);
+
+            boolean expandable = isExpandable(column);
+            for (int i = 0; i < getRowCount(); i++) {
+                if (!SUBGRID_ROW_STYLE.equals(getRowFormatter().getStyleName(i))) {
+                    Widget originalWidget = getOriginalWidget(i, column);
+                    if (expandable && ((ExpandableCell)originalWidget).isExpanded())
+                        collapseCell(i, column);
+                    removeCell(i, column);
+                }
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
     protected void removeRow() {
         Editable dataModel = getModel();
         if (dataModel instanceof Hierarchical) {
-            int currentRow = getCurrentRow();
+            int[] indexes = getCurrentRows();
+            for (int i = 0; i < indexes.length; i++) {
+                int index = indexes[i];
+                int modelRow = getModelRow(index);
 
-            if (currentRow >= 0 && currentRow < getRowCount()) {
-                int modelRow = getModelRow(currentRow);
-
-                for (int i = 0; i < getCellCount(currentRow); i++) {
+                for (int j = 0; j < getCellCount(index); j++) {
                     Hierarchical hierarchical = ((Hierarchical) dataModel);
-                    if (hierarchical.isExpanded(modelRow, i))
-                        collapseCell(currentRow, i);
-                    getGridPanelCache().remove(hierarchical.getSubgridModel(modelRow, i));
+                    if (hierarchical.isExpanded(modelRow, j))
+                        collapseCell(index, j);
+                    getGridPanelCache().remove(hierarchical.getSubgridModel(modelRow, j));
                 }
             }
 
@@ -244,7 +279,8 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      * @param parentColumn is a column number.
      */
     protected void expandCell (int parentRow, int parentColumn) {
-        ((HierarchicalGridRenderer)getGridRenderer()).renderSubgrid(parentRow, parentColumn);
+        if (getModel() instanceof Hierarchical)
+            ((Hierarchical) getModel()).setExpanded(getModelRow(parentRow), parentColumn, true);
         if (isResizable()) {
             GridPanel panel = getGridPanel(parentRow, parentColumn);
             Element td = getCellFormatter().getElement(getGridRowNumber(parentRow, parentColumn), parentColumn);
@@ -254,13 +290,32 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
     }
 
     /**
+     * This method draws a subgrid on add subgrid event.
+     *
+     * @param event is a model event to be handled.
+     */
+    protected void drawSubgrid(EditableModelEvent event) {
+        ((HierarchicalGridRenderer)getGridRenderer()).renderSubgrid(getRowByModelRow(event), event.getColumn());
+    }
+    
+    /**
      * This method collapses the cell and removes an appropriate subgrid row.
      *
      * @param parentRow is a row number..
      * @param parentColumn is a column number.
      */
     protected void collapseCell (int parentRow, int parentColumn) {
-        ((HierarchicalGridRenderer)getGridRenderer()).removeSubgrid(parentRow, parentColumn);
+        if (getModel() instanceof Hierarchical)
+            ((Hierarchical) getModel()).setExpanded(getModelRow(parentRow), parentColumn, false);
+    }
+
+    /**
+     * This method draws a subgrid on remove subgrid event.
+     *
+     * @param event is a model event to be handled.
+     */
+    protected void deleteSubgrid(EditableModelEvent event) {
+        ((HierarchicalGridRenderer)getGridRenderer()).removeSubgrid(getRowByModelRow(event), event.getColumn());
     }
 
     /**

@@ -31,6 +31,8 @@ import org.gwt.advanced.client.ui.widget.cell.GridCell;
 public class DefaultGridEventManager implements GridEventManager {
     /** a grid panel */
     private GridPanel panel;
+    /** selection modifier key code (Shift or Ctrl) */
+    private int selectionModifier;
 
     /**
      * Creates an instanec of the class and adds itself to the listeners list of the grid.
@@ -44,6 +46,11 @@ public class DefaultGridEventManager implements GridEventManager {
     /** {@inheritDoc} */
     public void dispatch(GridPanel panel, char keyCode, int modifiers) {
         int mainModifier = KeyboardListener.MODIFIER_ALT | KeyboardListener.MODIFIER_CTRL;
+
+        if (modifiers == KeyboardListener.MODIFIER_CTRL || modifiers == KeyboardListener.MODIFIER_SHIFT)
+            selectionModifier = modifiers;
+        else
+            selectionModifier = 0;
 
         if (KeyboardListener.KEY_DOWN == keyCode && modifiers == mainModifier)
             moveCursorDown();
@@ -81,7 +88,7 @@ public class DefaultGridEventManager implements GridEventManager {
         int row = grid.getCurrentRow();
         int column = grid.getCurrentColumn();
 
-        if (row != -1 && column != -1)
+        if (row != -1 && column != -1 && (!grid.isMultiRowModeEnabled() || getSelectionModifier() == 0))
             setCursor(row, column);
     }
 
@@ -96,7 +103,7 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     public void onCellClicked (SourcesTableEvents sender, int row, int cell) {
         EditableGrid grid = getPanel().getGrid();
-        if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn() && !grid.hasActiveCell())
+        if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn() && !grid.hasActiveCell() && getSelectionModifier() == 0)
             activateCell();
         else if (!grid.hasActiveCell())
             grid.setFocus(true);
@@ -116,6 +123,7 @@ public class DefaultGridEventManager implements GridEventManager {
 
     /** Does nothing */
     public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+        selectionModifier = 0;
     }
 
     /**
@@ -306,14 +314,24 @@ public class DefaultGridEventManager implements GridEventManager {
     }
 
     /**
-     * This method sets the current cell value.
+     * This method sets the current cell value.<p/>
+     * It takes into account whether the Shift or Ctrl modifier keys are pressed.
      *
      * @param row is a row number.
      * @param cell is a column number.
      */
     protected void setCursor(int row, int cell) {
         EditableGrid grid = getPanel().getGrid();
-        grid.setCurrentCell(row, cell);
+        if (getSelectionModifier() == 0 || !grid.isMultiRowModeEnabled())
+            grid.setCurrentCell(row, cell);
+        else if (getSelectionModifier() == KeyboardListener.MODIFIER_CTRL) {
+            if (!grid.isSelected(row))
+                grid.selectRow(row);
+            else
+                grid.deselectCell(row, cell);
+        } else if (getSelectionModifier() == KeyboardListener.MODIFIER_SHIFT) {
+            grid.selectRows(row);
+        }
     }
 
     /**
@@ -323,5 +341,15 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected GridPanel getPanel() {
         return panel;
+    }
+
+    /**
+     * Gets a key code of selection modifier pressed by a user.<p/>
+     * Usually Shift or Ctrl.
+     *
+     * @return a selection modifier key code.
+     */
+    public int getSelectionModifier() {
+        return selectionModifier;
     }
 }

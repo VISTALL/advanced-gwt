@@ -16,13 +16,7 @@
 
 package org.gwt.advanced.client.datamodel;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This is a data model for the tree grid.
@@ -48,7 +42,7 @@ public class TreeGridDataModel implements Composite {
      * @param data is a data array to be placed into the model.
      */
     public TreeGridDataModel(Object[][] data) {
-        setDelegate(new DelegateEditableGridDataModel(data));
+        setDelegate(new DelegateEditableGridDataModel(data, this));
     }
 
     /**
@@ -95,6 +89,8 @@ public class TreeGridDataModel implements Composite {
         siblings.add(gridRow);
         int index = siblings.size() - 1;
         gridRow.setIndex(index);
+
+        fireRowEvent(EditableModelEvent.ADD_ROW, parent, index);
         return index;
     }
 
@@ -110,6 +106,8 @@ public class TreeGridDataModel implements Composite {
         removeAll(parent);
         for (int i = 0; i < children.length; i++)
             addRow(parent, children[i]);
+
+        getDelegate().fireEvent(new CompositeModelEvent(EditableModelEvent.UPDATE_ALL, parent));
     }
 
     /** {@inheritDoc} */
@@ -121,6 +119,10 @@ public class TreeGridDataModel implements Composite {
 
         TreeGridRow[] rows = getRows(parent);
         rows[row].set(column, data);
+
+        CompositeModelEvent event = new CompositeModelEvent(EditableModelEvent.UPDATE_CELL, parent, row);
+        event.setColumn(column);
+        getDelegate().fireEvent(event);
     }
 
     /** {@inheritDoc} */
@@ -136,6 +138,8 @@ public class TreeGridDataModel implements Composite {
             getChildrenList(parent).remove(removeRow);
             getRemovedRowsList(parent).add(removeRow);
             remapIndexes(parent);
+
+            fireRowEvent(EditableModelEvent.REMOVE_ROW, parent, row);
         }
     }
 
@@ -143,8 +147,10 @@ public class TreeGridDataModel implements Composite {
     public void removeAll(TreeGridRow parent) {
         if (parent == null)
             removeAll();
-        else
+        else {
             getChildrenList(parent).clear();
+            getDelegate().fireEvent(new CompositeModelEvent(EditableModelEvent.CLEAN, parent));
+        }
     }
 
     /** {@inheritDoc} */
@@ -287,6 +293,8 @@ public class TreeGridDataModel implements Composite {
         setSortColumn(column);
         Collections.sort(getChildrenList(parent), getDelegate().createRowComparator(column, comparator));
         remapIndexes(parent);
+
+        getDelegate().fireEvent(new CompositeModelEvent(EditableModelEvent.SORT_ALL, parent, column));
     }
 
     /** {@inheritDoc} */
@@ -382,8 +390,6 @@ public class TreeGridDataModel implements Composite {
 
     /** {@inheritDoc} */
     public void removeAll() {
-        getDelegate().removeAll();
-
         for (Iterator iterator = getSubRows().keySet().iterator(); iterator.hasNext();) {
             TreeGridRow parent = (TreeGridRow) iterator.next();
             getRemovedRowsList(parent).addAll(getChildrenList(parent));
@@ -391,6 +397,8 @@ public class TreeGridDataModel implements Composite {
 
         getSubRows().clear();
         getPagingFlags().clear();
+
+        getDelegate().removeAll();
     }
 
     /** {@inheritDoc} */
@@ -478,6 +486,16 @@ public class TreeGridDataModel implements Composite {
     /** {@inheritDoc} */
     public void setColumNames(String[] names) {
         getDelegate().setColumNames(names);
+    }
+
+    /** {@inheritDoc} */
+    public void addListener(EditableModelListener listener) {
+        getDelegate().addListener(listener);
+    }
+
+    /** {@inheritDoc} */
+    public void removeListener(EditableModelListener listener) {
+        getDelegate().removeListener(listener);
     }
 
     /** {@inheritDoc} */
@@ -701,18 +719,35 @@ public class TreeGridDataModel implements Composite {
     }
 
     /**
+     * This method fires the {@link org.gwt.advanced.client.datamodel.CompositeModelEvent}.
+     *
+     * @param eventType is a concrete event type.
+     * @param parent is a parent row.
+     * @param row is a number of the row that produced this event.
+     */
+    protected void fireRowEvent(EditableModelEvent.EventType eventType, TreeGridRow parent, int row) {
+        CompositeModelEvent event = new CompositeModelEvent(eventType, parent, row);
+        getDelegate().fireEvent(event);
+    }
+
+    /**
      * This class extends original editable model to support {@link TreeGridRow}s creation.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
     protected class DelegateEditableGridDataModel extends EditableGridDataModel {
+        /** model events source */
+        private TreeGridDataModel source;
+
         /**
          * Creates an instance of this class and saves a link to a parent composite.
          *
          * @param data is a data to be placed into the model.
+         * @param source model events source.
          */
-        public DelegateEditableGridDataModel(Object[][] data) {
+        public DelegateEditableGridDataModel(Object[][] data, TreeGridDataModel source) {
             super(data);
+            this.source = source;
         }
 
         /**
@@ -727,6 +762,23 @@ public class TreeGridDataModel implements Composite {
         /** {@inheritDoc} */
         protected GridRow createGridRow(int columnCount) {
             return new TreeGridRow(getThisModel());
+        }
+
+        /** {@inheritDoc} */
+        protected void prepareEvent(EditableModelEvent event) {
+            event.setSource(source);
+        }
+
+        /** {@inheritDoc} */
+        protected EditableModelEvent createEvent(EditableModelEvent.EventType eventType) {
+            return new CompositeModelEvent(eventType, null);
+        }
+
+        /** {@inheritDoc} */
+        protected EditableModelEvent createEvent(EditableModelEvent.EventType eventType, int row, int column) {
+            CompositeModelEvent event = new CompositeModelEvent(eventType, null, row);
+            event.setColumn(column);
+            return event;
         }
     }
 }

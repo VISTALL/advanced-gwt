@@ -68,4 +68,22 @@ public interface GridRenderer {
      * @return a row number.
      */
     int getModelRow(int row);
+
+    /**
+     * Gets a grid row number on the displayed page by a model row number.
+     *
+     * @param modelRow is a model row number.
+     *
+     * @return a grid row number.
+     */
+    int getRowByModelRow(int modelRow);
+
+    /**
+     * This method draws a column.
+     *
+     * @param data is a column data to draw.
+     * @param column is a column number
+     * @param overwrite is a falg that means whether it's required to overwrite the column cells.
+     */
+    void drawColumn(Object[] data, int column, boolean overwrite);
 }

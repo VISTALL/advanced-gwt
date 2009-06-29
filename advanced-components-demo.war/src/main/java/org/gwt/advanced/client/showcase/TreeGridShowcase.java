@@ -44,8 +44,10 @@ public class TreeGridShowcase extends AbstractShowcase {
             DemoModelFactory.createTreePeopleModel()
         );
         gridPanel.setInvisibleColumn(3, true);
+        gridPanel.setInvisibleColumn(3, false);
         gridPanel.setPageNumberBoxDisplayed(true);
         gridPanel.setTotalCountDisplayed(true);
+        gridPanel.getGrid().setMultiRowModeEnabled(true);
         gridPanel.display();
         return gridPanel;
     }

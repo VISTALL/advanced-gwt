@@ -41,7 +41,7 @@ public class HierarchicalGridEventManager extends DefaultGridEventManager {
         EditableGrid grid = getPanel().getGrid();
 
         if (!isSubgridRow(row)) {
-            if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn() && !grid.hasActiveCell())
+            if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn() && !grid.hasActiveCell() && getSelectionModifier() == 0)
                 dispatch(getPanel(), (char) KeyboardListener.KEY_ENTER, 0);
             else if (!grid.hasActiveCell())
                 grid.setFocus(true);

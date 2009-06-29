@@ -188,7 +188,6 @@
 
 /** flex table head cells styles */
 .advanced-Grid th {
-    height: 26px;
     border-left: 1px solid white;
     padding: 0;
     background: url( images/gradient.gif ) repeat-x;
@@ -196,6 +195,11 @@
     font-size: 12px;
     font-weight: bold;
     color: white;
+}
+
+.advanced-Grid th .gwt-Label {
+    height: 19px;
+    padding: 3px 0;
 }
 
 /** data cells nested panel styles (if editable) */
@@ -211,10 +215,9 @@
 /** header cells nested panel styles */
 .advanced-Grid .header-cell {
     height: 100%;
-    width: 100%;
     text-align: center;
     vertical-align: middle;
-    padding: 0;
+    padding: 3px 0;
     background-color: transparent;
 }
 
@@ -224,8 +227,7 @@
     font-size: 12px;
     font-weight: bold;
     color: white;
-    height: 100%;
-    width: 100%;
+    display: inline;
 }
 
 /** header cells nested panel table styles */
@@ -239,13 +241,18 @@
     white-space: nowrap;
 }
 
+.advanced-Grid .header-cell img {
+    width: 15px;
+    height: 10px;
+}
+
 /** header sortable cells nested panel styles */
-.advanced-Grid .sortable-header {
+.advanced-Grid .sortable-header table {
     cursor: pointer;
 }
 
 /** header non-sortable cells nested panel styles */
-.advanced-Grid .non-sortable-header {
+.advanced-Grid .non-sortable-header, .advanced-Grid .sortable-header  {
     cursor: default;
 }
 

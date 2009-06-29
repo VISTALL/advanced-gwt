@@ -3,6 +3,22 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.4.7 includes:
+
+Bug fixes:
+1. [ERROR] Unexpected internal compiler error - GWT 1.6.4, gwt-dev-windows.jar
+2. Tree grid expand buttons (+) should not be displayed for rows without children
+3. ComboBox doesn't actually add a KeyboradListener
+4. Method EditableGridDataModel.update(init, int, Object) works improperly for LazyGridDataModel
+5. It seems like the library can't be compiled in GWT 1.6
+
+New features:
+1. Multiple line selection in grids
+2. Data models listening
+3. New theme required
+4. Resources not found when loading entry point from a page not in the root dir
+
+====================================================================================================================
 Release 1.4.6 includes:
 
 Bug fixes:

@@ -139,6 +139,26 @@ public class AdvancedFlexTable extends FlexTable {
     }
 
     /**
+     * Inserts a header cell element.
+     *
+     * @param column is a column number that the element will have.
+     */
+    public void insertHeaderCell(int column) {
+        Element tr;
+        if (tHeadElement == null) {
+            tHeadElement = DOM.createElement("thead");
+            DOM.insertChild(getElement(), getTHeadElement(), 0);
+            tr = DOM.createTR();
+            DOM.insertChild(getTHeadElement(), tr, 0);
+        } else {
+            tr = DOM.getChild(tHeadElement, 0);
+        }
+
+        Element th = DOM.createTH();
+        DOM.insertBefore(tr, th, DOM.getChild(tr, column));
+    }
+
+    /**
      * Prepares the flex table for scrolling.<p/>
      * Currently this method supports IE6+ and Firefox 2.x
      *

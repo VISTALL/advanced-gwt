@@ -125,6 +125,14 @@ public class LazyGridDataModel extends EditableGridDataModel implements LazyLoad
     }
 
     /** {@inheritDoc} */
+    public void update(int row, int column, Object data) {
+        checkRowNumber(row, getDataList().size() + getPageSize() * getCurrentPageNumber());
+        checkColumnNumber(column, getTotalColumnCount());
+
+        ((GridRow)getDataList().get(row - getPageSize() * getCurrentPageNumber())).set(column, data);
+    }
+
+    /** {@inheritDoc} */
     protected String getInternalRowIdentifier (int row) {
         return super.getInternalRowIdentifier(row - getStartRow());
     }

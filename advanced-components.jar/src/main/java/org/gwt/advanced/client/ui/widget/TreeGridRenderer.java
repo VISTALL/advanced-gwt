@@ -18,10 +18,7 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
-import org.gwt.advanced.client.datamodel.Composite;
-import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.datamodel.GridDataModel;
-import org.gwt.advanced.client.datamodel.TreeGridRow;
+import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
 import org.gwt.advanced.client.ui.widget.cell.TreeCell;
 import org.gwt.advanced.client.util.Stack;
@@ -92,6 +89,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
             TreeCell cell = (TreeCell) getCellFactory().create(row, column, gridCell);
             cell.setGridRow(currentRow);
             cell.setExpanded(currentRow.isExpanded());
+            cell.setLeaf(!(model instanceof LazyLoadable) && model.getRows(currentRow).length <= 0);
             cell.displayActive(false);
         } else
             super.drawCell(data, row, column, active);
@@ -104,6 +102,44 @@ public class TreeGridRenderer extends DefaultGridRenderer {
             return ((TreeGridRow)getRowMapping().get(new Integer(row))).getIndex();
         } else
             return super.getModelRow(row);
+    }
+
+    /** {@inheritDoc} */
+    public int getRowByModelRow(int modelRow) {
+        Editable editable = getGrid().getModel();
+        if (editable instanceof Composite) {
+            for (Iterator iterator = getRowMapping().entrySet().iterator(); iterator.hasNext();) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                TreeGridRow gridRow = (TreeGridRow) entry.getValue();
+                if (gridRow.getIndex() == modelRow) {
+                    return ((Integer)entry.getKey()).intValue();
+                }
+            }
+            return -1;
+        } else
+            return super.getRowByModelRow(modelRow);
+    }
+
+    /**
+     * This method gets a row number in the grid for the specified model row number.
+     *
+     * @param parent is a parent row.
+     * @param modelRow is a model row number (in the subtree).
+     * @return a grid row number.                             T
+     */
+    public int getRowByModelRow(TreeGridRow parent, int modelRow) {
+        Editable editable = getGrid().getModel();
+        if (editable instanceof Composite) {
+            for (Iterator iterator = getRowMapping().entrySet().iterator(); iterator.hasNext();) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                TreeGridRow gridRow = (TreeGridRow) entry.getValue();
+                if (gridRow.getIndex() == modelRow && parent == gridRow.getParent()) {
+                    return ((Integer)entry.getKey()).intValue();
+                }
+            }
+            return -1;
+        } else
+            return super.getRowByModelRow(modelRow);
     }
 
     /**
@@ -224,8 +260,10 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      * Removes a subtree that belongs to the specified parent.
      *
      * @param parent is a parent cell.
+     *
+     * @return number of removed rows in the grid.
      */
-    protected void removeSubtree(TreeCell parent) {
+    protected int removeSubtree(TreeCell parent) {
         getGrid().dropSelection();
         getGrid().setCurrentRow(parent.getRow());
         int level = parent.getGridRow().getLevel();
@@ -247,7 +285,9 @@ public class TreeGridRenderer extends DefaultGridRenderer {
             }
 
             getGrid().increaseRowNumbers(row, -count);
+            return count;
         }
+        return 0;
     }
 
     /**

@@ -16,13 +16,10 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.TreeGridRow;
 import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
+import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
  * This is a pager implementation for the subtree rows.<p/>
@@ -127,7 +124,7 @@ public class SubtreePager extends SimplePanel {
         int currentPage = getRow().getCurrentPageNumber();
 
         if (currentPage <= 0)
-            left = new Image("advanced/images/single.gif");
+            left = new Image(ThemeHelper.getInstance().getFullResourceName("advanced/images/single.gif"));
         else {
             left = new ThemeImage("bullet-left.gif");
             left.setStyleName("arrow-left");
@@ -135,7 +132,7 @@ public class SubtreePager extends SimplePanel {
         }
 
         if (currentPage >= getRow().getEndPage())
-            right = new Image("advanced/images/single.gif");
+            right = new Image(ThemeHelper.getInstance().getFullResourceName("advanced/images/single.gif"));
         else {
             right = new ThemeImage("bullet-right.gif");
             right.setStyleName("arrow-right");

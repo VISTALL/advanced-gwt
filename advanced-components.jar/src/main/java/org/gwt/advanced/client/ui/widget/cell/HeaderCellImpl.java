@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
 import org.gwt.advanced.client.ui.widget.SimpleGrid;
 import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
+import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
  * This is a header cell implementation.
@@ -30,7 +31,7 @@ import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
  */
 public class HeaderCellImpl extends AbstractCell implements HeaderCell {
     /** one pixel image name */
-    public static final String SINGLE_IMAGE = "advanced/images/single.gif";
+    public static final String SINGLE_IMAGE = ThemeHelper.getInstance().getFullResourceName("advanced/images/single.gif");
 
     /** this is a dock panel for the cell elemnts */
     private FlexTable panel;
@@ -79,7 +80,6 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
 
         if (panel.getRowCount() < 1) {
             panel.setWidget(0, 0, label);
-            panel.getFlexCellFormatter().setWidth(0, 0, "100%");
             panel.getFlexCellFormatter().setVerticalAlignment(0, 0, DockPanel.ALIGN_MIDDLE);
             panel.setCellPadding(0);
             panel.setCellSpacing(0);

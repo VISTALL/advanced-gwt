@@ -111,6 +111,7 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
      */
     public void setDate(Date date) {
         this.date = date;
+        getSelectedValue().setText(getFormat().format(date));
     }
 
     /** {@inheritDoc} */

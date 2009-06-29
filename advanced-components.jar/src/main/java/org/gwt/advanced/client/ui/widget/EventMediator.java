@@ -16,8 +16,7 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.datamodel.GridDataModel;
+import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.GridListener;
 import org.gwt.advanced.client.ui.GridToolbarListener;
 import org.gwt.advanced.client.ui.PagerListener;
@@ -35,7 +34,7 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class EventMediator implements PagerListener, GridListener, GridToolbarListener, SelectRowListener {
+public class EventMediator implements PagerListener, GridListener, GridToolbarListener, SelectRowListener, EditableModelListener {
     /** a grid panel */
     private GridPanel panel;
     /** pager listeners set */
@@ -97,7 +96,6 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
 
         grid.drawHeaders();
         grid.sortOnClient();
-        grid.synchronizeDataModel();
     }
 
     /** {@inheritDoc} */
@@ -120,8 +118,6 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
             setCurrentPageNumber(dataModel, gridPanel.getTopPager());
         if (gridPanel.isBottomPagerVisible())
             setCurrentPageNumber(dataModel, gridPanel.getBottomPager());
-
-        gridPanel.getGrid().synchronizeDataModel();
     }
 
     /** {@inheritDoc} */
@@ -345,6 +341,36 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
         getToolbarListeners().remove(listener);
     }
 
+    /**
+     * This method dispatches the model events and invokes appropriate methods of the related grid.
+     *
+     * @param event is an event to be dispatched.
+     */
+    public void onModelEvent(EditableModelEvent event) {
+        Object type = event.getEventType();
+        EditableGrid grid = getPanel().getGrid();
+        
+        if (type == EditableModelEvent.SORT_ALL || type == EditableModelEvent.UPDATE_ALL) {
+            grid.synchronizeView(event);
+        } else if (type == EditableModelEvent.ADD_ROW) {
+            grid.drawRow(event);
+        } else if (type == EditableModelEvent.UPDATE_ROW) {
+            grid.drawRow(event);
+        } else if (type == EditableModelEvent.UPDATE_CELL || type == HierarchicalModelEvent.ADD_SUBGRID || type == HierarchicalModelEvent.REMOVE_SUBGRID) {
+            grid.drawCell(event);
+        } else if (type == EditableModelEvent.REMOVE_ROW) {
+            grid.deleteRow(event);
+        } else if (type == EditableModelEvent.CLEAN) {
+            grid.synchronizeDataModel();
+        } else if (type == HierarchicalModelEvent.CELL_EXPANDED) {
+            ((HierarchicalGrid)grid).drawSubgrid(event);
+        } else if (type == HierarchicalModelEvent.CELL_COLLAPSED) {
+            ((HierarchicalGrid)grid).deleteSubgrid(event);
+        } else if (type == CompositeModelEvent.CLEAN_SUBTREE) {
+            ((TreeGrid)grid).removeSubtree(event);
+        }
+    }
+    
     /**
      * Getter for property 'panel'.
      *

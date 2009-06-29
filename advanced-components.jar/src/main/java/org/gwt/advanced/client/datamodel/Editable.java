@@ -166,7 +166,7 @@ public interface Editable extends GridDataModel {
     Object[][] getRemovedRows();
 
     /**
-     * This method clears 
+     * This method clears removed rows from the model history
      */
     void clearRemovedRows();
 
@@ -215,4 +215,18 @@ public interface Editable extends GridDataModel {
      * @param names is a list of column names.
      */
     void setColumNames(String[] names);
+
+    /**
+     * This method registers the specified listener to receive model events.
+     *
+     * @param listener is a model listener to register.
+     */
+    void addListener(EditableModelListener listener);
+
+    /**
+     * This method unregisters the specified listener to stop model events receiving.
+     *
+     * @param listener is a model listener to be removed.
+     */
+    void removeListener(EditableModelListener listener);
 }

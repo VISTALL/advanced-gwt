@@ -35,6 +35,7 @@ public class EditableGridShowcase extends AbstractShowcase {
         gridPanel.setPageNumberBoxDisplayed(true);
         gridPanel.setTotalCountDisplayed(true);
         gridPanel.display();
+        gridPanel.getGrid().setMultiRowModeEnabled(true);
         return gridPanel;
     }
 

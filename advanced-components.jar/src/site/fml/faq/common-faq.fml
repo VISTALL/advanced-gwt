@@ -119,5 +119,26 @@ RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(<
                 <div class="googleAds"><google-ads-horizontal-banner/></div>
             </answer>
         </faq>
+        <faq id="what_is_mvp">
+            <question>What is MVP? Why do I need it?</question>
+            <answer>
+                <p>
+                    MVP (Model-View-Presenter) is a user interface design pattern engineered to facilitate automated
+                    unit testing and improve the separation of concerns in presentation logic.
+                    The Model is an interface defining the data to be displayed or otherwise acted upon in the user
+                    interface.
+                    The View is an interface that displays data (the Model) and routes user commands to the Presenter
+                    to act upon that data.
+                    The Presenter acts upon the Model and the View. It retrieves data from repositories, persists it,
+                    manipulates it, and determines how it will be displayed in the View.
+                </p>
+                <p>
+                    Advanced GWT Components framework extends the standard GWT widgets and defines structures which can
+                    be identified as the "Model". The library also uses "renderers" which are the "View". And finally it
+                    provides component classes which can be interpreted as the "Presenter".
+                </p>
+                <div class="googleAds"><google-ads-horizontal-banner/></div>
+            </answer>
+        </faq>
     </part>
 </faqs>

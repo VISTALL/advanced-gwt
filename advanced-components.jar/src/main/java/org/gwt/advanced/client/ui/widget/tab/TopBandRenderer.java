@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.widget.AdvancedTabPanel;
 import org.gwt.advanced.client.ui.widget.border.Border;
 import org.gwt.advanced.client.ui.widget.border.BorderLine;
+import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
  * This is implementation of the tabs band renderer for the top position.
@@ -51,7 +52,7 @@ public class TopBandRenderer extends AbstractBandRenderer {
     /** {@inheritDoc} */
     protected int createEmpty(FlexTable result, int count, String styleName) {
         HTMLTable.CellFormatter formatter = result.getCellFormatter();
-        result.setWidget(0, count, new Image("advanced/images/single.gif"));
+        result.setWidget(0, count, new Image(ThemeHelper.getInstance().getFullResourceName("advanced/images/single.gif")));
         formatter.setStyleName(0, count++, styleName);
         return count;
     }

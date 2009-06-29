@@ -203,7 +203,6 @@
 
 /** flex table head cells styles */
 .advanced-Grid th {
-    height: 26px;
     padding: 0;
     border-top: 1px solid #999999;
     border-bottom: 1px solid #EEEEEE;
@@ -212,6 +211,11 @@
     font-size: 12px;
     font-weight: normal;
     color: black;
+}
+
+.advanced-Grid th .gwt-Label {
+    height: 19px;
+    padding: 3px 0;
 }
 
 /** data cells nested panel styles (if editable) */
@@ -230,13 +234,15 @@
     width: 100%;
     text-align: center;
     vertical-align: middle;
-    padding: 1px 1px 1px 1px;
+    padding: 3px 1px;
     border: 0;
 }
 
 /** sort image styles */
 .advanced-Grid .header-cell img {
-    margin-right: 3px;
+    margin-left: 2px;
+    width: 7px;
+    height: 4px;
 }
 
 /** header cells nested panel table styles */
@@ -245,8 +251,7 @@
     font-size: 12px;
     font-weight: bold;
     color: #222222;
-    height: 100%;
-    width: 100%;
+    display: inline;
     border: 0;
 }
 
@@ -262,12 +267,12 @@
 }
 
 /** header sortable cells nested panel styles */
-.advanced-Grid .sortable-header {
+.advanced-Grid .sortable-header table {
     cursor: pointer;
 }
 
 /** header non-sortable cells nested panel styles */
-.advanced-Grid .non-sortable-header {
+.advanced-Grid .non-sortable-header, .advanced-Grid .sortable-header  {
     cursor: default;
 }
 

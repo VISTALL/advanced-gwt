@@ -16,12 +16,10 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
+import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
  * This is a basic expandable cell implementation.
@@ -65,9 +63,14 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
         Image image = getImage();
         Widget child = (Widget) getValue();
 
-        if (panel.getWidgetIndex(image) == -1)
+        if (panel.getWidgetIndex(image) == -1 && !isLeaf()) {
             panel.add(image, DockPanel.WEST);
-        panel.setCellWidth(image, "1%");
+            panel.setCellWidth(image, "1%");
+        } else {
+            Label label = new Label();
+            panel.add(label, DockPanel.WEST);
+            panel.setCellWidth(label, "1%");
+        }
 
         if (panel.getWidgetIndex(child) == -1)
             panel.add(child, DockPanel.CENTER);
@@ -147,10 +150,11 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
      */
     protected void createImage() {
         if (isLeaf()) {
-            Image image = new Image("advanced/images/single.gif");
-            image.setWidth("9px");
-            image.setHeight("9px");
-            setImage(image);
+//            Image image = new Image(ThemeHelper.getInstance().getFullResourceName("advanced/images/single.gif"));
+//            image.setWidth("9px");
+//            image.setHeight("9px");
+//            setImage(image);
+            return;
         }
         if (isExpanded())
             setImage(new ThemeImage("expanded.gif"));

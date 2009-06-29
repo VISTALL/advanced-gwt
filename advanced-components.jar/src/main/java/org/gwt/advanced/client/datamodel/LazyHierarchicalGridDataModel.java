@@ -30,7 +30,12 @@ public class LazyHierarchicalGridDataModel extends HierarchicalGridDataModel imp
      */
     public LazyHierarchicalGridDataModel (Object[][] data) {
         super((Object[][])null);
-        setDelegate(new LazyGridDataModel(data));
+        final LazyHierarchicalGridDataModel source = this;
+        setDelegate(new LazyGridDataModel(data) {
+            protected void prepareEvent(EditableModelEvent event) {
+                event.setSource(source);
+            }
+        });
     }
 
     /**
@@ -40,7 +45,12 @@ public class LazyHierarchicalGridDataModel extends HierarchicalGridDataModel imp
      */
     public LazyHierarchicalGridDataModel (DataModelCallbackHandler handler) {
         super((Object[][])null);
-        setDelegate(new LazyGridDataModel(handler));
+        final LazyHierarchicalGridDataModel source = this;
+        setDelegate(new LazyGridDataModel(handler) {
+            protected void prepareEvent(EditableModelEvent event) {
+                event.setSource(source);
+            }
+        });
     }
 
     /** {@inheritDoc} */

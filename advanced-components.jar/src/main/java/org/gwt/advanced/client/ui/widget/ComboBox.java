@@ -139,7 +139,7 @@ public class ComboBox extends TextButtonPanel
      */
     public void addKeyboardListener(KeyboardListener listener) {
         removeKeyboardListener(listener);
-        getDelegateListener().getKeyboardListeners().remove(listener);
+        getDelegateListener().getKeyboardListeners().add(listener);
     }
 
     /**

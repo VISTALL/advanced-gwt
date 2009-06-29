@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gwt.core.client.GWT;
+
 /**
  * This sigleton is used to centrilize and simplify theme management.
  *
@@ -90,6 +92,17 @@ public class ThemeHelper {
     }
 
     /**
+     * Gets a full resource name applying the {@link #baseDirectory} as a root for the
+     * specified relative path.
+     *
+     * @param relativePath is a path relative the base directory.
+     * @return a full source name.
+     */
+    public String getFullResourceName(String relativePath) {
+        return getBaseDirectory() + relativePath;
+    }
+
+    /**
      * Setter for property 'baseDirectory'.
      *
      * @param baseDirectory Value to set for property 'baseDirectory'.
@@ -118,8 +131,8 @@ public class ThemeHelper {
     }
 
     /**
-     * This method returns a base directory that ends with '/' if it's specified and an empty string
-     * if it's not set.
+     * This method returns a base directory that ends with '/' if it's specified and
+     * <code>GWT.getModuleBaseURL()</code> by default.
      *
      * @return a base directory name (never <code>null</code>).
      */
@@ -127,6 +140,6 @@ public class ThemeHelper {
         if (baseDirectory != null && baseDirectory.length() > 0)
             return baseDirectory + "/";
         else
-            return "";
+            return GWT.getModuleBaseURL();
     }
 }

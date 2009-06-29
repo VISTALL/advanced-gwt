@@ -18,17 +18,20 @@ package org.gwt.advanced.client.misc;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.EditCellListener;
 import org.gwt.advanced.client.ui.GridListenerAdapter;
 import org.gwt.advanced.client.ui.GridPanelFactory;
 import org.gwt.advanced.client.ui.SelectRowListener;
 import org.gwt.advanced.client.ui.widget.*;
+import org.gwt.advanced.client.ui.widget.border.Border;
+import org.gwt.advanced.client.ui.widget.border.BorderFactory;
+import org.gwt.advanced.client.ui.widget.border.RoundCornerBorder;
+import org.gwt.advanced.client.ui.widget.border.SingleBorder;
 import org.gwt.advanced.client.ui.widget.cell.*;
+import org.gwt.advanced.client.ui.widget.tab.TabPosition;
+import org.gwt.advanced.client.ui.widget.tab.TopBandRenderer;
 import org.gwt.advanced.client.util.ThemeHelper;
 
 import java.util.Date;
@@ -349,6 +352,29 @@ public class Sample {
         box.display();
     }
 
+    public static void sample16() {
+        AdvancedTabPanel panel1 = new AdvancedTabPanel(TabPosition.LEFT);
+        AdvancedTabPanel panel2 = new AdvancedTabPanel(TabPosition.BOTTOM);
+
+        panel1.addTab(new Label("Nested Tabs"), panel2);
+    }
+
+    public static void sample17() {
+        BorderFactory contentbBorderFactory = new BorderFactory() {
+            public Border create() {
+                return new SingleBorder();
+            }
+        };
+        
+        BorderFactory tabBorderFactory = new BorderFactory() {
+            public Border create() {
+                return new RoundCornerBorder();
+            }
+        };
+
+        AdvancedTabPanel panel = new AdvancedTabPanel(TabPosition.TOP, tabBorderFactory, contentbBorderFactory);
+    }
+
     public static void quickstart() {
         //create a new model containing employees
         Editable model = new EditableGridDataModel(
@@ -487,6 +513,24 @@ public class Sample {
 
         public void drawContent(GridDataModel model) {
             DOM.setInnerHTML(getTBodyElement(), html);
+        }
+    }
+
+    public static class MyTabPosition extends TabPosition {
+        public static final TabPosition CUSTOM = new MyTabPosition("custom");
+
+        protected MyTabPosition(String name) {
+            super(name, new MyTabBandRenderer(), DockPanel.NORTH);
+        }
+    }
+
+    public static class MyTabBandRenderer extends TopBandRenderer {
+        public Widget render(AdvancedTabPanel panel) {
+            Widget tab = super.render(panel);
+
+            //do something specific
+
+            return tab;
         }
     }
 }

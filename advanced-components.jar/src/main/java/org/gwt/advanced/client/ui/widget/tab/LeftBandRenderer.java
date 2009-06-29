@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.widget.AdvancedTabPanel;
 import org.gwt.advanced.client.ui.widget.border.Border;
 import org.gwt.advanced.client.ui.widget.border.BorderLine;
+import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
  * This is implementation of the tabs band for the left position.
@@ -51,7 +52,7 @@ public class LeftBandRenderer extends AbstractBandRenderer {
     /** {@inheritDoc} */
     protected int createEmpty(FlexTable result, int count, String styleName) {
         HTMLTable.CellFormatter formatter = result.getCellFormatter();
-        result.setWidget(count, 0, new Image("advanced/images/single.gif"));
+        result.setWidget(count, 0, new Image(ThemeHelper.getInstance().getFullResourceName("advanced/images/single.gif")));
         formatter.setStyleName(count++, 0, styleName);
         return count;
     }

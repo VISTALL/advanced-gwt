@@ -30,7 +30,7 @@ public class LazyTreeGridDataModel extends TreeGridDataModel implements LazyLoad
      */
     public LazyTreeGridDataModel(Object[][] data) {
         super(data);
-        setDelegate(new DelegateLazyGridDataModel(data));
+        setDelegate(new DelegateLazyGridDataModel(data, this));
     }
 
     /**
@@ -109,13 +109,18 @@ public class LazyTreeGridDataModel extends TreeGridDataModel implements LazyLoad
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
     protected class DelegateLazyGridDataModel extends LazyGridDataModel {
+        /** source of model events */
+        private LazyTreeGridDataModel source;
+
         /**
          * Creates a new instance of the delegate.
          *
          * @param data is a data to store in the delegate.
+         * @param source is a soirce of model events.
          */
-        public DelegateLazyGridDataModel(Object[][] data) {
+        public DelegateLazyGridDataModel(Object[][] data, LazyTreeGridDataModel source) {
             super(data);
+            this.source = source;
         }
 
         /**
@@ -135,6 +140,23 @@ public class LazyTreeGridDataModel extends TreeGridDataModel implements LazyLoad
          */
         protected GridRow createGridRow(int columnCount) {
             return new LazyTreeGridRow(getThisModel());
+        }
+
+        /** {@inheritDoc} */
+        protected void prepareEvent(EditableModelEvent event) {
+            event.setSource(source);
+        }
+
+        /** {@inheritDoc} */
+        protected EditableModelEvent createEvent(EditableModelEvent.EventType eventType) {
+            return new CompositeModelEvent(eventType, null);
+        }
+
+        /** {@inheritDoc} */
+        protected EditableModelEvent createEvent(EditableModelEvent.EventType eventType, int row, int column) {
+            CompositeModelEvent event = new CompositeModelEvent(eventType, null, row);
+            event.setColumn(column);
+            return event;
         }
     }
 }

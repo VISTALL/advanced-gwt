@@ -57,7 +57,8 @@ public class ThemeImage extends Image implements ThemeApplicable {
    */
   public void setUrl(String shortName) {
       this.shortName = shortName;
-      DOM.setElementAttribute(getElement(), "src", ThemeHelper.getInstance().getFullImageName(shortName));
+      if (this.shortName != null)
+        DOM.setElementAttribute(getElement(), "src", ThemeHelper.getInstance().getFullImageName(shortName));
   }
 
   /**

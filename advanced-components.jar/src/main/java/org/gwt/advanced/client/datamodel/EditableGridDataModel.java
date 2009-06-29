@@ -16,12 +16,9 @@
 
 package org.gwt.advanced.client.datamodel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import com.google.gwt.core.client.GWT;
+
+import java.util.*;
 
 /**
  * This is a model for editable grids.<p>
@@ -42,6 +39,8 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
     private int totalColumnCount;
     /** data model callback handler */
     private DataModelCallbackHandler handler;
+    /** instances of {@link EditableModelListener} */
+    private List listeners = new ArrayList();
 
     /**
      * Creates an instance of this class and initializes it with the data.<p>
@@ -87,6 +86,8 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         GridRow gridRow = normalizeColumnsCount(row);
         data.add(beforeRow, gridRow);
         gridRow.setIndex(beforeRow);
+
+        fireRowEvent(EditableModelEvent.ADD_ROW, beforeRow);
     }
 
     /**
@@ -109,6 +110,8 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         resultRow.setIdentifier(oldRow.getIdentifier());
         
         data.set(rowNumber, resultRow);
+
+        fireRowEvent(EditableModelEvent.UPDATE_ROW, rowNumber);
     }
 
     /**
@@ -122,6 +125,8 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         checkRowNumber(rowNumber, data.size());
 
         removedRows.add(data.remove(rowNumber));
+
+        fireRowEvent(EditableModelEvent.REMOVE_ROW, rowNumber);
     }
 
     /** {@inheritDoc} */
@@ -140,6 +145,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         }
 
         totalColumnCount++;
+        fireColumnEvent(EditableModelEvent.ADD_COLUMN, beforeColumn);
     }
 
     /**
@@ -155,6 +161,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
     public void addColumn(int beforeColumn, String name, Object[] column) throws IllegalArgumentException {
         addColumn(beforeColumn, column);
         getColumnNamesList().add(beforeColumn, name);
+        fireColumnEvent(EditableModelEvent.ADD_COLUMN, beforeColumn);
     }
 
     /**
@@ -179,6 +186,8 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
             Object cellData = resultColumn.get(i);
             row.set(columnNumber, cellData);
         }
+
+        fireColumnEvent(EditableModelEvent.UPDATE_COLUMN, columnNumber);
     }
 
     /**
@@ -190,8 +199,10 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
      */
     public void updateColumn(String name, Object[] column) {
         int index = getColumnNamesList().indexOf(name);
-        if (index != -1)
+        if (index != -1) {
             updateColumn(index, column);
+            fireColumnEvent(EditableModelEvent.UPDATE_COLUMN, index);
+        }
     }
 
     /** {@inheritDoc} */
@@ -204,6 +215,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         }
 
         totalColumnCount--;
+        fireColumnEvent(EditableModelEvent.REMOVE_COLUMN, columnNumber);
     }
 
     /**
@@ -216,6 +228,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         if (index != -1) {
             removeColumn(index);
             getColumnNamesList().remove(index);
+            fireColumnEvent(EditableModelEvent.REMOVE_COLUMN, index);
         }
     }
 
@@ -228,6 +241,8 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
     public void removeAll () {
         removedRows.addAll(data);
         data.clear();
+
+        fireEvent(createEvent(EditableModelEvent.CLEAN));
     }
 
     /** {@inheritDoc} */
@@ -236,12 +251,14 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         checkColumnNumber(column, getTotalColumnCount());
 
         ((GridRow)this.data.get(row)).set(column, data);
+        fireEvent(createEvent(EditableModelEvent.UPDATE_CELL, row, column));
     }
 
     /** {@inheritDoc} */
     public void setSortColumn (int sortColumn, Comparator comparator) {
         setSortColumn(sortColumn);
         Collections.sort(data, createRowComparator(sortColumn, comparator));
+        fireColumnEvent(EditableModelEvent.SORT_ALL, sortColumn);
     }
 
     /**
@@ -308,6 +325,26 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
      */
     public void update(Object[][] data) {
         prepareData(data, data.length, data.length > 0 ? data[0].length : 0);
+        fireEvent(createEvent(EditableModelEvent.UPDATE_ALL));
+    }
+
+    /**
+     * This method registers the specified listener to receive model events.
+     *
+     * @param listener is a model listener to register.
+     */
+    public void addListener(EditableModelListener listener) {
+        removeListener(listener);
+        this.listeners.add(listener);
+    }
+
+    /**
+     * This method unregisters the specified listener to stop model events receiving.
+     *
+     * @param listener is a model listener to be removed.
+     */
+    public void removeListener(EditableModelListener listener) {
+        this.listeners.remove(listener);
     }
 
     /**
@@ -545,6 +582,90 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
      */
     protected List getDataList() {
         return data;
+    }
+
+    /**
+     * Gets a list of registered listeners.
+     *
+     * @return a list of registered listeners.
+     */
+    protected List getListeners() {
+        return listeners;
+    }
+
+    /**
+     * This method prepares the specified event for sending, initilizing necessary fields.
+     *
+     * @param event is an event to be prepared.
+     */
+    protected void prepareEvent(EditableModelEvent event) {
+        event.setSource(this);
+    }
+
+    /**
+     * This method fires the specified event.
+     *
+     * @param event is an event to fire.
+     */
+    protected void fireEvent(EditableModelEvent event) {
+        prepareEvent(event);
+        for (Iterator iterator = getListeners().iterator(); iterator.hasNext();) {
+            EditableModelListener listener = (EditableModelListener) iterator.next();
+            try {
+                listener.onModelEvent(event);
+            } catch (Exception e) {
+                GWT.log(e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * Fires a row change events.
+     *
+     * @param eventType is a concrete row event type.
+     * @param row is a row number.
+     */
+    protected void fireRowEvent(EditableModelEvent.EventType eventType, int row) {
+        EditableModelEvent event = createEvent(eventType);
+        event.setRow(row);
+        fireEvent(event);
+    }
+
+    /**
+     * Fires a column change events.
+     *
+     * @param eventType is a concrete column event type.
+     * @param column is a column number.
+     */
+    protected void fireColumnEvent(EditableModelEvent.EventType eventType, int column) {
+        EditableModelEvent event = createEvent(eventType);
+        event.setColumn(column);
+        fireEvent(event);
+    }
+
+    /**
+     * Creates a new model event.<p/>
+     * Subclasses can override this method to support their own event classes.
+     *
+     * @param eventType is an event type.
+     * @return a newly constructed event.
+     */
+    protected EditableModelEvent createEvent(EditableModelEvent.EventType eventType) {
+        return new EditableModelEvent(eventType);
+    }
+
+    /**
+     * Creates a new model event.<p/>
+     * Subclasses can override this method to support their own event classes.
+     *
+     * @param eventType is an event type.
+     * @param row is a row number.
+     * @param column is a column number.
+     * 
+     * @return a newly constructed event.
+     */
+    protected EditableModelEvent createEvent(EditableModelEvent.EventType eventType, int row, int column) {
+        return new EditableModelEvent(eventType, row, column);
     }
 
     /**

@@ -127,7 +127,6 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
             grid = new EditableGrid(headers, columnWidgetClasses, resizable);
         grid.setGridPanel(this);
         grid.setModel(model);
-        setGrid(grid);
 
         if (model instanceof Hierarchical)
             setGridEventManager(new HierarchicalGridEventManager(this));
@@ -611,6 +610,54 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
     }
 
     /**
+     * This method adds a new listener that is invoked on row selection.
+     *
+     * @param listener is a listener to be invoked.
+     */
+    public void addSelectRowListener(SelectRowListener listener) {
+        if (getGrid() != null)
+            getGrid().addSelectRowListener(listener);
+    }
+
+    /**
+     * This method removes the specified row selection listener.
+     *
+     * @param listener is a listener to remove.
+     */
+    public void removeSelectRowListener(SelectRowListener listener) {
+        if (getGrid() != null)
+            getGrid().removeSelectRowListener(listener);
+    }
+
+    /**
+     * Enables or disbales the multi-row selection mode.
+     *
+     * @param enabled <code>true</code> means that this grid will allow multiple row selection.
+     */
+    public void setMultiRowModeEnabled(boolean enabled) {
+        if (getGrid() != null)
+            getGrid().setMultiRowModeEnabled(enabled);
+    }
+
+    /**
+     * This method adds a new grid listener to be invoked on grid events.
+     *
+     * @param listener is a listener to add.
+     */
+    public void addGridListener(GridListener listener) {
+        getMediator().addGridListener(listener);
+    }
+
+    /**
+     * This method removes the specified grid listener.
+     *
+     * @param listener is a listener to remove.
+     */
+    public void removeGridListener(GridListener listener) {
+        getMediator().removeGridListener(listener);
+    }
+
+    /**
      * Makes the widget take as much space as possible inside a parent element and resizes
      * the nested grid.
      */
@@ -655,7 +702,6 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
         FocusPanel focusPanel = getFocusPanel();
         focusPanel.setWidget(grid);
         add(focusPanel, CENTER);
-        grid.display();
     }
 
     /**

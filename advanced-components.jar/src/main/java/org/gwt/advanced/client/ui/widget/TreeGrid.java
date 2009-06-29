@@ -19,11 +19,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
-import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
-import org.gwt.advanced.client.ui.widget.cell.GridCell;
-import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
-import org.gwt.advanced.client.ui.widget.cell.TreeCell;
-import org.gwt.advanced.client.ui.widget.cell.TreeCellFactory;
+import org.gwt.advanced.client.ui.widget.cell.*;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,18 +30,20 @@ import java.util.Map;
  * This class is a tree grid widget implentation that is able to display composite data models
  * as a tree of rows.<p/>
  * Remarkable feature of this grid is that it can render pageable subtrees.
- * 
+ *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.0
  */
 public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
-    /** expandable cell listeners */
+    /**
+     * expandable cell listeners
+     */
     private List expandableCellListeners;
 
     /**
      * Creates a tree grid with resizable columns by default.
      *
-     * @param headers is a list of header names.
+     * @param headers             is a list of header names.
      * @param columnWidgetClasses is a list of appropriate cell classes.
      */
     public TreeGrid(String[] headers, Class[] columnWidgetClasses) {
@@ -55,10 +53,10 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
     /**
      * Creates a tree grid with resizable columns.
      *
-     * @param headers is a list of header names.
+     * @param headers             is a list of header names.
      * @param columnWidgetClasses is a list of appropriate cell classes.
-     * @param resizable is a resizability flag. if it's <code>true</code> th grid will allow resize columns
-     *        by a mouse otherwise it won't.
+     * @param resizable           is a resizability flag. if it's <code>true</code> th grid will allow resize columns
+     *                            by a mouse otherwise it won't.
      */
     public TreeGrid(String[] headers, Class[] columnWidgetClasses, boolean resizable) {
         super(headers, columnWidgetClasses, resizable);
@@ -66,22 +64,28 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         setGridCellfactory(new TreeCellFactory(this));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void addExpandableCellListener(ExpandableCellListener listener) {
         getExpandableCellListeners().add(listener);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void removeExpandableCellListener(ExpandableCellListener listener) {
         getExpandableCellListeners().remove(listener);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void fireExpandCell(ExpandableCell cell) {
         if (cell.isExpanded())
             expandCell((TreeCell) cell);
         else
-            collapseCell((TreeCell)cell);
+            collapseCell((TreeCell) cell);
 
         for (Iterator iterator = getExpandableCellListeners().iterator(); iterator.hasNext();) {
             ExpandableCellListener expandableCellListener = (ExpandableCellListener) iterator.next();
@@ -89,20 +93,15 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         }
     }
 
-    /** {@inheritDoc} */
-    public int getModelRow(int gridRow) {
-        return getGridRenderer().getModelRow(gridRow);
-    }
-
     /**
      * This method returns a widget placed in the cell.<p>
      * If the widget is an expandable cell it returns cell child widget.
      *
-     * @param row is a row number.
+     * @param row    is a row number.
      * @param column is a column number.
      * @return is a cell widget.
      */
-    public Widget getWidget (int row, int column) {
+    public Widget getWidget(int row, int column) {
         Widget widget = super.getWidget(row, column);
         if (widget instanceof ExpandableCell)
             widget = (Widget) ((ExpandableCell) widget).getValue();
@@ -113,14 +112,14 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
      * Gets a tree grid row by parent and child row indexes.
      *
      * @param parentIndex is a parent row index.
-     * @param rowIndex is a row index.
+     * @param rowIndex    is a row index.
      * @return a tree grid row instance.
      */
     public TreeGridRow getGridRow(int parentIndex, int rowIndex) {
         if (getModel() instanceof Composite) {
             TreeGridRow parent = (TreeGridRow) getGridRow(parentIndex);
             if (parent != null && getGridRows(parentIndex).length > rowIndex)
-                return ((Composite)getModel()).getRow(parent, rowIndex);
+                return ((Composite) getModel()).getRow(parent, rowIndex);
         }
         return null;
     }
@@ -135,74 +134,176 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         if (getModel() instanceof Composite) {
             TreeGridRow parent = (TreeGridRow) getGridRow(parentIndex);
             if (parent != null)
-                return ((Composite)getModel()).getRows(parent);
+                return ((Composite) getModel()).getRows(parent);
         }
         return new TreeGridRow[0];
     }
 
-    /** {@inheritDoc} */
-    protected void addRow() {
+    /**
+     * {@inheritDoc}
+     */
+    public GridRow getGridRowByRowNumber(int row) {
+        Map mapping = ((TreeGridRenderer) getGridRenderer()).getRowMapping();
+        return (GridRow) mapping.get(new Integer(row));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void addRow() {
         Editable dataModel = getModel();
         if (dataModel instanceof Composite) {
             Object[] emptyCells = new Object[getHeaders().length];
 
             TreeCell cell = getTreeCell(getCurrentRow());
-            TreeGridRow parent = cell.getGridRow().getParent();
+            TreeGridRow parent = cell != null ? cell.getGridRow().getParent() : null;
 
             Composite model = (Composite) dataModel;
-            int index = model.addRow(parent, emptyCells);
-            TreeGridRow row = model.getRow(parent, index);
-
-            int position = getCurrentRow() + 1;
-            TreeCell nextCell = getTreeCell(position);
-            while(nextCell != null && nextCell.getGridRow().getLevel() > cell.getGridRow().getLevel()) {
-                position++;
-                nextCell = getTreeCell(position);
-            }
-
-            TreeGridRenderer renderer = (TreeGridRenderer) getGridRenderer();
-            renderer.getCurrentRows().add(row.getParent());
-            try {
-                renderer.drawRow(row, position);
-                dropSelection();
-            } finally {
-                renderer.getCurrentRows().remove();
-            }
-            setCurrentRow(position);
+            model.addRow(parent, emptyCells);
         } else
             super.addRow();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
+    protected void drawColumn(int column) {
+        if (getModel() != null) {
+            Object[] data = getModel().getColumns()[column].getData();
+            List resultData = new ArrayList(getRowCount());
+
+            int end = getModel().getEndRow();
+            int start = getModel().getStartRow();
+            int count = 0;
+            for (int i = start; i <= end; i++) {
+                resultData.add(data[i]);
+                Composite composite = (Composite) getModel();
+                resultData.addAll(getSubtreeColumnData((TreeGridRow) composite.getRow(i), column, count));
+                count+=resultData.size();
+            }
+
+            getGridRenderer().drawColumn(resultData.toArray(), column, false);
+        }
+    }
+
+    /**
+     * This method gets a list of column data values of the specified subtree recursively.<p/>
+     * Note that it returns only those subtrees which currently expanded if you use lazily loadable models.
+     * So if you don't want to expand them on the view simply synchronize the model subtree. 
+     *
+     * @param parent is a parent row of the subtree.
+     * @param column is a column number.
+     * @param count is a current count of column cell displayed above.
+     *
+     * @return a list of data values.
+     */
+    protected List getSubtreeColumnData(TreeGridRow parent, int column, int count) {
+        List resultData = new ArrayList();
+        if (getRowCount() > count && getTreeCell(count).isExpanded()) {
+            Composite composite = (Composite) getModel();
+            TreeGridRow[] treeGridRows = composite.getRows(parent);
+            for (int j = 0; j < treeGridRows.length; j++) {
+                TreeGridRow treeGridRow = treeGridRows[j];
+                resultData.add(treeGridRow.getData()[column]);
+                resultData.addAll(getSubtreeColumnData(treeGridRow, column, count + resultData.size()));
+            }
+        }
+        return resultData;
+    }
+
+    /**
+     * Draws a grid row on add row event.
+     *
+     * @param event is a model event containing a row number value.
+     */
+    protected void drawRow(EditableModelEvent event) {
+        Editable source = event.getSource();
+        if (source != getModel())
+            return;
+        CompositeModelEvent compositeEvent = (CompositeModelEvent) event;
+        Composite model = (Composite) source;
+        TreeCell cell = getTreeCell(getCurrentRow());
+        TreeGridRow row = model.getRow(compositeEvent.getParent(), compositeEvent.getRow());
+
+        int position = getCurrentRow() + 1;
+        TreeCell nextCell = getTreeCell(position);
+        while (nextCell != null && nextCell.getGridRow().getLevel() > cell.getGridRow().getLevel()) {
+            position++;
+            nextCell = getTreeCell(position);
+        }
+
+        TreeGridRenderer renderer = (TreeGridRenderer) getGridRenderer();
+        renderer.getCurrentRows().add(row.getParent());
+        try {
+            renderer.drawRow(row, position);
+            dropSelection();
+        } finally {
+            renderer.getCurrentRows().remove();
+        }
+        setCurrentRow(position);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected void removeRow() {
         Editable dataModel = getModel();
         if (dataModel instanceof Composite) {
-            int currentRow = getCurrentRow();
+            int[] indexes = getCurrentRows();
+            int last = -1;
+            if (indexes.length > 0)
+                last = indexes[indexes.length - 1];
 
-            if (currentRow >= 0 && getRowCount() > 0) {
+            TreeGridRenderer gridRenderer = (TreeGridRenderer) getGridRenderer();
+            Map mapping = gridRenderer.getRowMapping();
+            for (int i = 0; i < indexes.length; i++) {
+                int currentRow = indexes[i];
                 int modelRow = getModelRow(currentRow);
-                TreeGridRenderer gridRenderer = (TreeGridRenderer) getGridRenderer();
-                Map mapping = gridRenderer.getRowMapping();
                 TreeGridRow row = (TreeGridRow) mapping.get(new Integer(currentRow));
-                TreeCell cell = getTreeCell(currentRow);
-                gridRenderer.removeSubtree(cell);
-
                 ((Composite) dataModel).removeRow(row.getParent(), modelRow);
-                mapping.remove(new Integer(currentRow));
-                gridRenderer.remapIndexes(currentRow + 1, -1);
-
-                int rowCount = getRowCount() - 1;
-                int selectRow = currentRow;
-                if (selectRow >= rowCount) {
-                    selectRow = rowCount - 1;
-                }
-
-                removeRow(currentRow);
-                setCurrentRow(selectRow);
-                increaseRowNumbers(currentRow, -1);
             }
+
+            if (last >= getRowCount())
+                last = getRowCount() - 1;
+            if (last >= 0)
+                setCurrentRow(last);
         } else
             super.removeRow();
+    }
+
+    /**
+     * This method removes the row from the subgrid by it's model row number.
+     *
+     * @param event is a model event containing a row number value and parent row.
+     */
+    protected void deleteRow(EditableModelEvent event) {
+        CompositeModelEvent compositeEvent = (CompositeModelEvent) event;
+        int[] indexes = getCurrentRows();
+
+        TreeGridRenderer gridRenderer = (TreeGridRenderer) getGridRenderer();
+        int currentRow = gridRenderer.getRowByModelRow(compositeEvent.getParent(), compositeEvent.getRow());
+        Map mapping = gridRenderer.getRowMapping();
+        TreeCell cell = getTreeCell(currentRow);
+        int count = gridRenderer.removeSubtree(cell);
+
+        mapping.remove(new Integer(currentRow));
+        gridRenderer.remapIndexes(currentRow + 1, -1);
+
+        removeRow(currentRow);
+        increaseRowNumbers(currentRow, -1);
+
+        for (int j = currentRow; j < indexes.length; j++) {
+            int index = indexes[j];
+            if (index
+                    > currentRow)
+                indexes[j] = index - 1 - count;
+        }
+    }
+
+    /** {@inheritDoc} */
+    public int getRowByModelRow(EditableModelEvent event) {
+        return ((TreeGridRenderer) getGridRenderer()).getRowByModelRow(
+                ((CompositeModelEvent) event).getParent(), event.getRow());
     }
 
     /**
@@ -213,9 +314,9 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         if (!(getModel() instanceof Composite))
             return;
 
-        int currentRow = getCurrentRow();
-
-        if (currentRow > 0) {
+        int indexes[] = getCurrentRows();
+        for (int i = 0; i < indexes.length; i++) {
+            int currentRow = indexes[i];
             Composite model = (Composite) getModel();
             int column = model.getExpandableColumn();
             TreeCell cell =
@@ -223,11 +324,11 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
             TreeGridRow treeGridRow = cell.getGridRow();
             TreeGridRow parent = treeGridRow.getParent();
 
-            if (parent != null) {
+            if (parent != null)
                 model.setParent(parent.getParent(), treeGridRow);
-                synchronizeDataModel();
-            }
         }
+
+        synchronizeDataModel();
     }
 
     /**
@@ -238,9 +339,9 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         if (!(getModel() instanceof Composite))
             return;
 
-        int currentRow = getCurrentRow();
-
-        if (currentRow > 0) {
+        int indexes[] = getCurrentRows();
+        for (int i = 0; i < indexes.length; i++) {
+            int currentRow = indexes[i];
             Composite model = (Composite) getModel();
             int column = model.getExpandableColumn();
             TreeCell cell = (TreeCell) getOriginalWidget(currentRow, column);
@@ -260,12 +361,25 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
                 TreeGridRow parentRow = parentCell.getGridRow();
                 model.setParent(parentRow, treeGridRow);
                 parentRow.setExpanded(true);
-                synchronizeDataModel();
             }
         }
+
+        synchronizeDataModel();
     }
 
     /** {@inheritDoc} */
+    protected void synchronizeView(EditableModelEvent event) {
+        if (getModel() instanceof Composite && ((CompositeModelEvent) event).getParent() == null) {
+            //clear content since rows insertion works slower than rendering
+            while (getRowCount() > 0)
+                removeRow(getRowCount() - 1);
+            super.synchronizeView(event);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected void synchronizeDataModel() {
         if (getModel() instanceof Composite) {
             //clear content since rows insertion works slower than rendering
@@ -274,7 +388,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         }
         super.synchronizeDataModel();
     }
-    
+
     /**
      * This renderer returns a tree cell for the specified row.
      *
@@ -283,12 +397,14 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
      */
     protected TreeCell getTreeCell(int row) {
         if (row < getRowCount()) {
-            return (TreeCell) getOriginalWidget(row, ((TreeGridDataModel)getModel()).getExpandableColumn());
+            return (TreeCell) getOriginalWidget(row, ((TreeGridDataModel) getModel()).getExpandableColumn());
         } else
             return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void increaseRowNumbers(int startRow, int step) {
         for (int i = startRow; i >= 0 && i < getRowCount(); i++) {
             for (int j = 0; j < getCellCount(i); j++) {
@@ -299,8 +415,8 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
                         gridCell.setPosition(gridCell.getRow() + step, j);
 
                         if (widget instanceof ExpandableCell)
-                            ((GridCell)((ExpandableCell)widget).getValue()).setPosition (
-                                gridCell.getRow(), gridCell.getColumn()
+                            ((GridCell) ((ExpandableCell) widget).getValue()).setPosition(
+                                    gridCell.getRow(), gridCell.getColumn()
                             );
                     }
                 }
@@ -313,16 +429,18 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
      *
      * @param parent is a parent row.
      */
-    protected void sortOnClient (TreeGridRow parent) {
+    protected void sortOnClient(TreeGridRow parent) {
         if (!isClientSortEnabled())
             return;
 
         HeaderCell sortColumn = getCurrentSortColumn();
         if (sortColumn != null)
-            ((Composite)getModel()).setSortColumn(parent, sortColumn.getColumn(), getCellComparator());
+            ((Composite) getModel()).setSortColumn(parent, sortColumn.getColumn(), getCellComparator());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void updateModel(GridCell cell, Object newValue) {
         if (!(getModel() instanceof Composite))
             super.updateModel(cell, newValue);
@@ -365,11 +483,11 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         if (getModel() instanceof Composite) {
             cell.getGridRow().setExpanded(true);
             if (getModel() instanceof LazyLoadableComposite) {
-                ((TreeDataModelCallbackHandler)getModel().getHandler()).synchronize(
-                    (LazyTreeGridRow)cell.getGridRow(), (Composite) getModel()
+                ((TreeDataModelCallbackHandler) getModel().getHandler()).synchronize(
+                        (LazyTreeGridRow) cell.getGridRow(), (Composite) getModel()
                 );
             } else
-                ((TreeGridRenderer)getGridRenderer()).drawSubtree(cell);
+                ((TreeGridRenderer) getGridRenderer()).drawSubtree(cell);
         }
     }
 
@@ -381,7 +499,20 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
     protected void collapseCell(TreeCell cell) {
         if (getModel() instanceof Composite) {
             cell.getGridRow().setExpanded(false);
-            ((TreeGridRenderer)getGridRenderer()).removeSubtree(cell);
+            ((TreeGridRenderer) getGridRenderer()).removeSubtree(cell);
+        }
+    }
+
+    /**
+     * This method cleans the subtree in the grid on remove subtree event received from the data model.
+     *
+     * @param event is an event to be handled.
+     */
+    protected void removeSubtree(EditableModelEvent event) {
+        if (event instanceof CompositeModelEvent) {
+            GridCell cell = (GridCell) getOriginalWidget(getRowByModelRow(event), event.getColumn());
+            if (cell instanceof TreeCell && ((TreeCell)cell).isExpanded())
+                collapseCell((TreeCell) cell);
         }
     }
 

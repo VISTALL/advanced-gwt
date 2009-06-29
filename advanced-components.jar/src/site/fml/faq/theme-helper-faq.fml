@@ -42,5 +42,19 @@
                 <div class="googleAds"><google-ads-horizontal-banner/></div>
             </answer>
         </faq>
+        <faq id="how_to_change_look_and_feel">
+            <question>How to change look &amp; feel of widgets that is not covered by CSS features?</question>
+            <answer>
+                <p>
+                    Widgets that need this option must implement the <i>ThemeApplicable</i> interface and must be
+                    register in the <i>ThemeHelper</i> with the <i>ThemeHelp.register()</i> method.
+                </p>
+                <p>
+                    Every time when theme is chnaged the helper invokes the <i>apply()</i> method of registered
+                    widgets.
+                </p>
+                <div class="googleAds"><google-ads-horizontal-banner/></div>
+            </answer>
+        </faq>
     </part>
 </faqs>

@@ -40,7 +40,12 @@ public class HierarchicalGridDataModel implements Hierarchical {
      * @param data is a data set piece.
      */
     public HierarchicalGridDataModel (Object[][] data) {
-        setDelegate(new EditableGridDataModel(data));
+        final HierarchicalGridDataModel source = this;
+        setDelegate(new EditableGridDataModel(data) {
+            protected void prepareEvent(EditableModelEvent event) {
+                event.setSource(source);
+            }
+        });
     }
 
     /**
@@ -49,7 +54,12 @@ public class HierarchicalGridDataModel implements Hierarchical {
      * @param handler is a callback handler to be invoked on changes.
      */
     protected HierarchicalGridDataModel (DataModelCallbackHandler handler) {
-        setDelegate(new EditableGridDataModel(handler));
+        final HierarchicalGridDataModel source = this;
+        setDelegate(new EditableGridDataModel(handler) {
+            protected void prepareEvent(EditableModelEvent event) {
+                event.setSource(source);
+            }
+        });
     }
 
     /**
@@ -66,10 +76,13 @@ public class HierarchicalGridDataModel implements Hierarchical {
         delegate.checkColumnNumber(columnNumber, delegate.getTotalColumnCount());
 
         SubgridKey key = new SubgridKey(delegate.getInternalRowIdentifier(rowNumber), columnNumber);
-        if (model != null)
+        if (model != null) {
             associatedSubgrids.put(key, model);
-        else
+            getDelegate().fireEvent(new HierarchicalModelEvent(HierarchicalModelEvent.ADD_SUBGRID, rowNumber, columnNumber));
+        } else {
             associatedSubgrids.remove(key);
+            getDelegate().fireEvent(new HierarchicalModelEvent(HierarchicalModelEvent.REMOVE_SUBGRID, rowNumber, columnNumber));
+        }
     }
 
     /**
@@ -94,6 +107,9 @@ public class HierarchicalGridDataModel implements Hierarchical {
     /** {@inheritDoc} */
     public void setExpanded(int row, int column, boolean expanded) {
         expandedCells.put(new SubgridKey(delegate.getInternalRowIdentifier(row), column), Boolean.valueOf(expanded));
+        getDelegate().fireEvent(new HierarchicalModelEvent(
+                expanded ? HierarchicalModelEvent.CELL_EXPANDED : HierarchicalModelEvent.CELL_COLLAPSED, row, column
+        ));
     }
 
     /** {@inheritDoc} */
@@ -246,6 +262,16 @@ public class HierarchicalGridDataModel implements Hierarchical {
     /** {@inheritDoc} */
     public void setColumNames(String[] names) {
         getDelegate().setColumNames(names);
+    }
+
+    /** {@inheritDoc} */
+    public void addListener(EditableModelListener listener) {
+        getDelegate().addListener(listener);
+    }
+
+    /** {@inheritDoc} */
+    public void removeListener(EditableModelListener listener) {
+        getDelegate().removeListener(listener);
     }
 
     /** {@inheritDoc} */

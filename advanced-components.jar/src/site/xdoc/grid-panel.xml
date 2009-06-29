@@ -34,7 +34,7 @@
                         <li>centralized grid event (mouse na dkeyboard) handling</li>
                         <li>factory methods to create new grid instances</li>
                         <li>facade methods to control the nested grid</li>
-                        <li>centralized columns resizing <span class="new">new</span></li>
+                        <li>centralized columns resizing</li>
                     </ul>
 
                     The last feature means that you don't have to invoke the <i>SimpleGrid.resize()</i> mathod manually

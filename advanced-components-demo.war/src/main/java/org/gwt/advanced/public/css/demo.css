@@ -80,3 +80,16 @@ h1 {
     font-size: 12px;
     font-family: sans-serif;
 }
+
+.demo-FormLabel {
+    font-size: 12px;
+    font-family: sans-serif;
+    font-weight: normal;
+}
+
+.demo-TextBox {
+    font-size: 12px;
+    font-family: sans-serif;
+    font-weight: normal;
+    width: 300px;
+}

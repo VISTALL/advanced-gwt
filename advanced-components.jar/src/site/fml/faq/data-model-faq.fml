@@ -295,5 +295,19 @@ model.addRow(marketingDirector, </span><span style="color:#000080;background-col
                 <div class="googleAds"><google-ads-horizontal-banner/></div>
             </answer>
         </faq>
+        <faq id="what_are_events">
+            <question>What are data model events?</question>
+            <answer>
+                <p>
+                    Every time the model is changed it sends an event that is handled by the <i>EventMediator</i> class.
+                    This class invokes appropriate methods of the grid widget and makes it update the view.
+                </p>
+                <p>
+                    You can also use the events to do application specific operations on data change. Everything you
+                    need is to implement the <i>EditableModelListener</i> interface and register your implementation
+                    using the <i>EditableGridDataModel.addListener()</i> method.
+                </p>
+            </answer>
+        </faq>
     </part>
 </faqs>

@@ -64,9 +64,11 @@ public class DefaultGridRenderer implements GridRenderer {
 
     /** {@inheritDoc} */
     public void drawHeaders(Object[] headers) {
+        EditableGrid grid = getGrid();
+
         for (int i = 0; i < headers.length; i++) {
-            if (getGrid().isVisible(i)) {
-                String header = (String) headers[i];
+            String header = (String) headers[i];
+            if (grid.isVisible(i)) {
                 HeaderCell cell = getCellFactory().create(i, header);
                 cell.displayActive(false);
             }
@@ -131,6 +133,23 @@ public class DefaultGridRenderer implements GridRenderer {
     public int getModelRow(int row) {
         Editable dataModel = getGrid().getModel();
         return row + dataModel.getPageSize() * dataModel.getCurrentPageNumber();
+    }
+
+    /** {@inheritDoc} */
+    public int getRowByModelRow(int modelRow) {
+        Editable dataModel = getGrid().getModel();
+        return modelRow - dataModel.getPageSize() * dataModel.getCurrentPageNumber();
+    }
+
+    /** {@inheritDoc} */
+    public void drawColumn(Object[] data, int column, boolean overwrite) {
+        if (!overwrite && column < getGrid().getHeaderWidgets().size())
+            getGrid().insertHeaderCell(column);
+        HeaderCell cell = getCellFactory().create(column, getGrid().getHeaders()[column]);
+        cell.displayActive(false);
+
+        for (int i = 0; i < data.length && i < getGrid().getRowCount(); i++)
+            drawCell(data[i], i, column, false);
     }
 
     /**

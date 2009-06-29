@@ -6,7 +6,7 @@
     <artifactId>advanced-components-demo</artifactId>
     <packaging>war</packaging>
     <name>Advanced GWT Components Demo Application</name>
-    <version>1.4.6</version>
+    <version>1.4.7</version>
 
     <description>The application demonstrating features of the GWT Advanced Components library.</description>
     <inceptionYear>2008</inceptionYear>
@@ -30,38 +30,37 @@
                     <target>1.4</target>
                 </configuration>
             </plugin>
-
             <plugin>
-                <groupId>com.totsp.gwt</groupId>
-                <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
-                <version>2.0-beta25</version>
-                <configuration>
-                    <runTarget>org.gwt.advanced.Demo/index.html</runTarget>
-                    <compileTargets>
-                        <compileTarget>org.gwt.advanced.Demo</compileTarget>
-                    </compileTargets>
-                    <extraJvmArgs>-Xmx256m</extraJvmArgs>
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>1.1-SNAPSHOT</version>
                 <executions>
                     <execution>
+                        <configuration>
+                            <extraJvmArgs>-Xmx512m -Xss4M</extraJvmArgs>
+                            <module>org.gwt.advanced.Demo</module>
+                            <style>PRETTY</style>
+                            <logLevel>ERROR</logLevel>
+                        </configuration>
                         <goals>
-                            <!-- these are the standard goals -->
                             <goal>compile</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <phase>package</phase>
                         <configuration>
                             <tasks>
                                 <copy overwrite="true"
                                       todir="./target/advanced-components-demo-${version}/org.gwt.advanced.Demo">
                                     <fileset dir="../advanced-components.jar/src/main/java/org/gwt/advanced/public">
+                                        <include name="**/*.gif"/>
+                                    </fileset>
+                                    <fileset dir="src/main/java/org/gwt/advanced/public">
                                         <include name="**/*.gif"/>
                                     </fileset>
                                 </copy>
@@ -73,7 +72,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.0</version>
@@ -85,13 +83,13 @@
         <dependency>
             <groupId>org.gwt.advanced</groupId>
             <artifactId>advanced-components</artifactId>
-            <version>1.4.6</version>
+            <version>1.4.7</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>1.5.3</version>
+            <version>1.6.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -119,6 +117,14 @@
         <pluginRepository>
             <id>gwt-maven</id>
             <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>mojo</id>
+            <url>http://repository.codehaus.org/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>mojo-snapshots</id>
+            <url>http://snapshots.repository.codehaus.org/</url>
         </pluginRepository>
     </pluginRepositories>
 </project>

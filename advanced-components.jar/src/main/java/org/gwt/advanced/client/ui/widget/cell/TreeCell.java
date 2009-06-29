@@ -39,17 +39,15 @@ public class TreeCell extends ExpandableCellImpl implements ExpandableCell {
     /** {@inheritDoc} */
     protected void createImage() {
         super.createImage();
-        Element image = getImage().getElement();
-        DOM.setElementAttribute(image, "class", "indent-cell");
-        DOM.setStyleAttribute(image, "marginLeft", getGridRow().getLevel() * INDENT + "px");
-    }
 
-    /** {@inheritDoc} */
-    public void setLeaf(boolean leaf) {
-        super.setLeaf(leaf);
-        getPanel().remove(getImage());
-        createImage();
-        displayActive(false);
+        if (!isLeaf()) {
+            Element image = getImage().getElement();
+            DOM.setElementAttribute(image, "class", "indent-cell");
+            DOM.setStyleAttribute(image, "marginLeft", getGridRow().getLevel() * INDENT + "px");
+        } else {
+            Element text = ((Widget) getValue()).getElement();
+            DOM.setStyleAttribute(text, "marginLeft", (getGridRow().getLevel() * INDENT + 9) + "px");
+        }
     }
 
     /** {@inheritDoc} */

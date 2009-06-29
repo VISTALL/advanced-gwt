@@ -36,6 +36,9 @@
       <item name="Grid Panel" href="/grid-panel.html"/>
       <item name="Grid Toolbar" href="/grid-panel.html"/>
       <item name="Pager" href="/grid-panel.html"/>
+      <item name="Advanced TabPanel" href="/advanced-tab-panel.html"/>
+      <item name="Single Border" href="/borders.html"/>
+      <item name="Round Corner Border" href="/borders.html"/>
       <item name="Date Picker" href="/text-and-button.html"/>
       <item name="Combo Box" href="/text-and-button.html"/>
       <item name="Suggestion Box" href="/text-and-button.html"/>

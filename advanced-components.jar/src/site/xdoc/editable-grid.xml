@@ -52,6 +52,7 @@
                 </p>
             </div>
         </section>
+        <br/>
         <div class="googleAds"><google-ads-horizontal-banner/></div>
         <section name="Features List">
             <div class="imageRight">
@@ -73,12 +74,13 @@
                       <li>customizable keyboard events management</li>
                       <li>customizable content drawing, including server side rendering</li>
                       <li>updatable cells</li>
+                      <li>multiple and sigle row selection modes <span class="new">new</span></li>
                       <li>ability to add and remove rows as well as grid cleaning</li>
                       <li>ability to validate entering cell values</li>
                       <li>ability to synchronize whole data model and particular cells with any source of data</li>
                       <li>custom cells and custom data models support</li>
-                      <li>resizable columns (improved) <span class="new">new</span></li>
-                      <li>scrollable body (improved) <span class="new">new</span></li>
+                      <li>resizable columns</li>
+                      <li>scrollable body</li>
                       <li>themes support</li>
                   </ul>
                 </p>

@@ -18,6 +18,7 @@ package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwt.advanced.client.util.ThemeHelper;
 
 /**
  * This is a cell implementation forr <code>Image</code> widgets.
@@ -27,7 +28,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ImageCell extends AbstractCell {
     /** one pixel image name */
-    public static final String SINGLE_IMAGE = "advanced/images/single.gif";
+    public static final String SINGLE_IMAGE = ThemeHelper.getInstance().getFullResourceName("advanced/images/single.gif");
     /** image value */
     private Image image;
 

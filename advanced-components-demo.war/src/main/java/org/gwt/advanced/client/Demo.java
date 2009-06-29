@@ -37,13 +37,14 @@ public class Demo implements EntryPoint {
      */
     public void onModuleLoad() {
         AdvancedTabPanel advancedTabPanel = new AdvancedTabPanel(TabPosition.LEFT);
-        RootPanel.get("container").add(advancedTabPanel);
         RootPanel.get("theme").add(createThemeSwitcher());
+        RootPanel.get("container").add(advancedTabPanel);
 
         new EditableGridShowcase().initShowcase(advancedTabPanel);
         new HierarchicalGridShowcase().initShowcase(advancedTabPanel);
         new TreeGridShowcase().initShowcase(advancedTabPanel);
         new SimpleGridShowcase().initShowcase(advancedTabPanel);
+        new MVPShowcase().initShowcase(advancedTabPanel);
         new MasterDetailPanelShowcase().initShowcase(advancedTabPanel);
         new TextAndButtonShowcase().initShowcase(advancedTabPanel);
         new BordersShowcase().initShowcase(advancedTabPanel);
@@ -55,7 +56,10 @@ public class Demo implements EntryPoint {
      * @return a list box widget.
      */
     private ListBox createThemeSwitcher() {
+        ThemeHelper.getInstance().setThemeName("classic");
+        
         ListBox themes = new ListBox();
+        themes.addItem("classic", "classic");
         themes.addItem("default", "default");
         themes.addItem("gray", "gray");
         themes.addItem("ascetic", "ascetic");
