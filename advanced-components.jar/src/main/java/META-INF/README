@@ -3,6 +3,26 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.4.8 includes:
+
+Bug fixes:
+1. DateHelper problem with leap year
+2. resizing browser window makes TreeGrid generate an ArithmeticException
+3. Exception when removing invisible column from TreeGrid
+4. TreeGridRenderer.drawPager(TreeCell cell) does not account for null cell
+5. DefaultGridEventManager.activateCell() does not take invisible columns into account
+6. TreeGrid incorrectly update cells on model change
+7. Paging broken in TreeGridRenderer
+
+New features:
+1. Add overloaded method updateRow() in the TreeGridDataModel
+2. Keyboard support for ComboBox and SuggestionBox
+3. ComboBox and SuggestionBox should provide getter for the selected widget
+
+Doc updates:
+1. Update quickstart guide to make CSS usage simpler
+
+====================================================================================================================
 Release 1.4.7 includes:
 
 Bug fixes:

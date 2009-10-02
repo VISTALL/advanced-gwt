@@ -30,14 +30,22 @@ import java.util.Date;
  * @since 1.0.0
  */
 public class DateHelper {
-    /** number of days per month */
+    /**
+     * number of days per month
+     */
     private static final int[] DAYS_PER_MONTH = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    /** weekedn days (Sunday and Saturday) */
+    /**
+     * weekedn days (Sunday and Saturday)
+     */
     public static final int[] WEEK_END_DAYS = {0, 6};
 
-    /** a date to operate with */
+    /**
+     * a date to operate with
+     */
     private Date date;
-    /** the first day of week (usually 0 - Sunday) */
+    /**
+     * the first day of week (usually 0 - Sunday)
+     */
     private int firstDayOfWeek;
 
     /**
@@ -45,19 +53,19 @@ public class DateHelper {
      *
      * @param date is a date to operate with.
      */
-    public DateHelper (Date date) {
+    public DateHelper(Date date) {
         this.date = date;
         this.firstDayOfWeek =
-                Integer.valueOf(((CalendarConstants)GWT.create(CalendarConstants.class)).firstDayOfWeek()).intValue();
+                Integer.valueOf(((CalendarConstants) GWT.create(CalendarConstants.class)).firstDayOfWeek()).intValue();
     }
 
     /**
      * Creates an instance of this class.
      *
-     * @param year is a year number.
-     * @param month is a month number (from 0 to 11).
-     * @param day is a day number.
-     * @param hours is a hours number (from 0 to 23).
+     * @param year    is a year number.
+     * @param month   is a month number (from 0 to 11).
+     * @param day     is a day number.
+     * @param hours   is a hours number (from 0 to 23).
      * @param minutes is a minutes number.
      * @param seconds is a seconds number.
      */
@@ -69,6 +77,7 @@ public class DateHelper {
      * This method gets a week day number.<p>
      * Usually a week starts from Sunday (0), but in some localizations it can start from Monday. In this case
      * all numbers will be shifted, i.e. Monday (0), Tuesday (1),..., Sunday (6).
+     *
      * @return
      */
     public int getDayOfWeek() {
@@ -138,11 +147,13 @@ public class DateHelper {
      * @return a number of days.
      */
     public int getNumberOfDaysInMonth() {
-        if (date.getMonth() == 1 && date.getYear() % 4 == 0)
+        if ((date.getMonth() == 1) && ((date.getYear() % 400 == 0) ||
+                ((date.getYear() % 100 != 0) && (date.getYear() % 4 == 0))))
             return 29;
         else
             return DAYS_PER_MONTH[date.getMonth()];
     }
+
 
     /**
      * This method cuts time data from the date.

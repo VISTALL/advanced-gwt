@@ -67,7 +67,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         } else {
             int rowNumber = 0;
             for (int i = start; !empty && i <= end; i++)
-                rowNumber = drawRow((TreeGridRow) model.getRow(i - start), rowNumber);
+                rowNumber = drawRow((TreeGridRow) model.getRow(i), rowNumber);
             for (int i = getGrid().getRowCount() - 1; i >= rowNumber; i--)
                 getGrid().removeRow(i);
         }
@@ -76,17 +76,18 @@ public class TreeGridRenderer extends DefaultGridRenderer {
     /** {@inheritDoc} */
     public void drawCell(Object data, int row, int column, boolean active) {
         Editable gridModel = getGrid().getModel();
+        int gridColumn = getGrid().getColumnByModelColumn(column);
         if (gridModel instanceof Composite && ((Composite)gridModel).getExpandableColumn() == column) {
             Composite model = (Composite) gridModel;
             int modelRow = getModelRow(row);
 
-            GridCell gridCell = getCellFactory().create(row, column, data);
+            GridCell gridCell = getCellFactory().create(row, gridColumn, data);
             gridCell.displayActive(false);
 
             TreeGridRow parentRow = (TreeGridRow) getCurrentRows().get();
             TreeGridRow currentRow = model.getRow(parentRow, modelRow);
 
-            TreeCell cell = (TreeCell) getCellFactory().create(row, column, gridCell);
+            TreeCell cell = (TreeCell) getCellFactory().create(row, gridColumn, gridCell);
             cell.setGridRow(currentRow);
             cell.setExpanded(currentRow.isExpanded());
             cell.setLeaf(!(model instanceof LazyLoadable) && model.getRows(currentRow).length <= 0);
@@ -125,7 +126,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      *
      * @param parent is a parent row.
      * @param modelRow is a model row number (in the subtree).
-     * @return a grid row number.                             T
+     * @return a grid row number.                             
      */
     public int getRowByModelRow(TreeGridRow parent, int modelRow) {
         Editable editable = getGrid().getModel();
@@ -188,6 +189,9 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      * @return <code>true</code> if the pager has been displayed.
      */
     protected boolean drawPager(TreeCell cell) {
+        if (cell == null)
+            return false;
+
         TreeGridRow gridRow = cell.getGridRow();
         boolean draw = gridRow.isExpanded() && gridRow.isPagerEnabled();
         if (draw) {

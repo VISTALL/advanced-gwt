@@ -83,7 +83,7 @@ public interface GridRenderer {
      *
      * @param data is a column data to draw.
      * @param column is a column number
-     * @param overwrite is a falg that means whether it's required to overwrite the column cells.
+     * @param overwrite is a flag that means whether it's required to overwrite the column cells.
      */
     void drawColumn(Object[] data, int column, boolean overwrite);
 }

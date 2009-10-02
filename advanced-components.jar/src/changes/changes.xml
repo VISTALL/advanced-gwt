@@ -6,7 +6,20 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="1.4.7" date="2009-06-29" description="Latest version">
+        <release version="1.4.8" date="2009-09-29" description="Latest version">
+            <action type="add" issue="44" system="google">Add overloaded method updateRow() in the TreeGridDataModel</action>
+            <action type="add" issue="48" system="google">Keyboard support for ComboBox and SuggestionBox</action>
+            <action type="add" issue="49" system="google">ComboBox and SuggestionBox should provide getter for the selected widget</action>
+            <action type="fix" issue="41" system="google">DateHelper problem with leap year</action>
+            <action type="fix" issue="43" system="google">resizing browser window makes TreeGrid generate an ArithmeticException</action>
+            <action type="fix" issue="45" system="google">Exception when removing invisible column from TreeGrid</action>
+            <action type="fix" issue="46" system="google">TreeGridRenderer.drawPager(TreeCell cell) does not account for null cell</action>
+            <action type="fix" issue="47" system="google">DefaultGridEventManager.activateCell() does not take invisible columns into account</action>
+            <action type="fix" issue="51" system="google">TreeGrid incorrectly update cells on model change</action>
+            <action type="fix" issue="53" system="google">Paging broken in TreeGridRenderer</action>
+            <action type="update" issue="42" system="google">Update quickstart guide to make CSS usage simpler</action>
+        </release>
+        <release version="1.4.7" date="2009-06-29" description="Old unsupported version">
             <action type="add" issue="17" system="google">Multiple line selection in grids</action>
             <action type="add" issue="19" system="google">Data models listening</action>
             <action type="fix" issue="30" system="google">[ERROR] Unexpected internal compiler error - GWT 1.6.4, gwt-dev-windows.jar</action>

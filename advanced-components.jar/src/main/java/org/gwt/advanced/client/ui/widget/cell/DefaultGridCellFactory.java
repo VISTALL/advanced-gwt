@@ -46,7 +46,7 @@ public class DefaultGridCellFactory implements GridCellFactory {
     /** {@inheritDoc} */
     public GridCell create(int row, int column, Object data) {
         GridCell result;
-        Class columnType = getGrid().getColumnWidgetClasses()[column];
+        Class columnType = getGrid().getColumnWidgetClasses()[getGrid().getModelColumn(column)];
 
         if (TextBoxCell.class.equals(columnType)) {
             result = create((String) data);

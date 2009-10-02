@@ -114,6 +114,7 @@
                         <li><a href="faq/combo-box-faq.html#what_is_combo_box">What is ComboBox? Why do I need it?</a></li>
                         <li><a href="faq/combo-box-faq.html#how_to_use_combo">How to use combo boxes?</a></li>
                         <li><a href="faq/combo-box-faq.html#is_it_possible_to_create_combo_cell">Is it possible to create a grid cell that contains a ComboBox?</a></li>
+                        <li><a href="faq/combo-box-faq.html#does_support_keyboard">Does the ComboBox allow choosing an item using a keyboard?</a></li>
                     </ul>
                 </p>
             </section>
@@ -124,6 +125,7 @@
                         <li><a href="faq/suggestion-box-faq.html#what_is_difference_between_combo_suggestion_model">What's a difference between ComboBoxDataModel and SuggestionBoxDataModel?</a></li>
                         <li><a href="faq/suggestion-box-faq.html#can_i_use_combo_model_in_suggestion">Can I use ComboBoxDataModel in SuggestionBoxes?</a></li>
                         <li><a href="faq/suggestion-box-faq.html#is_it_possible_to_create_suggestion_cell">Is it possible to create a grid cell that contains a SuggestionBox?</a></li>
+                        <li><a href="faq/suggestion-box-faq.html#does_support_keyboard">Does the SuggestionBox allow choosing an item using a keyboard?</a></li>
                     </ul>
                 </p>
             </section>

@@ -115,7 +115,7 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
     /** {@inheritDoc} */
     public void drawColumn(Object[] data, int column, boolean overwrite) {
         if (!overwrite && column < getGrid().getHeaderWidgets().size())
-            getGrid().insertHeaderCell(column);
+            getGrid().insertHeaderCell(getGrid().getColumnByModelColumn(column));
         HeaderCell cell = getCellFactory().create(column, getGrid().getHeaders()[column]);
         cell.displayActive(false);
 

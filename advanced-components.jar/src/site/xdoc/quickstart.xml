@@ -55,7 +55,7 @@
 </span><span style="background-color:#ffffff;">panel.display();
 RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(</span><span style="background-color:#ffffff;">).add(panel);</span></pre>
 </source>
-                This code creates one grid containing a list of employees. All com\lumns are sortable and all cells are
+                This code creates one grid containing a list of employees. All columns are sortable and all cells are
                 editable. But this sample doesn't send data to an RPC service to persist it. So, it's just a simple
                 client side application.
 
@@ -76,6 +76,12 @@ RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(<
 &lt;/</span><span style="color:#000080;background-color:#efefef;font-weight:bold;">body</span><span style="background-color:#efefef;">&gt;
 &lt;/</span><span style="color:#000080;background-color:#efefef;font-weight:bold;">html</span><span style="background-color:#efefef;">&gt;
 </span></pre>
+</source>
+                <ul>
+                    <li>IMPORTANT NOTE. If you do not use Maven to compile GWT projects, you maight also need to add the following line into .gwt.xml file.</li>
+                </ul>
+<source>
+&lt;stylesheet src="advanced/themes/default/theme.css"/&gt;    
 </source>
                 <ul>
                     <li>Now compile the entry point and deploy WAR file</li>

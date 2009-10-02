@@ -16,11 +16,7 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
 
@@ -54,6 +50,8 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
     private String width;
     /** widget height */
     private String height;
+    /** enabled panel controls flag */
+    private boolean enabled;
 
     /**
      * Getter for property 'customTextAllowed'.
@@ -109,7 +107,9 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
         addComponentListeners();
 
         layout.setWidget(0, 0, getSelectedValue());
-        layout.setWidget(0, 1, getChoiceButton());
+
+        if (isChoiceButtonVisible()) 
+            layout.setWidget(0, 1, getChoiceButton());
 
         prepareSelectedValue();
         if(isChoiceButtonVisible())
@@ -154,6 +154,42 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
      */
     public void setMaxLength(int length) {
         getSelectedValue().setMaxLength(length);
+    }
+
+    /**
+     * This method sets a tab index for this component.
+     *
+     * @param index is a tab order number.
+     */
+    public void setTabIndex(int index) {
+        getSelectedValue().setTabIndex(index);
+    }
+
+    /**
+     * Checks whether the controls palced on this panel are enabled.
+     *
+     * @return a result of check.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Enables or disables the controls inside the panel.
+     *
+     * @param enabled is a flag that means whether the controls must be enabled.
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        getSelectedValue().setEnabled(enabled);
+        getChoiceButton().setEnabled(enabled);
+    }
+
+    /**
+     * Cleans all the data displayed in the widget.
+     */
+    public void cleanSelection() {
+        getSelectedValue().setText("");
     }
 
     /**

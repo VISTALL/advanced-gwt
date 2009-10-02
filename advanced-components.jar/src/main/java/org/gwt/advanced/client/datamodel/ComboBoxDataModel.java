@@ -81,8 +81,6 @@ public class ComboBoxDataModel implements ListDataModel {
 
     /** {@inheritDoc} */
     public String getSelectedId() {
-        if (selectedId == null && itemIds.size() > 0)
-            selectedId = (String) itemIds.get(0);
         return selectedId;
     }
 
@@ -103,7 +101,10 @@ public class ComboBoxDataModel implements ListDataModel {
 
     /** {@inheritDoc} */
     public void setSelectedIndex(int index) {
-        index = getValidIndex(index);
+        if (index < 0) {
+            selectedId = null;
+            return;
+        }
         List ids = getItemIds();
         if (ids.size() > 0)
             setSelectedId((String) ids.get(index));
@@ -149,7 +150,7 @@ public class ComboBoxDataModel implements ListDataModel {
      * @return <code>true</code> if the index is valid.
      */
     protected boolean isIndexValid(int index) {
-        return getItemIds().size() >= index;
+        return getItemIds().size() > index && index >= 0;
     }
 
     /**

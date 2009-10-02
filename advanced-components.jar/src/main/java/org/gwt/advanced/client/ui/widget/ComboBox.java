@@ -16,21 +16,11 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ChangeListenerCollection;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.ClickListenerCollection;
-import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.FocusListenerCollection;
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.KeyboardListenerCollection;
-import com.google.gwt.user.client.ui.SourcesChangeEvents;
-import com.google.gwt.user.client.ui.SourcesClickEvents;
-import com.google.gwt.user.client.ui.SourcesFocusEvents;
-import com.google.gwt.user.client.ui.SourcesKeyboardEvents;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventPreview;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.ui.widget.combo.DefaultListItemFactory;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
@@ -40,20 +30,34 @@ import java.util.Set;
 
 /**
  * This is a combo box widget implementation.
- * 
+ *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
- */                                                       
+ */
 public class ComboBox extends TextButtonPanel
         implements SourcesFocusEvents, SourcesChangeEvents, SourcesKeyboardEvents, SourcesClickEvents {
-    /** a combo box data model */
+    /**
+     * a combo box data model
+     */
     private ComboBoxDataModel model;
-    /** a list item factory */
+    /**
+     * a list item factory
+     */
     private ListItemFactory listItemFactory;
-    /** a list popup panel */
+    /**
+     * a list popup panel
+     */
     private ListPopupPanel listPanel;
-    /** a combo box delegate listener */
+    /**
+     * a combo box delegate listener
+     */
     private DelegateListener delegateListener;
+    /**
+     * a keyboard events listener that switches off default browser handling and replaces it with conponents'
+     */
+    private ComboBoxKeyboardManager keyboardManager;
+    /** a flag that is <code>true</code> if any control key is pressed */
+    private boolean keyPressed;
 
     /**
      * Setter for property 'model'.
@@ -262,22 +266,68 @@ public class ComboBox extends TextButtonPanel
             getListPanel().hide();
     }
 
+    /**
+     * This method gets a widget that is currently selected in the drop down list.
+     *
+     * @return <code>null</code> if the drop down list is collapsed.
+     */
+    public Widget getSelectedWidget() {
+        if (isListPanelOpened() && getModel().getSelectedIndex() >= 0) {
+            return getListPanel().getList().getWidget(getModel().getSelectedIndex());
+        } else {
+            return null;
+        }
+    }
+
     /** {@inheritDoc} */
+    public void cleanSelection() {
+        super.cleanSelection();
+        getModel().clear();
+        for (int i = 0; i < getListPanel().getList().getWidgetCount(); i++) {
+            getListPanel().getList().remove(i);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected String getDefaultImageName() {
         return "drop-down.gif";
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns <code>true</code> if cursor is moved by a control key.
+     *
+     * @return a flag value.
+     */
+    protected boolean isKeyPressed() {
+        return keyPressed;
+    }
+
+    /**
+     * Sets the value of the key pressed flag.
+     *
+     * @param keyPressed is a key pressed flag value.
+     */
+    protected void setKeyPressed(boolean keyPressed) {
+        this.keyPressed = keyPressed;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected void prepareSelectedValue() {
         super.prepareSelectedValue();
         getSelectedValue().setText(getListItemFactory().convert(getModel().getSelected()));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void addComponentListeners() {
         TextBox value = getSelectedValue();
         ToggleButton button = getChoiceButton();
-        
+
         getListPanel().addChangeListener(getDelegateListener());
         value.removeChangeListener(getDelegateListener());
         value.addChangeListener(getDelegateListener());
@@ -301,8 +351,9 @@ public class ComboBox extends TextButtonPanel
      * @return Value for property 'listPanel'.
      */
     protected ListPopupPanel getListPanel() {
-        if (listPanel == null)
+        if (listPanel == null) {
             listPanel = new ListPopupPanel(this);
+        }
         return listPanel;
     }
 
@@ -318,20 +369,43 @@ public class ComboBox extends TextButtonPanel
     }
 
     /**
+     * This method gets a keybord manager implementation for the component.
+     *
+     * @return an instance of the manager.
+     */
+    protected ComboBoxKeyboardManager getKeyboardManager() {
+        if (keyboardManager == null)
+            keyboardManager = new ComboBoxKeyboardManager();
+        return keyboardManager;
+    }
+
+    /**
      * Universal listener that delegates all events handling to custom listeners.
      */
     protected class DelegateListener implements FocusListener, ClickListener, ChangeListener, KeyboardListener {
-        /** a list of focused controls */
+        /**
+         * a list of focused controls
+         */
         private Set focuses;
-        /** a combo box widget */
+        /**
+         * a combo box widget
+         */
         private Widget widget;
-        /** a list of custom focus listeners */
+        /**
+         * a list of custom focus listeners
+         */
         private FocusListenerCollection focusListeners;
-        /** a list of custom click listeners */
+        /**
+         * a list of custom click listeners
+         */
         private ClickListenerCollection clickListeners;
-        /** a list of custom change listeners */
+        /**
+         * a list of custom change listeners
+         */
         private ChangeListenerCollection changeListeners;
-        /** s list of keyboard listeners */
+        /**
+         * s list of keyboard listeners
+         */
         private KeyboardListenerCollection keyboardListeners;
 
         /**
@@ -343,50 +417,68 @@ public class ComboBox extends TextButtonPanel
             this.widget = widget;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onFocus(Widget sender) {
             getFocuses().add(sender);
 
+            DOM.addEventPreview(getKeyboardManager());
+
             TextBox value = getSelectedValue();
             if (sender == value) {
-                if (!isCustomTextAllowed())
+                if (!isCustomTextAllowed()) {
                     value.addStyleName("selected-row");
-                else
-                    value.setSelectionRange(0, value.getText().length());
+                    if (isChoiceButtonVisible())
+                        getChoiceButton().setFocus(true);
+                }
+            } else if (sender == getListPanel()) {
+                Widget widget = getSelectedWidget();
+                if (widget != null)
+                    getListPanel().getScrollPanel().ensureVisible(widget); 
             }
 
             if (focuses.size() == 1)
                 getFocusListeners().fireFocus(widget);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onLostFocus(Widget sender) {
             if (!isFocus())
                 return;
-            
+
+            DOM.removeEventPreview(getKeyboardManager());
+
             getFocuses().remove(sender);
 
             TextBox value = getSelectedValue();
             if (sender == value && !isCustomTextAllowed())
-                    value.removeStyleName("selected-row");
-            
+                value.removeStyleName("selected-row");
+
             if (!isFocus())
                 getFocusListeners().fireLostFocus(widget);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onClick(Widget sender) {
             int count = getModel().getCount();
             if (sender instanceof ToggleButton || !isCustomTextAllowed()) {
-                if (count > 0)
+                if (count > 0) {
                     getListPanel().display();
-                else
+                    getChoiceButton().setDown(true);
+                } else
                     getChoiceButton().setDown(false);
             }
             getClickListeners().fireClick(widget);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onChange(Widget sender) {
             if (sender == getListPanel()) {
                 getSelectedValue().setText(getListItemFactory().convert(getModel().getSelected()));
@@ -397,21 +489,27 @@ public class ComboBox extends TextButtonPanel
             getChangeListeners().fireChange(widget);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onKeyDown(Widget sender, char keyCode, int modifiers) {
             getKeyboardListeners().fireKeyDown(widget, keyCode, modifiers);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onKeyPress(Widget sender, char keyCode, int modifiers) {
             getKeyboardListeners().fireKeyPress(widget, keyCode, modifiers);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onKeyUp(Widget sender, char keyCode, int modifiers) {
             getKeyboardListeners().fireKeyUp(widget, keyCode, modifiers);
         }
-        
+
         /**
          * Getter for property 'focusListeners'.
          *
@@ -474,6 +572,84 @@ public class ComboBox extends TextButtonPanel
          */
         protected boolean isFocus() {
             return getFocuses().size() > 0;
+        }
+    }
+
+    /**
+     * This is a keyboard manager implemntation developed for the widget.<p/>
+     * It prevents default browser event handling for system keys like arrow up / down, escape, enter and tab.
+     * This manager is activated on widget focus and is used for opening / closing the drop down list and
+     * swicthing a cursor position in the list.<p/>
+     * It also supports Alt+Tab combination but skips other modifiers.
+     */
+    protected class ComboBoxKeyboardManager implements EventPreview {
+        /** See class docs */
+        public boolean onEventPreview(Event event) {
+            Element target = DOM.eventGetTarget(event);
+
+            int type = DOM.eventGetType(event);
+            if (type == Event.ONKEYDOWN) {
+                setKeyPressed(true);
+                if (DOM.getCaptureElement() != null)
+                    return true;
+
+                boolean eventTargetsPopup = (target != null)
+                        && DOM.isOrHasChild(getElement(), target);
+                int button = DOM.eventGetKeyCode(event);
+                boolean alt = DOM.eventGetAltKey(event);
+                boolean ctrl = DOM.eventGetCtrlKey(event);
+                boolean shift = DOM.eventGetShiftKey(event);
+
+                boolean hasModifiers = alt || ctrl || shift;
+
+                if (eventTargetsPopup && isListPanelOpened()) {
+                    int row = getListPanel().getHighlightRow();
+
+                    if (button == KeyboardListener.KEY_UP && !hasModifiers)
+                        row--;
+                    else if (button == KeyboardListener.KEY_DOWN && !hasModifiers)
+                        row++;
+                    else if (button == KeyboardListener.KEY_ENTER && !hasModifiers) {
+                        getModel().setSelectedIndex(getListPanel().getHighlightRow());
+                        getSelectedValue().setText(getListItemFactory().convert(getModel().getSelected()));
+                        getListPanel().hide();
+                        getSelectedValue().removeStyleName("selected-row");
+                        getChoiceButton().setDown(false);
+                        getSelectedValue().setFocus(false);
+                        setKeyPressed(false);
+                        return false;
+                    } else if (button == KeyboardListener.KEY_ESCAPE && !hasModifiers) {
+                        getListPanel().hide();
+                        getChoiceButton().setDown(false);
+                        setKeyPressed(false);
+                        return false;
+                    } else if (button == KeyboardListener.KEY_TAB && (!hasModifiers || alt && !ctrl && !shift)) {
+                        getListPanel().hide();
+                        getChoiceButton().setDown(false);
+                        setKeyPressed(false);
+                        return true;
+                    }
+
+                    if (row != getListPanel().getHighlightRow()) {
+                        if (row >= getModel().getCount())
+                            row = getModel().getCount() - 1;
+                        if (row < 0)
+                            row = 0;
+
+                        getListPanel().setHightlightRow(row);
+                        getListPanel().getScrollPanel().ensureVisible(getListPanel().getList().getWidget(row));
+                        return false;
+                    }
+                } else if (eventTargetsPopup && !hasModifiers
+                        && button == KeyboardListener.KEY_ENTER && getModel().getCount() > 0) {
+                    getListPanel().display();
+                    return false;
+                }
+            } else if (type == Event.ONKEYUP) {
+                setKeyPressed(false);
+            }
+
+            return true;
         }
     }
 }

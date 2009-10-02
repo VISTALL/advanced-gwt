@@ -37,7 +37,7 @@
             </div>
             <div class="textleft">
                 <p>
-                    Another one widget is Combo Box. You can enter a new value directly in the text field or choosing it
+                    Another one widget is ComboBox. You can enter a new value directly in the text field or choosing it
                     from the drop down list. Key features of this widget listed below:
 
                     <ul>
@@ -45,6 +45,7 @@
                         <li>Complex drop down list items support, for example, textual objects with icons</li>
                         <li>Transparent GWT event model support</li>
                         <li>Data model support (MVP pattern implementation)</li>
+                        <li>Moving selection cursor with keyboard <span class="new">new</span></li>
                     </ul>
                 </p>
             </div>

@@ -6,7 +6,7 @@
     <artifactId>advanced-components-demo</artifactId>
     <packaging>war</packaging>
     <name>Advanced GWT Components Demo Application</name>
-    <version>1.4.7</version>
+    <version>1.4.8</version>
 
     <description>The application demonstrating features of the GWT Advanced Components library.</description>
     <inceptionYear>2008</inceptionYear>
@@ -33,13 +33,13 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>1.1-SNAPSHOT</version>
+                <version>1.1</version>
                 <executions>
                     <execution>
                         <configuration>
-                            <extraJvmArgs>-Xmx512m -Xss4M</extraJvmArgs>
+                            <extraJvmArgs>-Xmx512m</extraJvmArgs>
                             <module>org.gwt.advanced.Demo</module>
-                            <style>PRETTY</style>
+                            <style>OBF</style>
                             <logLevel>ERROR</logLevel>
                         </configuration>
                         <goals>
@@ -83,13 +83,13 @@
         <dependency>
             <groupId>org.gwt.advanced</groupId>
             <artifactId>advanced-components</artifactId>
-            <version>1.4.7</version>
+            <version>1.4.8</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>1.6.4</version>
+            <version>1.7.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

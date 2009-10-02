@@ -105,8 +105,9 @@ public class DefaultGridRenderer implements GridRenderer {
     
     /** {@inheritDoc} */
     public void drawCell(Object data, int row, int column, boolean active) {
+        int gridColumn = getGrid().getColumnByModelColumn(column);
         if (active)
-            getCellFactory().create(row, column, data).displayActive(true);
+            getCellFactory().create(row, gridColumn, data).displayActive(true);
         else {
             Class columnType = grid.getColumnWidgetClasses()[column];
 
@@ -115,17 +116,17 @@ public class DefaultGridRenderer implements GridRenderer {
                 || DoubleCell.class.equals(columnType) || FloatCell.class.equals(columnType)
                 || ShortCell.class.equals(columnType)
             )
-                setCellText(formatString(data), row, column, "numeric-cell");
+                setCellText(formatString(data), row, gridColumn, "numeric-cell");
             else if (ListCell.class.equals(columnType))
-                setCellText(getListBoxText((ListBox) data), row, column, "list-cell");
+                setCellText(getListBoxText((ListBox) data), row, gridColumn, "list-cell");
             else if (DateCell.class.equals(columnType))
-                setCellText(formatDate((Date) data), row, column, "date-cell");
+                setCellText(formatDate((Date) data), row, gridColumn, "date-cell");
             else if (LabelCell.class.equals(columnType) || TextBoxCell.class.equals(columnType))
-                setCellText(formatString(data), row, column, "text-cell");
+                setCellText(formatString(data), row, gridColumn, "text-cell");
             else if (ImageCell.class.equals(columnType))
-                setCellWidget((Widget) data, row, column, "image-cell");
+                setCellWidget((Widget) data, row, gridColumn, "image-cell");
             else 
-                getCellFactory().create(row, column, data).displayActive(false);
+                getCellFactory().create(row, gridColumn, data).displayActive(false);
         }
     }
 

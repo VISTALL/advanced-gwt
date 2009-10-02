@@ -18,14 +18,7 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.TableListener;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.CalendarListener;
 import org.gwt.advanced.client.ui.resources.CalendarConstants;
@@ -44,7 +37,7 @@ import java.util.Set;
  */
 public class Calendar extends SimplePanel implements AdvancedWidget {
     /** calendar constants */
-    private static CalendarConstants constants =
+    static CalendarConstants constants =
             (CalendarConstants) GWT.create(CalendarConstants.class);
 
     /** short week day names */
@@ -487,7 +480,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
      */
     public ToggleButton getTodayButton () {
         if (todayButton == null) {
-            todayButton = new ToggleButton("Today");
+            todayButton = new ToggleButton(constants.today());
             todayButton.setStyleName("today-button");
             todayButton.addClickListener(getSwitchDateListener());
         }

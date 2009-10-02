@@ -53,5 +53,49 @@ ComboBox comboBox = </span><span style="font-weight: bold; color: rgb(0, 0, 128)
                 <div class="googleAds"><google-ads-horizontal-banner/></div>
             </answer>
         </faq>
+        <faq id="does_support_keyboard">
+            <question>Does the ComboBox allow choosing an item using a keyboard?</question>
+            <answer>
+                <p>
+                    Yes, keyboard events handling is supported since the 1.4.8 version. The following table contains
+                    shortcuts and descriptions for each action you can do with a keyboard.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Shortcut</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Enter</td>
+                            <td>Opens a drop-down list if it's closed, otherwise chooses a currently highlight item in the list</td>
+                        </tr>
+                        <tr>
+                            <td>Esc</td>
+                            <td>Closes opened drop-down list without choosing an item</td>
+                        </tr>
+                        <tr>
+                            <td>Arrow Up</td>
+                            <td>Moves the list cursor up</td>
+                        </tr>
+                        <tr>
+                            <td>Arrow Down</td>
+                            <td>Moves the list cursor down</td>
+                        </tr>
+                        <tr>
+                            <td>Tab</td>
+                            <td>Moves focus to the next focusable element on the screen</td>
+                        </tr>
+                        <tr>
+                            <td>Alt-Tab</td>
+                            <td>Moves focus to the previous focusable element on the screen</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="googleAds"><google-ads-horizontal-banner/></div>
+            </answer>
+        </faq>
     </part>
 </faqs>

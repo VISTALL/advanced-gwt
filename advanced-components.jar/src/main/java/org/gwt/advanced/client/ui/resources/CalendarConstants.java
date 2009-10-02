@@ -179,4 +179,18 @@ public interface CalendarConstants extends Constants {
      * @return a hours cycle basis value.
      */
     String hoursCircleBasis();
+
+    /**
+     * Specifies the date and time format for the date picker.
+     *
+     * @return a format applicable for the <code>DateTimeFormat</code>
+     */
+    String dateTimeFormat();
+
+    /**
+     * Specifies the date format only for the date picker.
+     *
+     * @return a format applicable for the <code>DateTimeFormat</code>
+     */
+    String dateFormat();
 }

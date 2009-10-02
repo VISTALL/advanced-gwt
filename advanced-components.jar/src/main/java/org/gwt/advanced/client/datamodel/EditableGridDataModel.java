@@ -258,6 +258,12 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
     public void setSortColumn (int sortColumn, Comparator comparator) {
         setSortColumn(sortColumn);
         Collections.sort(data, createRowComparator(sortColumn, comparator));
+        int count = 0;
+        for (Iterator iterator = data.iterator(); iterator.hasNext();) {
+            GridRow gridRow = (GridRow) iterator.next();
+            gridRow.setIndex(count);
+            count++;
+        }
         fireColumnEvent(EditableModelEvent.SORT_ALL, sortColumn);
     }
 

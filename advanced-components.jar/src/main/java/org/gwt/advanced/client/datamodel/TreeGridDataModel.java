@@ -336,6 +336,18 @@ public class TreeGridDataModel implements Composite {
     }
 
     /** {@inheritDoc} */
+    public void updateRow(TreeGridRow parent, int rowNumber, Object[] row) throws IllegalArgumentException {
+        if (parent == null)
+            updateRow(rowNumber, row);
+        else {
+            TreeGridRow[] treeGridRows = getRows(parent);
+            getDelegate().checkRowNumber(rowNumber, treeGridRows.length);
+
+            treeGridRows[rowNumber].setData(row);
+        }
+    }
+
+    /** {@inheritDoc} */
     public void addRow(int beforeRow, Object[] row) throws IllegalArgumentException {
         getDelegate().addRow(beforeRow, row);
         remapIndexes(null);

@@ -105,7 +105,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      */
     public void addGridPanelFactory(int column, GridPanelFactory factory) {
         getGridPanelFactories().put(new Integer(column), factory);
-        getGridRenderer().drawColumn(getModel().getGridColumn(column).getData(), column, true);
+        getGridRenderer().drawColumn(getModel().getGridColumn(getModelColumn(column)).getData(), column, true);
     }
 
     /**

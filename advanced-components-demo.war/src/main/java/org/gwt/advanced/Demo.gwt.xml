@@ -5,4 +5,5 @@
 
     <entry-point class='org.gwt.advanced.client.Demo'/>
 
+    <extend-property name="locale" values="ru"/>    
 </module>

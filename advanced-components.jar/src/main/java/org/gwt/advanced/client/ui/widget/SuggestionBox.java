@@ -17,6 +17,7 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,6 +40,8 @@ import java.util.List;
  * @since 1.2.0
  */
 public class SuggestionBox extends ComboBox {
+    /** default request timeout between last expression change and getting data */
+    public static final int DEFAULT_REQUEST_TIMEOUT = 500;
     /**
      * suggestion expression length
      */
@@ -58,7 +61,9 @@ public class SuggestionBox extends ComboBox {
     /**
      * a keyboard listener to set focus when a user types any text
      */
-    private KeyboardListener keyboardListener;
+    private ExpressionKeyboardListener keyboardListener;
+    /** request timeout value */
+    private int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
 
 
     /**
@@ -94,6 +99,25 @@ public class SuggestionBox extends ComboBox {
      */
     public void setExpressionLength(int expressionLength) {
         this.expressionLength = expressionLength;
+    }
+
+    /**
+     * Gets a timeout value between last expression change and getting data.
+     *
+     * @return a request timeout value.
+     */
+    public int getRequestTimeout() {
+        return requestTimeout;
+    }
+
+    /**
+     * Sets the request timeout value.<p/>
+     * Set it to control how offten the widget will request a server for data.
+     *
+     * @param requestTimeout is a request timeout value in msc.
+     */
+    public void setRequestTimeout(int requestTimeout) {
+        this.requestTimeout = requestTimeout;
     }
 
     /**
@@ -156,6 +180,28 @@ public class SuggestionBox extends ComboBox {
     }
 
     /**
+     * Immediately refreshes the list of values which may match the expression.<p/>
+     * Use this method if whant to open the popup list from the
+     * {@link org.gwt.advanced.client.datamodel.ListCallbackHandler} implementation and values are NOT cached on a
+     * client side.
+     */
+    public void refreshList() {
+        if (getModel().getCount() > 0) {
+            getTimer().cancel();
+            getListPanel().display();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void cleanSelection() {
+        super.cleanSelection();
+        if (getModel() instanceof SuggestionBoxDataModel)
+            ((SuggestionBoxDataModel)getModel()).setExpression(null);
+    }
+
+    /**
      * {@inheritDoc}
      */
     protected void prepareSelectedValue() {
@@ -173,6 +219,8 @@ public class SuggestionBox extends ComboBox {
         getSelectedValue().addFocusListener(getFocusListener());
         getSelectedValue().removeKeyboardListener(getKeyboardListener());
         getSelectedValue().addKeyboardListener(getKeyboardListener());
+        getSelectedValue().removeChangeListener(getKeyboardListener());
+        getSelectedValue().addChangeListener(getKeyboardListener());
         getSelectedValue().removeFocusListener(getDelegateListener());
     }
 
@@ -214,7 +262,7 @@ public class SuggestionBox extends ComboBox {
      *
      * @return Value for property 'keyboardListener'.
      */
-    public KeyboardListener getKeyboardListener() {
+    protected ExpressionKeyboardListener getKeyboardListener() {
         if (keyboardListener == null)
             keyboardListener = new ExpressionKeyboardListener();
         return keyboardListener;
@@ -224,34 +272,57 @@ public class SuggestionBox extends ComboBox {
      * This is a focus listener that starts / cancels the timer.
      */
     protected class ExpressionFocusListener implements FocusListener {
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onFocus(Widget sender) {
-            getTimer().scheduleRepeating(500);
+            getTimer().scheduleRepeating(getRequestTimeout());
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onLostFocus(Widget sender) {
             getTimer().cancel();
-            ((ExpressionTimer)getTimer()).setLastExpression(null);
+            if (!getSelectedValue().getText().equals(((ExpressionTimer) getTimer()).getLastExpression()))
+                setSelectedId(null);    
+            ((ExpressionTimer) getTimer()).setLastExpression(null);
         }
     }
 
     /**
      * This listener is invoked when a user types any text and sets focus
      */
-    protected class ExpressionKeyboardListener implements KeyboardListener {
-        /** {@inheritDoc} */
+    protected class ExpressionKeyboardListener implements KeyboardListener, ChangeListener {
+        /**
+         * {@inheritDoc}
+         */
         public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+            if (KeyboardListener.KEY_BACKSPACE == keyCode && modifiers == 0) {
+                getTimer().scheduleRepeating(getRequestTimeout());
+                setSelectedId(null);
+            }
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-            getSelectedValue().setFocus(false);
-            getSelectedValue().setFocus(true);
+            getTimer().scheduleRepeating(getRequestTimeout());
+            setSelectedId(null);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void onChange(Widget sender) {
+            setSelectedId(null);
         }
     }
 
@@ -259,10 +330,14 @@ public class SuggestionBox extends ComboBox {
      * This is a timer that displays the list of items.
      */
     protected class ExpressionTimer extends Timer {
-        /** a last displayed expression filter */
+        /**
+         * a last displayed expression filter
+         */
         private String lastExpression;
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void run() {
             String text = getSelectedValue().getText();
             if (text == null || text.length() < getExpressionLength() || text.equals(getLastExpression()))
@@ -273,11 +348,8 @@ public class SuggestionBox extends ComboBox {
                 listener.onChange(text);
             }
 
-            if (getModel().getCount() > 0) {
-                getTimer().cancel();
-                getListPanel().display();
-            }
             setLastExpression(text);
+            refreshList();
         }
 
         /**

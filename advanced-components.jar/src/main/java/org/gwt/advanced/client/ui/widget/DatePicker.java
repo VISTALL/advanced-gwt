@@ -18,12 +18,7 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ChangeListenerCollection;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.CalendarListener;
 
 import java.util.Date;
@@ -47,6 +42,8 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
     private Date date;
     /** time visibility flag */
     private boolean timeVisible = false;
+    /** date and time format for the widget */
+    private String format; 
 
     /**
      * Creates an instance of this class and does nothing else.
@@ -132,6 +129,17 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
             return "";
     }
 
+    /**
+     * Sets a format string for the displaying date and time.<p/>
+     * It overrides the format specified in the resource file.
+     * For more details see docs for the <code>DateTimeFormat</code> class.
+     *
+     * @param format is a format string.
+     */
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
     /** {@inheritDoc} */
     protected void prepareSelectedValue() {
         super.prepareSelectedValue();
@@ -202,11 +210,14 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
      * @return Value for property 'format'.
      */
     protected DateTimeFormat getFormat() {
+        if (this.format != null)
+            return DateTimeFormat.getFormat(this.format);
+
         DateTimeFormat format;
         if (isTimeVisible())
-            format = DateTimeFormat.getLongDateTimeFormat();
+            format = DateTimeFormat.getFormat(Calendar.constants.dateTimeFormat());
         else
-            format = DateTimeFormat.getLongDateFormat();
+            format = DateTimeFormat.getFormat(Calendar.constants.dateFormat());
         return format;
     }
 

@@ -249,4 +249,14 @@ public interface Composite extends Editable {
      * @return an end row number.
      */
     int getEndRow(TreeGridRow parent);
+
+    /**
+     * This method updates a row with the specified data set.
+     *
+     * @param parent is a parent grid row.
+     * @param rowNumber is a row number.
+     * @param row is row data.
+     * @throws IllegalArgumentException if the row number is invalid.
+     */
+    void updateRow(TreeGridRow parent, int rowNumber, Object[] row) throws IllegalArgumentException;
 }

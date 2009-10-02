@@ -61,5 +61,16 @@ SuggestionBox suggestionBox =</span><span style="font-weight: bold; color: rgb(0
                 <div class="googleAds"><google-ads-horizontal-banner/></div>
             </answer>
         </faq>
+        <faq id="does_support_keyboard">
+            <question>Does the SuggestionBox allow choosing an item using a keyboard?</question>
+            <answer>
+                <p>
+                    SuggestionBox extends the ComboBox class and therefore supports all features of the superclass
+                    including keyboard events handling. See <a href="combo-box-faq.html#does_support_keyboard">this topic</a> 
+                    for details.
+                </p>
+                <div class="googleAds"><google-ads-horizontal-banner/></div>
+            </answer>
+        </faq>
     </part>
 </faqs>

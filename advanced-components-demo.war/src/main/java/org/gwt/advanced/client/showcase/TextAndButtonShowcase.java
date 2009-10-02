@@ -16,18 +16,18 @@
 
 package org.gwt.advanced.client.showcase;
 
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.AbstractShowcase;
 import org.gwt.advanced.client.DemoModelFactory;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
-import org.gwt.advanced.client.datamodel.SuggestionBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListCallbackHandler;
 import org.gwt.advanced.client.datamodel.ListDataModel;
+import org.gwt.advanced.client.datamodel.SuggestionBoxDataModel;
 import org.gwt.advanced.client.ui.widget.ComboBox;
 import org.gwt.advanced.client.ui.widget.DatePicker;
 import org.gwt.advanced.client.ui.widget.SuggestionBox;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Label;
 
 import java.util.Date;
 
@@ -41,7 +41,7 @@ public class TextAndButtonShowcase extends AbstractShowcase {
     protected Widget getWidget() {
         FlexTable panel = new FlexTable();
 
-        panel.setWidget(0, 0, createHintLabel("Select a country:"));
+        panel.setWidget(0, 0, createHintLabel("Select a country or enter a new one:"));
         panel.setWidget(1, 0, createHintLabel("Select a date:"));
         panel.setWidget(2, 0, createHintLabel("Type any European country name:"));
         panel.setWidget(3, 0, createHintLabel("Type any European country name to see the flag:"));
@@ -51,6 +51,7 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         ComboBox comboBox = new ComboBox();
         comboBox.setWidth("100%");
         ComboBoxDataModel model = DemoModelFactory.createsCountriesModel();
+        model.setSelectedIndex(0);
         comboBox.setModel(model);
         comboBox.setCustomTextAllowed(true);
 

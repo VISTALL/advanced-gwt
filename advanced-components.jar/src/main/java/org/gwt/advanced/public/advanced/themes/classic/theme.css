@@ -857,6 +857,11 @@
     font-weight: normal;
 }
 
+/** icon item label style **/
+.advanced-ListPopupPanel .list .selected-row .icon-item div {
+    color: white;
+}
+
 /*********************
  * Border styles
  */

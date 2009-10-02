@@ -282,8 +282,9 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * @param column is a column number.
      */
     protected void drawColumn(int column) {
-        if (getModel() != null) {
-            Object[] data = getModel().getColumns()[column].getData();
+        int modelColumn = getModelColumn(column);
+        if (getModel() != null && getModel().getColumns().length > modelColumn) {
+            Object[] data = getModel().getColumns()[modelColumn].getData();
             Object[] pageData;
             if (!(getModel() instanceof LazyLoadable)) {
                 int end = getModel().getEndRow();
@@ -297,7 +298,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
                 }
             } else
                 pageData = data;
-            getGridRenderer().drawColumn(pageData, column, false);
+            getGridRenderer().drawColumn(pageData, modelColumn, false);
         }
     }
 
@@ -794,8 +795,8 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
         if (widget == null) {
             int modelRow = getModelRow(row);
             Object data = null;
-            if (modelRow <= getModel().getEndRow())
-                data = getModel().getRowData(modelRow)[column];
+            if (modelRow < getModel().getTotalRowCount())
+                data = getModel().getRowData(modelRow)[getModelColumn(column)];
 
             widget = (Widget) getGridCellFactory().create(row, column, data);
             super.setWidget(row, column, widget); //do it to avoid loops
@@ -879,6 +880,41 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      */
     public GridColumn[] getGridColumns() {
         return getModel().getColumns();
+    }
+
+    /**
+     * This method returns a column number taking into account invisible columns.
+     *
+     * @param column is a column number of the grid.
+     * @return a column number in the data model.
+     */
+    public int getModelColumn(int column) {
+        int increment = 0;
+        for (Iterator iterator = getInvisibleColumns().iterator(); iterator.hasNext();) {
+            Integer number = (Integer) iterator.next();
+            if (column >= number.intValue())
+                increment++;
+        }
+        return column + increment;
+    }
+
+    /**
+     * Gets a grid column number by a model column index.
+     *
+     * @param modelColumn is amodel column index.
+     * @return a grid column number.
+     */
+    public int getColumnByModelColumn(int modelColumn) {
+        int decrement = 0;
+        for (Iterator iterator = getInvisibleColumns().iterator(); iterator.hasNext();) {
+            Integer number = (Integer) iterator.next();
+            if (modelColumn >= number.intValue())
+                decrement++;
+        }
+        int result = modelColumn - decrement;
+        if (result < 0)
+            result = 0;
+        return result;
     }
 
     /**
@@ -1015,7 +1051,7 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      */
     protected void updateModel(GridCell cell, Object newValue) {
         Editable dataModel = getModel();
-        dataModel.update(getModelRow(cell.getRow()), cell.getColumn(), newValue);
+        dataModel.update(getModelRow(cell.getRow()), getModelColumn(cell.getColumn()), newValue);
     }
 
     /**

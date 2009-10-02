@@ -18,16 +18,7 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
-import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.MouseListener;
-import com.google.gwt.user.client.ui.MouseListenerAdapter;
-import com.google.gwt.user.client.ui.PopupListener;
-import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
@@ -44,20 +35,38 @@ import java.util.List;
  * @since 1.2.0
  */
 public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
-    /** a list of items */
+    /**
+     * a list of items
+     */
     private VerticalPanel list;
-    /** items scrolling widget */
+    /**
+     * items scrolling widget
+     */
     private ScrollPanel scrollPanel;
-    /** a flag meaning whether this widget is hidden */
+    /**
+     * a flag meaning whether this widget is hidden
+     */
     private boolean hidden = true;
-    /** a parent selection box */
+    /**
+     * a parent selection box
+     */
     private ComboBox comboBox;
-    /** a list of change listeners */
+    /**
+     * a list of change listeners
+     */
     private List changeListeners;
-    /** item click  listener */
+    /**
+     * item click  listener
+     */
     private ClickListener itemClickListener;
-    /** mouse event listener */
+    /**
+     * mouse event listener
+     */
     private MouseListener mouseEventsListener;
+    /**
+     * the row that is currently hightlight in the list but my be not selected in the model
+     */
+    private int highlightRow = -1;
 
     /**
      * Creates an instance of this class and sets the parent combo box value.
@@ -98,7 +107,38 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         return hidden;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Gets a currently hightlight row.<p/>
+     * Note that it may not be equl to the selected row index in the model.
+     *
+     * @return a row number that is currently highlight.
+     */
+    public int getHighlightRow() {
+        return highlightRow;
+    }
+
+    /**
+     * Sets the hight light row number.
+     *
+     * @param row is a row number to become highlight.
+     */
+    protected void setHightlightRow(int row) {
+        if (row >= 0 && row < getList().getWidgetCount()) {
+            Widget widget = null;
+            if (this.highlightRow >= 0 && getList().getWidgetCount() > this.highlightRow)
+                widget = getList().getWidget(this.highlightRow);
+
+            if (widget != null)
+                widget.removeStyleName("selected-row");
+            this.highlightRow = row;
+            widget = getList().getWidget(this.highlightRow);
+            widget.addStyleName("selected-row");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void hide() {
         try {
             getComboBox().getDelegateListener().onLostFocus(this);
@@ -108,31 +148,36 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void show() {
         setHidden(false);
         super.show();
+        setHightlightRow(getComboBox().getModel().getSelectedIndex());
         getComboBox().getDelegateListener().onFocus(this);
     }
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     public void display() {
         setStyleName("advanced-ListPopupPanel");
-        
+
         if (!isHidden())
             hide();
-                       
+
         prepareList();
         setWidget(getScrollPanel());
-        
+
         show();
         setPopupPosition(getComboBox().getAbsoluteLeft(),
                 getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
 
         ScrollPanel table = getScrollPanel();
         if (table.getOffsetHeight() > Window.getClientHeight() * 0.3) {
-            table.setHeight((int)(Window.getClientHeight() * 0.3) + "px");
-        } 
+            table.setHeight((int) (Window.getClientHeight() * 0.3) + "px");
+        }
     }
 
     /**
@@ -164,17 +209,11 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         ComboBoxDataModel model = getComboBox().getModel();
         VerticalPanel panel = getList();
 
-        int row = model.getSelectedIndex();
-
-        if (row >= 0 && row < panel.getWidgetCount())
-            panel.getWidget(row).removeStyleName("selected-row");
-
         model.setSelectedIndex(newRow);
         newRow = model.getSelectedIndex();
 
         if (newRow >= 0 && newRow < panel.getWidgetCount())
-            panel.getWidget(newRow).addStyleName("selected-row");
-        
+            setHightlightRow(newRow);
     }
 
     /**
@@ -239,11 +278,17 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      * @return Value for property 'scrollPanel'.
      */
     public ScrollPanel getScrollPanel() {
-        if(scrollPanel == null) {
+        if (scrollPanel == null) {
             scrollPanel = new ScrollPanel();
             scrollPanel.setAlwaysShowScrollBars(false);
             scrollPanel.setWidget(getList());
             DOM.setStyleAttribute(scrollPanel.getElement(), "overflowX", "hidden");
+
+            scrollPanel.addScrollListener(new ScrollListener(){
+                public void onScroll(Widget widget, int scrollLeft, int scrollTop) {
+                    getComboBox().setFocus(true);
+                }
+            });
         }
         return scrollPanel;
     }
@@ -274,7 +319,9 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      * This is a click listener required to dispatch click events.
      */
     protected class ItemClickListener implements ClickListener {
-        /** a list panel instance */
+        /**
+         * a list panel instance
+         */
         private ListPopupPanel panel;
 
         /**
@@ -286,7 +333,9 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
             this.panel = panel;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onClick(Widget sender) {
             selectRow(getList().getWidgetIndex(sender));
 
@@ -308,18 +357,27 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
 
     /**
      * This listener is required to handle mouse moving events over the list.
-     */
+     */                                                                             
     protected class ListMouseListener extends MouseListenerAdapter {
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onMouseEnter(Widget sender) {
+            if (getComboBox().isKeyPressed())
+                return;
             int index = getComboBox().getModel().getSelectedIndex();
             if (index >= 0)
                 getList().getWidget(index).removeStyleName("selected-row");
             sender.addStyleName("selected-row");
+            setHightlightRow(getList().getWidgetIndex(sender));
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onMouseLeave(Widget sender) {
+            if (getComboBox().isKeyPressed())
+                return;
             sender.removeStyleName("selected-row");
         }
     }
@@ -328,7 +386,9 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      * This is listener that sets the choice button in up state, if the panel has been closed automatically.
      */
     protected class AutoPopupListener implements PopupListener {
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
             if (autoClosed) {
                 hide();

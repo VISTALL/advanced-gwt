@@ -107,7 +107,7 @@ public interface ListDataModel {
 
     /**
      * This method sets a currently selected item specifying it by the index.<p/>
-     * If the index < 0 it selects item 0. If the index > then list size, it selects the last item. 
+     * If the index < 0 it deselects any item. If the index > then list size, it selects the last item. 
      *
      * @param index is an item index.
      */
