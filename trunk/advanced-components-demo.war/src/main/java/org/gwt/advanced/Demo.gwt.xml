@@ -1,9 +1,0 @@
-<module>
-
-    <inherits name='com.google.gwt.user.User'/>
-    <inherits name='org.gwt.advanced.Grid'/>
-
-    <entry-point class='org.gwt.advanced.client.Demo'/>
-
-    <extend-property name="locale" values="ru"/>    
-</module>
