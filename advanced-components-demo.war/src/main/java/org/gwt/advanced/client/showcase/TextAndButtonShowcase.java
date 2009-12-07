@@ -59,10 +59,11 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         picker.setWidth("100%");
         picker.setTimeVisible(true);
 
-        SuggestionBox suggestionBox = new SuggestionBox();
+        final SuggestionBox suggestionBox = new SuggestionBox();
         suggestionBox.setExpressionLength(1);
         suggestionBox.setModel(new SuggestionBoxDataModel(new SuggestionBoxHandler()));
         suggestionBox.setWidth("100%");
+
 
         SuggestionBox complexSuggestionBox = new SuggestionBox();
         complexSuggestionBox.setExpressionLength(1);

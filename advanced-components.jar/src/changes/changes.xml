@@ -6,7 +6,14 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="1.4.8" date="2009-09-29" description="Latest version">
+        <release version="1.4.9" date="2009-11-18" description="Latest version">
+            <action type="add" issue="50" system="google">Need model events support for ComboBox and SuggestionBox</action>
+            <action type="add" issue="52" system="google">Double click listener on table cells</action>
+            <action type="add" issue="55" system="google">Add method to enable / disable tabs in the AdvancedTabPanel</action>
+            <action type="fix" issue="54" system="google">TreeGrid seriously broken in 1.4.8</action>
+            <action type="fix" issue="56" system="google">Pressing Up / Down arrows makes a browser window scroll</action>
+        </release>
+        <release version="1.4.8" date="2009-09-29" description="Old unsupported version">
             <action type="add" issue="44" system="google">Add overloaded method updateRow() in the TreeGridDataModel</action>
             <action type="add" issue="48" system="google">Keyboard support for ComboBox and SuggestionBox</action>
             <action type="add" issue="49" system="google">ComboBox and SuggestionBox should provide getter for the selected widget</action>

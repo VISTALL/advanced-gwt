@@ -94,6 +94,8 @@ public class DefaultGridRenderer implements GridRenderer {
 
     /** {@inheritDoc} */
     public void drawRow(Object[] data, int row) {
+        if (row < 0)
+            row = 0;
         EditableGrid grid = getGrid();
         for (int i = 0; i < data.length; i++) {
             if (grid.isVisible(i)) {

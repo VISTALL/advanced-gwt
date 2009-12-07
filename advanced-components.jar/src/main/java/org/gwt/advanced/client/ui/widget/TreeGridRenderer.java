@@ -152,9 +152,10 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      * @return the next row number.
      */
     protected int drawRow(TreeGridRow row, int rowNumber) {
-        getRowMapping().put(new Integer(rowNumber), row);
-        if (rowNumber < getGrid().getRowCount())
-            getGrid().insertRow(rowNumber);
+        if (rowNumber < getGrid().getRowCount()) {
+            getGrid().insertRow(rowNumber < 0 ? 0 : rowNumber);
+        }
+        getRowMapping().put(new Integer(rowNumber < 0 ? 0 : rowNumber), row);
         drawRow(row.getData(), rowNumber);
         if (row.getParent() != null)
             getGrid().getRowFormatter().addStyleName(rowNumber, "grid-subrow");

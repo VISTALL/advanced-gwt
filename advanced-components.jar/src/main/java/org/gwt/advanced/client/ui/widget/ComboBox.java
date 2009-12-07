@@ -22,6 +22,8 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventPreview;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
+import org.gwt.advanced.client.datamodel.ListModelEvent;
+import org.gwt.advanced.client.datamodel.ListModelListener;
 import org.gwt.advanced.client.ui.widget.combo.DefaultListItemFactory;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
 
@@ -35,7 +37,7 @@ import java.util.Set;
  * @since 1.2.0
  */
 public class ComboBox extends TextButtonPanel
-        implements SourcesFocusEvents, SourcesChangeEvents, SourcesKeyboardEvents, SourcesClickEvents {
+        implements SourcesFocusEvents, SourcesChangeEvents, SourcesKeyboardEvents, SourcesClickEvents, ListModelListener {
     /**
      * a combo box data model
      */
@@ -56,7 +58,9 @@ public class ComboBox extends TextButtonPanel
      * a keyboard events listener that switches off default browser handling and replaces it with conponents'
      */
     private ComboBoxKeyboardManager keyboardManager;
-    /** a flag that is <code>true</code> if any control key is pressed */
+    /**
+     * a flag that is <code>true</code> if any control key is pressed
+     */
     private boolean keyPressed;
 
     /**
@@ -65,8 +69,12 @@ public class ComboBox extends TextButtonPanel
      * @param model Value to set for property 'model'.
      */
     public void setModel(ComboBoxDataModel model) {
-        if (model != null)
+        if (model != null) {
+            if (this.model != null)
+                this.model.removeListModelListener(this);
             this.model = model;
+            this.model.addListModelListener(this);
+        }
     }
 
     /**
@@ -77,6 +85,8 @@ public class ComboBox extends TextButtonPanel
     public void setListItemFactory(ListItemFactory listItemFactory) {
         if (listItemFactory != null)
             this.listItemFactory = listItemFactory;
+        if (isListPanelOpened())
+            getListPanel().prepareList();
     }
 
     /**
@@ -210,6 +220,49 @@ public class ComboBox extends TextButtonPanel
     }
 
     /**
+     * Gets a number of visible rows.<p/>
+     * Values <= 0 interpreted as undefined.
+     *
+     * @return a visible rows to be displayed without scrolling.
+     */
+    public int getVisibleRows() {
+        return getListPanel().getVisibleRows();
+    }
+
+    /**
+     * Sets visible rows number.<p/>
+     * You can pass a value <= 0. It will mean that this parameter in undefined.
+     *
+     * @param visibleRows is a number of rows to be displayed without scrolling.
+     */
+    public void setVisibleRows(int visibleRows) {
+        getListPanel().setVisibleRows(visibleRows);
+    }
+
+    /**
+     * Sets an item index that must be displayed on top.<p/>
+     * If the item is outside the currently visible area the list will be scrolled down
+     * to this item.
+     */
+    public void setStartItemIndex(int index) {
+        getListPanel().setStartItemIndex(index);
+    }
+
+    public int getStartItemIndex() {
+        return getListPanel().getStartItemIndex();
+    }
+
+    /**
+     * Sets text to the selected value box but doesn't change anything
+     * in the list of items.
+     *
+     * @param text is a text to set.
+     */
+    public void setText(String text) {
+        getSelectedValue().setText(text);
+    }
+
+    /**
      * This method returns a selected item.
      *
      * @return is a selected item.
@@ -273,18 +326,91 @@ public class ComboBox extends TextButtonPanel
      */
     public Widget getSelectedWidget() {
         if (isListPanelOpened() && getModel().getSelectedIndex() >= 0) {
-            return getListPanel().getList().getWidget(getModel().getSelectedIndex());
+            VerticalPanel list = getListPanel().getList();
+            if (list.getWidgetCount() > getModel().getSelectedIndex())
+                return list.getWidget(getModel().getSelectedIndex());
+            return null;
         } else {
             return null;
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void cleanSelection() {
         super.cleanSelection();
         getModel().clear();
-        for (int i = 0; i < getListPanel().getList().getWidgetCount(); i++) {
-            getListPanel().getList().remove(i);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void onModelEvent(ListModelEvent event) {
+        if (event.getType() == ListModelEvent.ADD_ITEM) {
+            add(event);
+        } else if (event.getType() == ListModelEvent.CLEAN) {
+            clean(event);
+        } else if (event.getType() == ListModelEvent.REMOVE_ITEM) {
+            remove(event);
+        } else if (event.getType() == ListModelEvent.SELECT_ITEM) {
+            select(event);
+        }
+        getListPanel().adjustSize();
+    }
+
+    /**
+     * Adds a new visual item into the drop down list every time when it's added into the data
+     * model.
+     *
+     * @param event is an event containing data about the item.
+     */
+    protected void add(ListModelEvent event) {
+        if (isListPanelOpened()) {
+            Widget item = getListItemFactory().createWidget(event.getSource().get(event.getItemId()));
+            item = getListPanel().adoptItemWidget(item);
+
+            if (event.getItemIndex() < getListPanel().getList().getWidgetCount()) {
+                getListPanel().getList().insert(item, event.getItemIndex());
+            } else {
+                getListPanel().getList().add(item);
+            }
+        }
+    }
+
+    /**
+     * This method cleans the drop down list on each data clean.
+     *
+     * @param event is a clean event.
+     */
+    protected void clean(ListModelEvent event) {
+        if (isListPanelOpened()) {
+            getListPanel().getList().clear();
+            getListPanel().hide();
+        }
+    }
+
+    /**
+     * Removes a visual item from the drop down list if the remove event is received.
+     *
+     * @param event is an event that contains data of the removed item.
+     */
+    protected void remove(ListModelEvent event) {
+        if (isListPanelOpened()) {
+            getListPanel().remove(getListPanel().getList().getWidget(event.getItemIndex()));
+            if (getListPanel().getList().getWidgetCount() <= 0)
+                getListPanel().hide();
+        }
+    }
+
+    /**
+     * Highlights the visual item in the drop down list if it's selected in the model.
+     *
+     * @param event is an event that contains data about selected item.
+     */
+    protected void select(ListModelEvent event) {
+        if (isListPanelOpened()) {
+            getListPanel().setHightlightRow(event.getItemIndex());
         }
     }
 
@@ -435,7 +561,7 @@ public class ComboBox extends TextButtonPanel
             } else if (sender == getListPanel()) {
                 Widget widget = getSelectedWidget();
                 if (widget != null)
-                    getListPanel().getScrollPanel().ensureVisible(widget); 
+                    getListPanel().ensureVisible(widget);
             }
 
             if (focuses.size() == 1)
@@ -468,7 +594,8 @@ public class ComboBox extends TextButtonPanel
             int count = getModel().getCount();
             if (sender instanceof ToggleButton || !isCustomTextAllowed()) {
                 if (count > 0) {
-                    getListPanel().display();
+                    getListPanel().prepareList();
+                    getListPanel().show();
                     getChoiceButton().setDown(true);
                 } else
                     getChoiceButton().setDown(false);
@@ -583,7 +710,9 @@ public class ComboBox extends TextButtonPanel
      * It also supports Alt+Tab combination but skips other modifiers.
      */
     protected class ComboBoxKeyboardManager implements EventPreview {
-        /** See class docs */
+        /**
+         * See class docs
+         */
         public boolean onEventPreview(Event event) {
             Element target = DOM.eventGetTarget(event);
 
@@ -611,7 +740,7 @@ public class ComboBox extends TextButtonPanel
                         row++;
                     else if (button == KeyboardListener.KEY_ENTER && !hasModifiers) {
                         getModel().setSelectedIndex(getListPanel().getHighlightRow());
-                        getSelectedValue().setText(getListItemFactory().convert(getModel().getSelected()));
+                        setText(getListItemFactory().convert(getModel().getSelected()));
                         getListPanel().hide();
                         getSelectedValue().removeStyleName("selected-row");
                         getChoiceButton().setDown(false);
@@ -623,7 +752,7 @@ public class ComboBox extends TextButtonPanel
                         getChoiceButton().setDown(false);
                         setKeyPressed(false);
                         return false;
-                    } else if (button == KeyboardListener.KEY_TAB && (!hasModifiers || alt && !ctrl && !shift)) {
+                    } else if (button == KeyboardListener.KEY_TAB && (!hasModifiers || !alt && !ctrl && shift)) {
                         getListPanel().hide();
                         getChoiceButton().setDown(false);
                         setKeyPressed(false);
@@ -637,12 +766,14 @@ public class ComboBox extends TextButtonPanel
                             row = 0;
 
                         getListPanel().setHightlightRow(row);
-                        getListPanel().getScrollPanel().ensureVisible(getListPanel().getList().getWidget(row));
+                        Widget item = getListPanel().getList().getWidget(row);
+                        getListPanel().ensureVisible(item);
                         return false;
                     }
                 } else if (eventTargetsPopup && !hasModifiers
                         && button == KeyboardListener.KEY_ENTER && getModel().getCount() > 0) {
-                    getListPanel().display();
+                    getListPanel().prepareList();
+                    getListPanel().show();
                     return false;
                 }
             } else if (type == Event.ONKEYUP) {

@@ -2,9 +2,14 @@ package org.gwt.advanced.client.showcase;
 
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.user.client.Window;
 import org.gwt.advanced.client.AbstractShowcase;
 import org.gwt.advanced.client.ui.widget.SimpleGrid;
 import org.gwt.advanced.client.ui.widget.AdvancedTabPanel;
+import org.gwt.advanced.client.ui.TableDoubleClickListener;
+import org.gwt.advanced.client.ui.SourcesTableDoubleClickEvents;
 
 /**
  * This sample demonstrates basic grids functionality: rendering, columns resizing and scrolling.

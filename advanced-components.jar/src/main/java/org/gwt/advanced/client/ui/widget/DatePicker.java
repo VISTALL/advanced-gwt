@@ -49,6 +49,7 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
      * Creates an instance of this class and does nothing else.
      */
     public DatePicker() {
+        this(null);
     }
 
     /**
@@ -57,7 +58,9 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
      * @param initialDate is an initial date.
      */
     public DatePicker(Date initialDate) {
+        super();
         this.date = initialDate;
+        getCalendar().setShowTime(isTimeVisible());
     }
 
     /**
@@ -76,6 +79,8 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
      */
     public void setTimeVisible(boolean timeVisible) {
         this.timeVisible = timeVisible;
+        if (getDate() != null)
+            getSelectedValue().setText(getFormat().format(date));
     }
 
     /** {@inheritDoc} */
@@ -111,10 +116,12 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
         getSelectedValue().setText(getFormat().format(date));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated you don't have to invoke this method any more 
+     */
     public void display() {
-        super.display();
-        getCalendar().setShowTime(isTimeVisible());
     }
 
     /**

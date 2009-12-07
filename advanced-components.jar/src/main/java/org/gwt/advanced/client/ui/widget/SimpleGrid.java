@@ -19,6 +19,7 @@ package org.gwt.advanced.client.ui.widget;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.Resizable;
+import org.gwt.advanced.client.ui.TableDoubleClickListener;
 import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.List;
@@ -185,7 +186,7 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         }
     }
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc} */                              
     public void removeHeaderWidget(int column) {
         getHeaderTable().removeHeaderWidget(column);
     }
@@ -357,6 +358,22 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
             getBodyTable().addTableListener(listener);
         else
             super.addTableListener(listener);
+    }
+
+    /** {@inheritDoc} */
+    public void addDoubleClickListener(TableDoubleClickListener listener) {
+        if (initialized)
+            getBodyTable().addDoubleClickListener(listener);
+        else
+            super.addDoubleClickListener(listener);
+    }
+
+    /** {@inheritDoc} */
+    public void removeDoubleClickListener(TableDoubleClickListener listener) {
+        if (initialized)
+            getBodyTable().removeDoubleClickListener(listener);
+        else
+            super.removeDoubleClickListener(listener);
     }
 
     /** {@inheritDoc} */

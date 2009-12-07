@@ -6,7 +6,7 @@
     <artifactId>advanced-components</artifactId>
     <packaging>jar</packaging>
     <name>Advanced GWT Components</name>
-    <version>1.4.8</version>
+    <version>1.4.9</version>
     <url>http://advanced-gwt.sourceforge.net</url>
     <description>The set of useful GWT components</description>
 
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>1.7.0</version>
+            <version>1.7.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

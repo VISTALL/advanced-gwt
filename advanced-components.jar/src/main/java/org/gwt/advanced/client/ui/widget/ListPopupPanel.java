@@ -67,6 +67,14 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      * the row that is currently hightlight in the list but my be not selected in the model
      */
     private int highlightRow = -1;
+    /**
+     * number of visible rows in the scrollable area of the popup list. Limited by 30% of screen height by default
+     */
+    private int visibleRows = -1;
+    /**
+     * the top item index to be displayed in the visible area of the list
+     */
+    private int startItemIndex = 0;
 
     /**
      * Creates an instance of this class and sets the parent combo box value.
@@ -76,6 +84,15 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     protected ListPopupPanel(ComboBox selectionTextBox) {
         super(true, false);
         this.comboBox = selectionTextBox;
+
+        setStyleName("advanced-ListPopupPanel");
+
+        prepareList();
+        setWidget(getScrollPanel());
+
+        getList().setWidth("100%");
+        getList().setStyleName("list");
+        
         addPopupListener(new AutoPopupListener());
     }
 
@@ -137,6 +154,31 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     }
 
     /**
+     * Checks whether the specified item is visible in the scroll area.<p/>
+     * The result is <code>true</code> if whole item is visible.
+     *
+     * @param index is an index of the item.
+     * @return a result of check.
+     */
+    public boolean isItemVisible(int index) {
+        Widget item = getList().getWidget(index);
+        int itemTop = item.getAbsoluteTop();
+        int top = getScrollPanel().getAbsoluteTop();
+        return itemTop >= top && itemTop + item.getOffsetHeight() <= top + getScrollPanel().getOffsetHeight();
+    }
+
+    /**
+     * Makes the item visible in the list according to the check done by the {@link #isItemVisible(int)} method.
+     *
+     * @param item is an item to check.
+     */
+    public void ensureVisible(Widget item) {
+        if (!isItemVisible(getList().getWidgetIndex(item))) {
+            getScrollPanel().ensureVisible(item);
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     public void hide() {
@@ -154,30 +196,106 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     public void show() {
         setHidden(false);
         super.show();
+
+        setPopupPosition(getComboBox().getAbsoluteLeft(),
+                getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
+
+        adjustSize();
+        
         setHightlightRow(getComboBox().getModel().getSelectedIndex());
         getComboBox().getDelegateListener().onFocus(this);
     }
 
     /**
+     * Gets a number of visible rows.<p/>
+     * Values <= 0 interpreted as undefined.
+     *
+     * @return a visible rows to be displayed without scrolling.
+     */
+    public int getVisibleRows() {
+        return visibleRows;
+    }
+
+    /**
+     * Sets visible rows number.<p/>
+     * You can pass a value <= 0. It will mean that this parameter in undefined.
+     *
+     * @param visibleRows is a number of rows to be displayed without scrolling.
+     */
+    public void setVisibleRows(int visibleRows) {
+        this.visibleRows = visibleRows;
+        if (isShowing())
+            adjustSize();
+    }
+
+    /**
+     * Sets an item index that must be displayed on top.<p/>
+     * If the item is outside the currently visible area the list will be scrolled down
+     * to this item.
+     *
+     * @param index is an index of the element to display.
+     */
+    public void setStartItemIndex(int index) {
+        if (index < 0)
+            index = 0;
+        this.startItemIndex = index;
+        if (isShowing())
+            adjustSize();
+    }
+
+    public int getStartItemIndex() {
+        return startItemIndex;
+    }
+
+    /**
+     * Adjusts drop down list sizes to make it take optimal area on the screen.
+     */
+    protected void adjustSize() {
+        ScrollPanel table = getScrollPanel();
+        int visibleRows = getVisibleRows();
+        
+        if (visibleRows <= 0) {
+            if (table.getOffsetHeight() > Window.getClientHeight() * 0.3) {
+                table.setHeight((int) (Window.getClientHeight() * 0.3) + "px");
+            }
+            setHightlightRow(0);
+        } else if (getComboBox().getModel().getCount() > visibleRows){
+            int index = getStartItemIndex();
+            int count = getList().getWidgetCount();
+
+            if (index + visibleRows > count) {
+                index = count - visibleRows + 1;
+                if (index < 0)
+                    index = 0;
+            }
+
+            int listHeight = 0;
+            int scrollPosition = 0;
+            for (int i = 0; i < index + visibleRows && i < count; i++) {
+                int height = getList().getWidget(i).getOffsetHeight();
+                if (i < index)
+                    scrollPosition += height;
+                else
+                    listHeight += height;
+            }
+            table.setSize(table.getOffsetWidth() + "px", listHeight + "px");
+            table.setScrollPosition(scrollPosition);
+            setHightlightRow(index);
+        }
+
+        int absoluteBottom = getAbsoluteTop() + getOffsetHeight();
+        if (absoluteBottom > Window.getClientHeight()
+            && getOffsetHeight() <= getComboBox().getAbsoluteTop()) {
+            setPopupPosition(getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
+        }
+    }
+
+    /**
      * {@inheritDoc}
+     *
+     * @deprecated you don't have to invoke this method to display the widget any more
      */
     public void display() {
-        setStyleName("advanced-ListPopupPanel");
-
-        if (!isHidden())
-            hide();
-
-        prepareList();
-        setWidget(getScrollPanel());
-
-        show();
-        setPopupPosition(getComboBox().getAbsoluteLeft(),
-                getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
-
-        ScrollPanel table = getScrollPanel();
-        if (table.getOffsetHeight() > Window.getClientHeight() * 0.3) {
-            table.setHeight((int) (Window.getClientHeight() * 0.3) + "px");
-        }
     }
 
     /**
@@ -195,9 +313,6 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
 
         selectRow(getComboBox().getModel().getSelectedIndex());
         getScrollPanel().setWidth(getComboBox().getOffsetWidth() + "px");
-        panel.setWidth("100%");
-
-        panel.setStyleName("list");
     }
 
     /**
@@ -207,13 +322,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      */
     protected void selectRow(int newRow) {
         ComboBoxDataModel model = getComboBox().getModel();
-        VerticalPanel panel = getList();
-
         model.setSelectedIndex(newRow);
-        newRow = model.getSelectedIndex();
-
-        if (newRow >= 0 && newRow < panel.getWidgetCount())
-            setHightlightRow(newRow);
     }
 
     /**

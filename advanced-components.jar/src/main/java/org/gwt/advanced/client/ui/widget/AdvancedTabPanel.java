@@ -37,24 +37,46 @@ import java.util.List;
  * @since 1.4.6
  */
 public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, Resizable {
-    /** tabs position for displaying */
+    /**
+     * tabs position for displaying
+     */
     private TabPosition position;
-    /** index of the currently selected tab */
+    /**
+     * index of the currently selected tab
+     */
     private int selected = -1;
-    /** tabs and contents list */
+    /**
+     * tabs and contents list
+     */
     private List tabs = new ArrayList();
-    /** a factory for rendering tab borders */
+    /**
+     * a factory for rendering tab borders
+     */
     private BorderFactory tabBorderFactory;
-    /** a factory for rendering the content border */
+    /**
+     * a factory for rendering the content border
+     */
     private BorderFactory contentBorderFactory;
-    /** tab panel layout */
+    /**
+     * tab panel layout
+     */
     private DockPanel layout = new DockPanel();
-    /** a list of tab selection listeners */
+    /**
+     * a list of tab selection listeners
+     */
     private List tabListeners = new ArrayList();
-    /** content border instance */
+    /**
+     * content border instance
+     */
     private Border contentBorder;
-    /** a widget of the tabs band */
+    /**
+     * a widget of the tabs band
+     */
     private Widget tabsWidget;
+    /**
+     * tab states list
+     */
+    private List tabStates = new ArrayList();
 
     /**
      * Creates an instance of this class and displays top tabs band.
@@ -75,8 +97,8 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
     /**
      * Creates an instance of this class and displays the panel using the specified border factories.
      *
-     * @param position is a postion of tabs.
-     * @param tabBorderFactory is a factory for tabs border.
+     * @param position             is a postion of tabs.
+     * @param tabBorderFactory     is a factory for tabs border.
      * @param contentBorderFactory is a factory for the content border.
      */
     public AdvancedTabPanel(TabPosition position, BorderFactory tabBorderFactory, BorderFactory contentBorderFactory) {
@@ -87,12 +109,50 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         this.layout.setStyleName("layout");
         setStyleName("advanced-TabPanel");
         render();
+
+        addTabListener(new TabListener() {
+            public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
+                for (Iterator iterator = tabStates.iterator(); iterator.hasNext();) {
+                    TabState tabState = (TabState) iterator.next();
+                    if (tabIndex == tabState.getIndex() && !tabState.isEnabled()) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
+            }
+        });
+    }
+
+    /**
+     * Do the same things like the
+     * {@link #addTab(com.google.gwt.user.client.ui.Widget, com.google.gwt.user.client.ui.Widget)}
+     * method and included into the class for changing from GWT TabPanel to this one.
+     *
+     * @param content is a tab content.
+     * @param tab     is a tab header.
+     */
+    public void add(Widget content, Widget tab) {
+        addTab(tab, content);
+    }
+
+    /**
+     * Do the same things like the
+     * {@link #setSelected(int)} method and included into the class for changing from GWT TabPanel
+     * to this one.
+     *
+     * @param index is a selected tab index.
+     */
+    public void selectTab(int index) {
+        setSelected(index);
     }
 
     /**
      * Adds a new tab into the panel.
      *
-     * @param tab is a tab widget.
+     * @param tab     is a tab widget.
      * @param content is a content widget.
      */
     public void addTab(Widget tab, Widget content) {
@@ -103,6 +163,12 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
             setSelected(0);
 
         renderTabs();
+
+        TabState tabState = new TabState();
+        tabState.setIndex(tabs.indexOf(tab));
+        tabState.setTab(tab);
+        tabState.setEnabled(true);
+        tabStates.add(tabState);
     }
 
     /**
@@ -121,14 +187,32 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
             setSelected(index);
         }
         renderTabs();
+
+        TabState selState = null;
+        for (Iterator iterator = tabStates.iterator(); iterator.hasNext();) {
+            TabState tabState = (TabState) iterator.next();
+            if (tabState.getTab().equals(tab))
+                selState = tabState;
+        }
+
+        if (selState != null) {
+            int selIndex = selState.getIndex();
+            tabStates.remove(selState);
+
+            for (Iterator iterator = tabStates.iterator(); iterator.hasNext();) {
+                TabState tabState = (TabState) iterator.next();
+                if (tabState.getIndex() > selIndex)
+                    tabState.setIndex(tabState.getIndex()-1);
+            }
+        }
     }
 
     /**
      * Inserts the tab before the specified tab.
      *
-     * @param tab is a tab widget.
+     * @param tab     is a tab widget.
      * @param content is a tab widget.
-     * @param before is an index of existent tab.
+     * @param before  is an index of existent tab.
      */
     public void insertTab(Widget tab, Widget content, int before) {
         if (tabs.size() >= before)
@@ -141,6 +225,12 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         if (getSelected() == before)
             setSelected(before + 1);
         renderTabs();
+
+        TabState tabState = new TabState();
+        tabState.setIndex(tabs.indexOf(tab));
+        tabState.setTab(tab);
+        tabState.setEnabled(true);
+        tabStates.add(tabState);
     }
 
     /**
@@ -151,10 +241,17 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
     public void setSelected(int index) {
         if (index >= tabs.size())
             return;
+
+        boolean continueTabSelection = true;
         for (Iterator iterator = tabListeners.iterator(); iterator.hasNext();) {
             TabListener tabListener = (TabListener) iterator.next();
-            tabListener.onBeforeTabSelected(this, index);
+            continueTabSelection = tabListener.onBeforeTabSelected(this, index);
+            if (!continueTabSelection)
+                break;
         }
+
+        if (!continueTabSelection)
+            return;
 
         selected = index;
         renderTabs();
@@ -232,6 +329,26 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
     }
 
     /**
+     * Sets the specified tab enabled or disabled.
+     *
+     * @param tabIndex is a tab index.
+     * @param enable is a tab state value.
+     */
+    public void setTabEnabled(int tabIndex, boolean enable) {
+        Widget w = getTab(tabIndex);
+        if (enable) {
+            w.removeStyleName("disabled-tab");
+        } else {
+            w.addStyleName("disabled-tab");
+        }
+        for (Iterator iterator = tabStates.iterator(); iterator.hasNext();) {
+            TabState tabState = (TabState) iterator.next();
+            if (tabState.getIndex() == tabIndex)
+                tabState.setEnabled(enable);
+        }
+    }
+
+    /**
      * Adds a tab listener to the panel.
      *
      * @param listener is a tab listener.
@@ -294,10 +411,10 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         setWidget(this.layout);
 
         if (getContentBorder() != null)
-            this.layout.remove((Widget)getContentBorder());
+            this.layout.remove((Widget) getContentBorder());
         this.contentBorder = getContentBorderFactory().create();
-        ((Widget)getContentBorder()).addStyleName("content-" + getPosition().getName());
-        this.layout.add((Widget)getContentBorder(), DockPanel.CENTER);
+        ((Widget) getContentBorder()).addStyleName("content-" + getPosition().getName());
+        this.layout.add((Widget) getContentBorder(), DockPanel.CENTER);
 
         renderTabs();
         resize();
@@ -307,12 +424,12 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
      * This method renders tabs band widget and puts it in the corrent position.
      */
     protected void renderTabs() {
-         if (this.tabsWidget != null)
+        if (this.tabsWidget != null)
             this.tabsWidget.removeFromParent();
         this.tabsWidget = getPosition().getRenderer().render(this);
         this.layout.add(this.tabsWidget, getPosition().getLayoutPosition());
 
-        Element parent = DOM.getParent(((Widget)getContentBorder()).getElement());
+        Element parent = DOM.getParent(((Widget) getContentBorder()).getElement());
         DOM.setStyleAttribute(parent, "height", "100%");
         DOM.setStyleAttribute(parent, "width", "100%");
 
@@ -322,7 +439,9 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void resize() {
         Widget content = getContent(getTab(getSelected()));
         if (content != null && content instanceof Resizable)
@@ -337,15 +456,19 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
      * @author Sergey Skladchikov
      */
     protected static class TabHolder {
-        /** tab widget */
+        /**
+         * tab widget
+         */
         private Widget tab;
-        /** content widegt */
+        /**
+         * content widegt
+         */
         private Widget content;
 
         /**
          * Creates an instance of this class and initilizes internla fields.
          *
-         * @param tab is a tab widget (key).
+         * @param tab     is a tab widget (key).
          * @param content is a content widget (value).
          */
         public TabHolder(Widget tab, Widget content) {
@@ -371,7 +494,9 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
             return content;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null) return false;
@@ -379,9 +504,47 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
             return !(tab != null ? !tab.equals(tabHolder.tab) : tabHolder.tab != null);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public int hashCode() {
             return tab != null ? tab.hashCode() : 0;
+        }
+    }
+
+    /**
+     * Describes the tab state (enabled or disabled.
+     */
+    protected class TabState {
+        /** tab index */
+        int index;
+        /** tab header */
+        public Widget tab;
+        /** enabled or disabled */
+        public boolean enabled;
+
+        public int getIndex() {
+            return index;
+        }
+
+        public Widget getTab() {
+            return tab;
+        }
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+
+        public void setTab(Widget tab) {
+            this.tab = tab;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
         }
     }
 }

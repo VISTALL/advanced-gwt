@@ -3,6 +3,28 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.4.9 includes:
+
+Bug fixes:
+1. Pressing Up / Down arrows makes a browser window scroll
+2. Bug fixes included into 1.4.9-beta
+
+New features:
+1. Features included into 1.4.9-beta
+
+====================================================================================================================
+Release 1.4.9-beta includes:
+
+Bug fixes:
+1. TreeGrid seriously broken in 1.4.8
+2. Several minor bug fixes in ComboBox and SuggestionBox
+
+New features:
+1. Double click listener on table cells
+2. Need model events support for ComboBox and SuggestionBox
+3. Add method to enable / disable tabs in the AdvancedTabPanel
+
+====================================================================================================================
 Release 1.4.8 includes:
 
 Bug fixes:

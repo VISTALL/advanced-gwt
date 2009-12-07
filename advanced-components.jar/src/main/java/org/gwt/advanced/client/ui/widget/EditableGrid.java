@@ -1178,10 +1178,16 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
             int modelRow = getModelRow(row);
 
             model.removeRow(modelRow);
+            for (int j = i + 1; j < indexes.length; j++) {
+                if (indexes[j] > row)
+                    indexes[j]--;
+                if (indexes[j] < 0)
+                    indexes[j] = 0;
+            }
         }
 
-        getSelectionModel().clear();
         dropSelection();
+        getSelectionModel().clear();
 
         if (last > getRowCount() - 1)
             last = getRowCount() - 1;
@@ -1195,17 +1201,9 @@ public class EditableGrid extends SimpleGrid implements AdvancedWidget {
      * @param event is a model event containing a row number value.
      */
     protected void deleteRow(EditableModelEvent event) {
-        int[] indexes = getCurrentRows();
-
         int row = getRowByModelRow(event);
         removeRow(row);
         increaseRowNumbers(row, -1);
-
-        for (int j = row; j < indexes.length; j++) {
-            int index = indexes[j];
-            if (index > row)
-                indexes[j] = index - 1;
-        }
     }
 
     /**

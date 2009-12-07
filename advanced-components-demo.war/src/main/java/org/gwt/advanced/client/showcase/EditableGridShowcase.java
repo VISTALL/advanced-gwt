@@ -17,10 +17,10 @@
 package org.gwt.advanced.client.showcase;
 
 import com.google.gwt.user.client.ui.Widget;
-import org.gwt.advanced.client.ui.widget.GridPanel;
 import org.gwt.advanced.client.AbstractShowcase;
-import org.gwt.advanced.client.GridPanelFactoryImpl;
 import org.gwt.advanced.client.DemoModelFactory;
+import org.gwt.advanced.client.GridPanelFactoryImpl;
+import org.gwt.advanced.client.ui.widget.GridPanel;
 
 /**
  * This is a show case for the {@link org.gwt.advanced.client.ui.widget.EditableGrid} widget.
@@ -36,6 +36,7 @@ public class EditableGridShowcase extends AbstractShowcase {
         gridPanel.setTotalCountDisplayed(true);
         gridPanel.display();
         gridPanel.getGrid().setMultiRowModeEnabled(true);
+
         return gridPanel;
     }
 

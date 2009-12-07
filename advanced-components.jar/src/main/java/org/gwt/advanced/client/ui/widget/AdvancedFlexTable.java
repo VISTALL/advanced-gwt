@@ -20,10 +20,10 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
+import org.gwt.advanced.client.ui.SourcesTableDoubleClickEvents;
+import org.gwt.advanced.client.ui.TableDoubleClickListener;
+import org.gwt.advanced.client.ui.TableDoubleClickListenerCollection;
 import org.gwt.advanced.client.util.GWTUtil;
 
 import java.util.ArrayList;
@@ -39,15 +39,55 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class AdvancedFlexTable extends FlexTable {
-    /** the thead element */
+public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleClickEvents {
+    /**
+     * maximal timeout between two clicks in double click
+     */
+    private static final int CLICK_TIMEOUT = 300;
+    /**
+     * the thead element
+     */
     private Element tHeadElement;
-    /** header widgets list */
+    /**
+     * header widgets list
+     */
     private List headerWidgets;
-    /** a scroll panel widget (supported by IE only) */
+    /**
+     * a scroll panel widget (supported by IE only)
+     */
     private Panel scrollPanel;
-    /** a scrollable flag value */
+    /**
+     * a scrollable flag value
+     */
     private boolean scrollable;
+    /**
+     * list of table listeners
+     */
+    private TableListenerCollection listeners = new TableListenerCollection();
+    /**
+     * list of double click listeners registered in this widget
+     */
+    private TableDoubleClickListenerCollection doubleClikcListeners = new TableDoubleClickListenerCollection();
+    /**
+     * the timer that is activated if the second click hasn't been done
+     */
+    private Timer clickTimer = new ClickTimer();
+    /**
+     * count of clicks
+     */
+    private int clickCount;
+    /**
+     * latest cell clicked
+     */
+    private Element cell;
+    /**
+     * flag meaning that ONCLICK event is already sank
+     */
+    private boolean clickEnabled;
+    /**
+     * enables double clicks, must be switched to <code>false</code> if there are no double click listeners
+     */
+    private boolean doubleClickEnabled;
 
     /**
      * Creates an instance of this class.
@@ -77,7 +117,7 @@ public class AdvancedFlexTable extends FlexTable {
      * @param column is a column number.
      * @param widget is a widget to be added to the cell.
      */
-    public void setHeaderWidget (int column, Widget widget) {
+    public void setHeaderWidget(int column, Widget widget) {
         prepareHeaderCell(column);
 
         if (widget != null) {
@@ -104,7 +144,7 @@ public class AdvancedFlexTable extends FlexTable {
      *
      * @param column is a column number.
      */
-    public void removeHeaderWidget (int column) {
+    public void removeHeaderWidget(int column) {
         if (column < 0)
             throw new IndexOutOfBoundsException("Column number mustn't be negative");
 
@@ -127,7 +167,9 @@ public class AdvancedFlexTable extends FlexTable {
         setScrollable(enabled);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Iterator iterator() {
         List notAttachedWidgets = new ArrayList();
         for (Iterator iterator = getHeaderWidgets().iterator(); iterator.hasNext();) {
@@ -156,6 +198,167 @@ public class AdvancedFlexTable extends FlexTable {
 
         Element th = DOM.createTH();
         DOM.insertBefore(tr, th, DOM.getChild(tr, column));
+    }
+
+    public void onBrowserEvent(Event event) {
+        if (event.getTypeInt() == Event.ONCLICK) {
+            setCellClicked(DOM.eventGetTarget(event));
+            if (getClickCount() % 2 == 0 && doubleClickEnabled) {
+                setClickCount(getClickCount() + 1);
+                getClickTimer().schedule(CLICK_TIMEOUT);
+            } else if (getClickCount() % 2 == 0 && !doubleClickEnabled) {
+                fireClickEvent();
+            } else if (doubleClickEnabled) {
+                setClickCount(0);
+                fireDoubleClickEvent();
+                getClickTimer().cancel();
+            }
+        }
+        super.onBrowserEvent(event);
+    }
+
+    /**
+     * Adds a table listener and sinks the ONCLICK event if it's not sank.
+     *
+     * @param listener is a listener to add.
+     */
+    public void addTableListener(TableListener listener) {
+        removeTableListener(listener);
+        getListeners().add(listener);
+        if (!clickEnabled) {
+            DOM.sinkEvents(getElement(), Event.ONCLICK);
+            clickEnabled = true;
+        }
+    }
+
+    /**
+     * Removes the table listener.
+     *
+     * @param listener is a listener to remove.
+     */
+    public void removeTableListener(TableListener listener) {
+        getListeners().remove(listener);
+    }
+
+    /**
+     * Adds a double click listener and sinks the ONCLICK event if it's not sank.
+     *
+     * @param listener is a listener to register.
+     */
+    public void addDoubleClickListener(TableDoubleClickListener listener) {
+        removeDoubleClickListener(listener);
+        getDoubleClikcListeners().add(listener);
+        if (!clickEnabled) {
+            DOM.sinkEvents(getElement(), Event.ONCLICK);
+            clickEnabled = true;
+        }
+        doubleClickEnabled = true;
+    }
+
+    /**
+     * Removes the double click listener.
+     *
+     * @param listener is a listener to remove.
+     */
+    public void removeDoubleClickListener(TableDoubleClickListener listener) {
+        getDoubleClikcListeners().remove(listener);
+        if (getDoubleClikcListeners().isEmpty()) {
+            doubleClickEnabled = false;
+        }
+    }
+
+    /**
+     * Fires click events.
+     */
+    protected void fireClickEvent() {
+        Element td = getCellElement(getCellClicked());
+        if (td == null)
+            return;
+
+        Element tr = DOM.getParent(td);
+        Element tbody = DOM.getParent(tr);
+
+        getListeners().fireCellClicked(this, DOM.getChildIndex(tbody, tr), DOM.getChildIndex(tr, td));
+        setCellClicked(null);
+    }
+
+    /**
+     * Fires double click events.
+     */
+    protected void fireDoubleClickEvent() {
+        Element td = getCellElement(getCellClicked());
+        if (td == null)
+            return;
+
+        Element tr = DOM.getParent(td);
+        Element tbody = DOM.getParent(tr);
+
+        getDoubleClikcListeners().fireCellDoubleClicked(this, DOM.getChildIndex(tbody, tr), DOM.getChildIndex(tr, td));
+        setCellClicked(null);
+    }
+
+    /**
+     * Searches for the td element strting from the clicked element to upper levels of the DOM tree.
+     *
+     * @param clickElement is an element that is clicked.
+     * @return a found element or <code>null</code> if the clicked element is not the td tag and not nested
+     *         into any td.
+     */
+    protected Element getCellElement(Element clickElement) {
+        while (clickElement != null && !"td".equalsIgnoreCase(clickElement.getTagName()))
+            clickElement = DOM.getParent(clickElement);
+
+        if (clickElement == null)
+            return null;
+
+        Element tr = DOM.getParent(clickElement);
+        Element tbody = DOM.getParent(tr);
+        Element table = DOM.getParent(tbody);
+
+        if (getElement().equals(table))
+            return clickElement;
+        else
+            return getCellElement(table);
+    }
+
+    protected TableListenerCollection getListeners() {
+        return listeners;
+    }
+
+    protected void setListeners(TableListenerCollection listeners) {
+        this.listeners = listeners;
+    }
+
+    protected TableDoubleClickListenerCollection getDoubleClikcListeners() {
+        return doubleClikcListeners;
+    }
+
+    protected void setDoubleClikcListeners(TableDoubleClickListenerCollection doubleClikcListeners) {
+        this.doubleClikcListeners = doubleClikcListeners;
+    }
+
+    protected Timer getClickTimer() {
+        return clickTimer;
+    }
+
+    protected void setClickTimer(Timer clickTimer) {
+        this.clickTimer = clickTimer;
+    }
+
+    protected int getClickCount() {
+        return clickCount;
+    }
+
+    protected void setClickCount(int clickCount) {
+        this.clickCount = clickCount;
+    }
+
+    protected Element getCellClicked() {
+        return cell;
+    }
+
+    protected void setCellClicked(Element cell) {
+        this.cell = cell;
     }
 
     /**
@@ -245,10 +448,10 @@ public class AdvancedFlexTable extends FlexTable {
      *
      * @param column is a column number.
      */
-    protected void prepareHeaderCell (int column) {
+    protected void prepareHeaderCell(int column) {
         if (column < 0) {
             throw new IndexOutOfBoundsException(
-                "Cannot create a column with a negative index: " + column
+                    "Cannot create a column with a negative index: " + column
             );
         }
 
@@ -273,7 +476,7 @@ public class AdvancedFlexTable extends FlexTable {
      * @param tHead is a grid thead element.
      * @param num   is a number of columns to create.
      */
-    protected native void addHeaderCells (Element tHead, int num)/*-{
+    protected native void addHeaderCells(Element tHead, int num)/*-{
         var rowElem = tHead.rows[0];
         for(var i = 0; i < num; i++){
           var cell = $doc.createElement("th");
@@ -286,7 +489,7 @@ public class AdvancedFlexTable extends FlexTable {
      *
      * @return Value for property 'tHeadElement'.
      */
-    public Element getTHeadElement () {
+    public Element getTHeadElement() {
         return tHeadElement;
     }
 
@@ -295,7 +498,7 @@ public class AdvancedFlexTable extends FlexTable {
      *
      * @return Value for property 'headerWidgets'.
      */
-    protected List getHeaderWidgets () {
+    protected List getHeaderWidgets() {
         if (headerWidgets == null)
             headerWidgets = new ArrayList();
         return headerWidgets;
@@ -342,109 +545,144 @@ public class AdvancedFlexTable extends FlexTable {
         return super.getBodyElement();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void prepareCell(int row, int column) {
         super.prepareCell(row, column);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void prepareRow(int row) {
         super.prepareRow(row);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void checkCellBounds(int row, int column) {
         super.checkCellBounds(row, column);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void checkRowBounds(int row) {
         super.checkRowBounds(row);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected Element createCell() {
         return super.createCell();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected int getDOMCellCount(Element tableBody, int row) {
         return super.getDOMCellCount(tableBody, row);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected int getDOMCellCount(int row) {
         return super.getDOMCellCount(row);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected int getDOMRowCount() {
         return super.getDOMRowCount();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected int getDOMRowCount(Element elem) {
         return super.getDOMRowCount(elem);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected Element getEventTargetCell(Event event) {
         return super.getEventTargetCell(event);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void insertCells(int row, int column, int count) {
         super.insertCells(row, column, count);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected boolean internalClearCell(Element td, boolean clearInnerHTML) {
         return super.internalClearCell(td, clearInnerHTML);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void prepareColumn(int column) {
         super.prepareColumn(column);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void setCellFormatter(CellFormatter cellFormatter) {
         super.setCellFormatter(cellFormatter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void setColumnFormatter(ColumnFormatter formatter) {
         super.setColumnFormatter(formatter);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void setRowFormatter(RowFormatter rowFormatter) {
         super.setRowFormatter(rowFormatter);
     }
+
     /**
      * This is a scroll panel extension designed especially for rows scrolling.
      */
     protected class RowsScrollPanel extends ScrollPanel {
-        /** Constructs a new RowsScrollPanel. */
+        /**
+         * Constructs a new RowsScrollPanel.
+         */
         public RowsScrollPanel() {
             setStyleAttribute("position", "relative");
             new Timer() {
                 public void run() {
                     if (getTHeadElement() == null)
                         return;
-                    
+
                     String top = DOM.getStyleAttribute(DOM.getChild(DOM.getChild(getTHeadElement(), 0), 0), "top");
                     if (!(getScrollPosition() + "px").equals(top))
                         setStyleAttribute("top", String.valueOf(getScrollPosition()));
                 }
             }.scheduleRepeating(100); //this timer ensures that the header will always be on top
-                                      //whereas events don't
+            //whereas events don't
         }
 
         /**
          * This method sets the specified style attribute to all the header rows.
          *
-         * @param name is a name of style attribute.
+         * @param name  is a name of style attribute.
          * @param value is a value of style attribute.
          */
         protected void setStyleAttribute(String name, String value) {
@@ -452,7 +690,7 @@ public class AdvancedFlexTable extends FlexTable {
                 return;
 
             int rowCount = DOM.getChildCount(getTHeadElement());
-            for(int i = 0; i < rowCount; i++)
+            for (int i = 0; i < rowCount; i++)
                 DOM.setStyleAttribute(DOM.getChild(getTHeadElement(), i), name, value);
         }
     }
@@ -463,11 +701,17 @@ public class AdvancedFlexTable extends FlexTable {
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
     protected class AdvancedWidgetIterator implements Iterator {
-        /** parent flex table iterator */
+        /**
+         * parent flex table iterator
+         */
         private Iterator parentIterator;
-        /** header widget collection iterator */
+        /**
+         * header widget collection iterator
+         */
         private Iterator headersIterator;
-        /** end of headers collection reached flag */
+        /**
+         * end of headers collection reached flag
+         */
         private boolean endOfHeadersReached;
 
         /**
@@ -512,6 +756,21 @@ public class AdvancedFlexTable extends FlexTable {
                 headersIterator.remove();
             else
                 parentIterator.remove();
+        }
+    }
+
+    /**
+     * This timer is invoked if the first click is received bu t the second one isn't till the
+     * {@link AdvancedFlexTable#CLICK_TIMEOUT} exceded.<p/>
+     * It drops clicks count and fires onclick event.
+     */
+    protected class ClickTimer extends Timer {
+        /**
+         * See class docs
+         */
+        public void run() {
+            setClickCount(0);
+            fireClickEvent();
         }
     }
 }

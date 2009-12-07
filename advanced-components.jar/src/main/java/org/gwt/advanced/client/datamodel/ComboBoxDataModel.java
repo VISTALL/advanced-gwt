@@ -16,10 +16,9 @@
 
 package org.gwt.advanced.client.datamodel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.gwt.core.client.GWT;
+
+import java.util.*;
 
 /**
  * This is an implementation of the data model interface for the ComboBox widget.
@@ -34,6 +33,8 @@ public class ComboBoxDataModel implements ListDataModel {
     private Map items = new HashMap();
     /** a selected item ID */
     private String selectedId;
+    /** {@link org.gwt.advanced.client.datamodel.ListModelListener}s */
+    private List listeners = new ArrayList();
 
     /** {@inheritDoc} */
     public void add(String id, Object item) {
@@ -41,6 +42,8 @@ public class ComboBoxDataModel implements ListDataModel {
         if (!ids.contains(id))
             ids.add(id);
         getItems().put(id, item);
+
+        fireEvent(new ListModelEvent(this, id, getItemIds().indexOf(id), ListModelEvent.ADD_ITEM));
     }
 
     /** {@inheritDoc} */
@@ -69,8 +72,11 @@ public class ComboBoxDataModel implements ListDataModel {
 
     /** {@inheritDoc} */
     public void remove(String id) {
+        int index = getItemIds().indexOf(id);
         getItemIds().remove(id);
         getItems().remove(id);
+
+        fireEvent(new ListModelEvent(this, id, index, ListModelEvent.REMOVE_ITEM));
     }
 
     /** {@inheritDoc} */
@@ -97,6 +103,8 @@ public class ComboBoxDataModel implements ListDataModel {
     /** {@inheritDoc} */
     public void setSelectedId(String id) {
         this.selectedId = id;
+
+        fireEvent(new ListModelEvent(this, id, getSelectedIndex(), ListModelEvent.SELECT_ITEM));
     }
 
     /** {@inheritDoc} */
@@ -113,6 +121,8 @@ public class ComboBoxDataModel implements ListDataModel {
     /** {@inheritDoc} */
     public void clear() {
         itemIds.clear();
+
+        fireEvent(new ListModelEvent(this, ListModelEvent.CLEAN));
     }
 
     /** {@inheritDoc} */
@@ -123,6 +133,41 @@ public class ComboBoxDataModel implements ListDataModel {
     /** {@inheritDoc} */
     public int getCount() {
         return itemIds.size();
+    }
+
+    /**
+     * This method registers a list data model listener.
+     *
+     * @param listener is a listener to be invoked on any event.
+     */
+    public void addListModelListener(ListModelListener listener) {
+        removeListModelListener(listener);
+        listeners.add(listener);
+    }
+
+    /**
+     * This method unregisters the specified listener.
+     *
+     * @param listener is a listener to be unregistered.
+     */
+    public void removeListModelListener(ListModelListener listener) {
+        listeners.remove(listener);
+    }
+
+    /**
+     * This method fires the specified event and invokes the listeners.
+     *
+     * @param event is an event to fire.
+     */
+    protected void fireEvent(ListModelEvent event) {
+        for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
+            ListModelListener listener = (ListModelListener) iterator.next();
+            try {
+                listener.onModelEvent(event);
+            } catch (Throwable t) {
+                GWT.log("Unknown listener error", t);
+            }
+        }
     }
 
     /**

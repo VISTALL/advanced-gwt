@@ -45,13 +45,22 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
     /** a locking panel to lock the screen */
     private LockingPanel lockingPanel;
     /** choice button visibility flag */
-    private boolean choiceButtonVisible = true;
+    private boolean choiceButtonVisible;
     /** widget width */
     private String width;
     /** widget height */
     private String height;
     /** enabled panel controls flag */
     private boolean enabled;
+
+    protected TextButtonPanel() {
+        getLayout().setWidget(0, 0, getSelectedValue());
+        setChoiceButtonVisible(true);
+        setCustomTextAllowed(false);
+        setStyleName("advanced-TextButtonPanel");
+        setWidget(getLayout());
+        addComponentListeners();
+    }
 
     /**
      * Getter for property 'customTextAllowed'.
@@ -69,6 +78,7 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
      */
     public void setCustomTextAllowed(boolean customTextAllowed) {
         this.customTextAllowed = customTextAllowed;
+        prepareSelectedValue();
     }
 
     /**
@@ -95,28 +105,21 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
      * @param choiceButtonVisible Value to set for property 'choiceButtonVisible'.
      */
     public void setChoiceButtonVisible(boolean choiceButtonVisible) {
+        if (!choiceButtonVisible && isChoiceButtonVisible()) {
+            getLayout().removeCell(0, 1);
+        } else if (choiceButtonVisible && !isChoiceButtonVisible()) {
+            getLayout().setWidget(0, 1, getChoiceButton());
+            prepareChoiceButton();
+        }
         this.choiceButtonVisible = choiceButtonVisible;
     }
     
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated you don't have to use this method to display the widget any more 
+     */
     public void display() {
-        FlexTable layout = getLayout();
-        while (layout.getRowCount() > 0)
-            layout.removeRow(layout.getRowCount() - 1);
-
-        addComponentListeners();
-
-        layout.setWidget(0, 0, getSelectedValue());
-
-        if (isChoiceButtonVisible()) 
-            layout.setWidget(0, 1, getChoiceButton());
-
-        prepareSelectedValue();
-        if(isChoiceButtonVisible())
-            prepareChoiceButton();
-
-        setStyleName("advanced-TextButtonPanel");
-        setWidget(layout);
     }
 
     /** {@inheritDoc} */

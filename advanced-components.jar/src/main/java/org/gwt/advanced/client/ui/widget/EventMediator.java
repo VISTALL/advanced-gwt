@@ -145,6 +145,7 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
         EditableGrid grid = getPanel().getGrid();
         Editable dataModel = grid.getModel();
         dataModel.removeAll();
+        grid.getSelectionModel().clear();
         fireClearEvent(dataModel);
 
         if (grid instanceof HierarchicalGrid)
@@ -354,12 +355,20 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
             grid.synchronizeView(event);
         } else if (type == EditableModelEvent.ADD_ROW) {
             grid.drawRow(event);
+            if (getPanel().isTopPagerVisible())
+                getPanel().getTopPager().display();
+            if (getPanel().isBottomPagerVisible())
+                getPanel().getBottomPager().display();
         } else if (type == EditableModelEvent.UPDATE_ROW) {
             grid.drawRow(event);
         } else if (type == EditableModelEvent.UPDATE_CELL || type == HierarchicalModelEvent.ADD_SUBGRID || type == HierarchicalModelEvent.REMOVE_SUBGRID) {
             grid.drawCell(event);
         } else if (type == EditableModelEvent.REMOVE_ROW) {
             grid.deleteRow(event);
+            if (getPanel().isTopPagerVisible())
+                getPanel().getTopPager().display();
+            if (getPanel().isBottomPagerVisible())
+                getPanel().getBottomPager().display();
         } else if (type == EditableModelEvent.CLEAN) {
             grid.synchronizeDataModel();
         } else if (type == HierarchicalModelEvent.CELL_EXPANDED) {

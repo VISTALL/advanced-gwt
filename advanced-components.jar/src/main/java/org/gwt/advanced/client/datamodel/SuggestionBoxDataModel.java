@@ -69,7 +69,9 @@ public class SuggestionBoxDataModel extends ComboBoxDataModel implements Suggest
      * @param expression Value to set for property 'expression'.
      */
     public void setExpression(String expression) {
-        this.expression = expression; 
+        this.expression = expression;
+
+        fireEvent(new SuggestionModelEvent(this, SuggestionModelEvent.EXPRESSION_CHANGED, expression));
     }
 
     /** {@inheritDoc} */

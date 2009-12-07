@@ -927,6 +927,11 @@
     height: 100%;
 }
 
+.advanced-TabPanel .disabled-tab {
+    color: #777777;
+    cursor: default;
+}
+
 /** selected tab border container element styles */
 .advanced-TabPanel .selected .round-container {
     height: 15px;

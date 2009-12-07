@@ -129,7 +129,7 @@ public class Sample {
         table.setHeaderWidget(0, new Label("First Name"));
         table.setHeaderWidget(1, new Label("Surname"));
 
-        // enable verticall scrolling 
+        // enabled verticall scrolling
         table.enableVerticalScrolling(true);
     }
 
@@ -313,7 +313,7 @@ public class Sample {
         grid.setHeaderWidget(0, new Label("First Name"));
         grid.setHeaderWidget(1, new Label("Surname"));
 
-        // enable verticall scrolling
+        // enabled verticall scrolling
         grid.enableVerticalScrolling(true);
 
         //set column widths in pixels

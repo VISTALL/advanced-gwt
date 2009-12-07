@@ -22,7 +22,9 @@ import com.google.gwt.user.client.ui.FocusListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
+import org.gwt.advanced.client.datamodel.ListModelEvent;
 import org.gwt.advanced.client.datamodel.SuggestionBoxDataModel;
+import org.gwt.advanced.client.datamodel.SuggestionModelEvent;
 import org.gwt.advanced.client.ui.SuggestionBoxListener;
 
 import java.util.ArrayList;
@@ -65,7 +67,6 @@ public class SuggestionBox extends ComboBox {
     /** request timeout value */
     private int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
 
-
     /**
      * Constructs a new SuggestionBox.</p>
      * By default the minimal expression length is <code>3</code>.
@@ -81,6 +82,8 @@ public class SuggestionBox extends ComboBox {
      */
     public SuggestionBox(int expressionLength) {
         this.expressionLength = expressionLength;
+        setCustomTextAllowed(true);
+        setChoiceButtonVisible(false);
     }
 
     /**
@@ -184,12 +187,10 @@ public class SuggestionBox extends ComboBox {
      * Use this method if whant to open the popup list from the
      * {@link org.gwt.advanced.client.datamodel.ListCallbackHandler} implementation and values are NOT cached on a
      * client side.
+     *
+     * @deprecated you don't have to invoke this method since the list is updated on data model changes.
      */
     public void refreshList() {
-        if (getModel().getCount() > 0) {
-            getTimer().cancel();
-            getListPanel().display();
-        }
     }
 
     /**
@@ -202,12 +203,36 @@ public class SuggestionBox extends ComboBox {
     }
 
     /**
+     * Additionally listens for events produced by the
+     * {@link org.gwt.advanced.client.datamodel.SuggestionBoxDataModel}.
+     *
      * {@inheritDoc}
      */
-    protected void prepareSelectedValue() {
-        setCustomTextAllowed(true);
-        super.prepareSelectedValue();
-        setChoiceButtonVisible(false);
+    public void onModelEvent(ListModelEvent event) {
+        if (event.getType() == SuggestionModelEvent.EXPRESSION_CHANGED
+                && !getText().equals(((SuggestionModelEvent)event).getExpression())) {
+            setText(((SuggestionModelEvent)event).getExpression());
+            getListPanel().adjustSize();
+        } else if (event.getType() != SuggestionModelEvent.EXPRESSION_CHANGED) {
+            super.onModelEvent(event);
+        }
+    }
+
+    /**
+     * Additionally cleans the list every time when the first item is added.<p/>
+     * In other cases works like the same method in the super class.
+     *
+     * @param event is an event containing data about the added item.
+     */
+    protected void add(ListModelEvent event) {
+        getTimer().cancel();
+        if (!isListPanelOpened()) {
+            getListPanel().getList().clear();
+            getListPanel().getScrollPanel().setWidth(getOffsetWidth() + "px");
+            getListPanel().show();
+        }
+        super.add(event);
+        getListPanel().selectRow(getModel().getSelectedIndex());
     }
 
     /**
@@ -276,7 +301,7 @@ public class SuggestionBox extends ComboBox {
          * {@inheritDoc}
          */
         public void onFocus(Widget sender) {
-            getTimer().scheduleRepeating(getRequestTimeout());
+            getTimer().schedule(getRequestTimeout());
         }
 
         /**
@@ -284,9 +309,6 @@ public class SuggestionBox extends ComboBox {
          */
         public void onLostFocus(Widget sender) {
             getTimer().cancel();
-            if (!getSelectedValue().getText().equals(((ExpressionTimer) getTimer()).getLastExpression()))
-                setSelectedId(null);    
-            ((ExpressionTimer) getTimer()).setLastExpression(null);
         }
     }
 
@@ -294,34 +316,36 @@ public class SuggestionBox extends ComboBox {
      * This listener is invoked when a user types any text and sets focus
      */
     protected class ExpressionKeyboardListener implements KeyboardListener, ChangeListener {
+        private String lastExpression;
+
         /**
          * {@inheritDoc}
          */
         public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-            if (KeyboardListener.KEY_BACKSPACE == keyCode && modifiers == 0) {
-                getTimer().scheduleRepeating(getRequestTimeout());
-                setSelectedId(null);
-            }
         }
 
         /**
          * {@inheritDoc}
          */
         public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-            getTimer().scheduleRepeating(getRequestTimeout());
-            setSelectedId(null);
         }
 
         /**
          * {@inheritDoc}
          */
         public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+            if (!getText().equals(lastExpression)) {
+                lastExpression = getText();
+                setSelectedId(null);
+                getTimer().schedule(getRequestTimeout());
+            }
         }
 
         /**
          * {@inheritDoc}
          */
         public void onChange(Widget sender) {
+            getTimer().cancel();
             setSelectedId(null);
         }
     }
@@ -331,43 +355,17 @@ public class SuggestionBox extends ComboBox {
      */
     protected class ExpressionTimer extends Timer {
         /**
-         * a last displayed expression filter
-         */
-        private String lastExpression;
-
-        /**
          * {@inheritDoc}
          */
         public void run() {
             String text = getSelectedValue().getText();
-            if (text == null || text.length() < getExpressionLength() || text.equals(getLastExpression()))
+            if (text.length() < getExpressionLength())
                 return;
 
             for (Iterator iterator = getSuggestionBoxListeners().iterator(); iterator.hasNext();) {
                 SuggestionBoxListener listener = (SuggestionBoxListener) iterator.next();
                 listener.onChange(text);
             }
-
-            setLastExpression(text);
-            refreshList();
-        }
-
-        /**
-         * Getter for property 'lastExpression'.
-         *
-         * @return Value for property 'lastExpression'.
-         */
-        protected String getLastExpression() {
-            return lastExpression;
-        }
-
-        /**
-         * Setter for property 'lastExpression'.
-         *
-         * @param lastExpression Value to set for property 'lastExpression'.
-         */
-        protected void setLastExpression(String lastExpression) {
-            this.lastExpression = lastExpression;
         }
     }
 }
