@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 package org.gwt.advanced.client.util;
 
+import com.google.gwt.core.client.GWT;
 import org.gwt.advanced.client.ui.widget.theme.ThemeApplicable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.gwt.core.client.GWT;
 
 /**
  * This sigleton is used to centrilize and simplify theme management.

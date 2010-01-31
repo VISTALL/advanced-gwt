@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,6 +243,8 @@ public class ComboBox extends TextButtonPanel
      * Sets an item index that must be displayed on top.<p/>
      * If the item is outside the currently visible area the list will be scrolled down
      * to this item.
+     *
+     * @param index is an index of the item that must be displayed on top of the visible area.
      */
     public void setStartItemIndex(int index) {
         getListPanel().setStartItemIndex(index);
@@ -344,6 +346,115 @@ public class ComboBox extends TextButtonPanel
     }
 
     /**
+     * Gets a highlight row number.<p/>
+     * Note that sometimes this value is not equal to the selected row.
+     *
+     * @return a hightlight row number or <code>-1</code> if nothing is highlight.
+     */
+    public int getHightlightRow() {
+        return getListPanel().getHighlightRow();
+    }
+
+    /**
+     * Sets a hightlight row number and display the row as selected but not actually
+     * select it.
+     *
+     * @param row is a row number to highlight. If it's out of range thus method does nothing.
+     */
+    public void setHightListRow(int row) {
+        getListPanel().setHighlightRow(row);
+    }
+
+    /**
+     * This method gets an actual number of items displayed in the drop down.
+     *
+     * @return an item count.
+     */
+    public int getItemCount() {
+        return getListPanel().getItemCount();
+    }
+
+    /**
+     * Gets an item by its index<p/>
+     * If index < 0 or index >= {@link #getItemCount()} it throws an exception.
+     *
+     * @param index is an index of the item to get.
+     * @return a foudn item.
+     * @throws IndexOutOfBoundsException if index is invalid.
+     */
+    public Widget getItem(int index) {
+        return getListPanel().getItem(index);
+    }
+
+    /**
+     * Gets an item index if it's displayed in the drop down list.<p/>
+     * Otherwise returns <code>-1</code>.
+     *
+     * @param item an item that is required to return.
+     * @return an item index value or <code>-1</code>.
+     */
+    public int getItemIndex(Widget item) {
+        return getListPanel().getItemIndex(item);
+    }
+
+    /**
+     * This method shows the drop down list.
+     *
+     * @param prepareList forces the list to be prepared (refreshed) before displaying.
+     */
+    public void showList(boolean prepareList) {
+        getListPanel().show();
+        if (prepareList)
+            getListPanel().prepareList();
+        if (getItemCount() <= 0)
+            getListPanel().hide();
+    }
+
+    /**
+     * Moves the cursor up or down.
+     *
+     * @param step is a number of items relative to the current cursor position.
+     */
+    public void moveCursor(int step) {
+        int row = getListPanel().getHighlightRow();
+        if (step == 0 || row + step < 0 || row + step >= getItemCount())
+            return;
+
+        row+=step;
+
+        if (row != getListPanel().getHighlightRow()) {
+            if (row >= getModel().getCount())
+                row = getModel().getCount() - 1;
+            if (row < 0)
+                row = 0;
+
+            getListPanel().setHighlightRow(row);
+            Widget item = getListPanel().getList().getWidget(row);
+            getListPanel().ensureVisible(item);
+        }
+    }
+
+    /**
+     * Hides the drop down list.
+     */
+    public void hideList() {
+        getListPanel().hide();
+        getChoiceButton().setDown(false);
+    }
+
+    /**
+     * Selects the specified item in the model and in the drop down list.
+     *
+     * @param row is a row index to select
+     */
+    public void select(int row) {
+        getModel().setSelectedIndex(row);
+        getListPanel().hide();
+        getSelectedValue().removeStyleName("selected-row");
+        getChoiceButton().setDown(false);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public void onModelEvent(ListModelEvent event) {
@@ -360,13 +471,37 @@ public class ComboBox extends TextButtonPanel
     }
 
     /**
+     * Checks whether the lazy rendering option is enabled.
+     *
+     * @return a result of check.
+     */
+    public boolean isLazyRenderingEnabled() {
+        return getListPanel().isLazyRenderingEnabled();
+    }
+
+    /**
+     * Enables or disables lazy rendering option.<p/>
+     * If this option is enabled the widget displays only several items on lazily reders other ones on scroll down.<p/>
+     * By default lazy rendering is disabled. Switch it on for really large (over 500 items) lists only.<p/>
+     * Note that <i>lazy rendering</i> is not <i>lazy data loading</i>. The second one means that the data is loaded into
+     * the model on request where as the first option assumes that all necessary data has already been loaded and put
+     * into the model. If you need <i>lazy loading</i> please consider using {@link SuggestionBox} and
+     * {@link org.gwt.advanced.client.datamodel.SuggestionBoxDataModel}.  
+     *
+     * @param lazyRenderingEnabled is an option value.
+     */
+    public void setLazyRenderingEnabled(boolean lazyRenderingEnabled) {
+        getListPanel().setLazyRenderingEnabled(lazyRenderingEnabled);
+    }
+
+    /**
      * Adds a new visual item into the drop down list every time when it's added into the data
      * model.
      *
      * @param event is an event containing data about the item.
      */
     protected void add(ListModelEvent event) {
-        if (isListPanelOpened()) {
+        if (isListPanelOpened() && event.getItemIndex() <= getItemCount()) {
             Widget item = getListItemFactory().createWidget(event.getSource().get(event.getItemId()));
             item = getListPanel().adoptItemWidget(item);
 
@@ -396,7 +531,7 @@ public class ComboBox extends TextButtonPanel
      * @param event is an event that contains data of the removed item.
      */
     protected void remove(ListModelEvent event) {
-        if (isListPanelOpened()) {
+        if (isListPanelOpened() && event.getItemIndex() < getListPanel().getList().getWidgetCount()) {
             getListPanel().remove(getListPanel().getList().getWidget(event.getItemIndex()));
             if (getListPanel().getList().getWidgetCount() <= 0)
                 getListPanel().hide();
@@ -409,8 +544,11 @@ public class ComboBox extends TextButtonPanel
      * @param event is an event that contains data about selected item.
      */
     protected void select(ListModelEvent event) {
-        if (isListPanelOpened()) {
-            getListPanel().setHightlightRow(event.getItemIndex());
+        if (event.getItemIndex() >= 0 && event.getItemIndex() < getListPanel().getList().getWidgetCount()) {
+            if (isListPanelOpened()) {
+                getListPanel().setHighlightRow(event.getItemIndex());
+            }
+            setText(getListItemFactory().convert(model.getSelected()));
         }
     }
 
@@ -594,8 +732,10 @@ public class ComboBox extends TextButtonPanel
             int count = getModel().getCount();
             if (sender instanceof ToggleButton || !isCustomTextAllowed()) {
                 if (count > 0) {
-                    getListPanel().prepareList();
                     getListPanel().show();
+                    getListPanel().prepareList();
+                    if (getItemCount() <= 0)
+                        getListPanel().hide();
                     getChoiceButton().setDown(true);
                 } else
                     getChoiceButton().setDown(false);
@@ -732,49 +872,29 @@ public class ComboBox extends TextButtonPanel
                 boolean hasModifiers = alt || ctrl || shift;
 
                 if (eventTargetsPopup && isListPanelOpened()) {
-                    int row = getListPanel().getHighlightRow();
-
-                    if (button == KeyboardListener.KEY_UP && !hasModifiers)
-                        row--;
-                    else if (button == KeyboardListener.KEY_DOWN && !hasModifiers)
-                        row++;
-                    else if (button == KeyboardListener.KEY_ENTER && !hasModifiers) {
-                        getModel().setSelectedIndex(getListPanel().getHighlightRow());
-                        setText(getListItemFactory().convert(getModel().getSelected()));
-                        getListPanel().hide();
-                        getSelectedValue().removeStyleName("selected-row");
-                        getChoiceButton().setDown(false);
-                        getSelectedValue().setFocus(false);
-                        setKeyPressed(false);
+                    if (button == KeyboardListener.KEY_UP && !hasModifiers) {
+                        moveCursor(-1);
                         return false;
+                    } else if (button == KeyboardListener.KEY_DOWN && !hasModifiers) {
+                        moveCursor(1);
+                        return false;
+                    } else if (button == KeyboardListener.KEY_ENTER && !hasModifiers) {
+                        select(getHightlightRow());
+                        setKeyPressed(false);
+                        return true;
                     } else if (button == KeyboardListener.KEY_ESCAPE && !hasModifiers) {
-                        getListPanel().hide();
-                        getChoiceButton().setDown(false);
+                        hideList();
                         setKeyPressed(false);
-                        return false;
+                        return true;
                     } else if (button == KeyboardListener.KEY_TAB && (!hasModifiers || !alt && !ctrl && shift)) {
-                        getListPanel().hide();
-                        getChoiceButton().setDown(false);
+                        hideList();
                         setKeyPressed(false);
                         return true;
                     }
-
-                    if (row != getListPanel().getHighlightRow()) {
-                        if (row >= getModel().getCount())
-                            row = getModel().getCount() - 1;
-                        if (row < 0)
-                            row = 0;
-
-                        getListPanel().setHightlightRow(row);
-                        Widget item = getListPanel().getList().getWidget(row);
-                        getListPanel().ensureVisible(item);
-                        return false;
-                    }
                 } else if (eventTargetsPopup && !hasModifiers
                         && button == KeyboardListener.KEY_ENTER && getModel().getCount() > 0) {
-                    getListPanel().prepareList();
-                    getListPanel().show();
-                    return false;
+                    showList(true);
+                    return true;
                 }
             } else if (type == Event.ONKEYUP) {
                 setKeyPressed(false);

@@ -16,7 +16,7 @@
             </p>
             <p>
                 The latest stable version is
-                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/1.4.9/">1.4.9</a>.
+                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/1.5.0/">1.5.0</a>.
                 <!-- You can try also a new one (released but may contain some bugs):
                 <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/1.4.9-beta/">1.4.9-beta</a>.-->
             </p>
@@ -66,7 +66,8 @@
                   <li>localization and internationalization</li>
                   <li>&lt;thead&gt; HTML tag support in tables</li>
                   <li>splitting to view and model (MVP design)</li>
-                  <li>data model events <span class="new">new</span></li>
+                  <li>data model events</li>
+                  <li>lazy rendering for large drop down lists <span class="new">new</span></li>
                   <li>customizable event management and rendering</li>
                   <li>GWT 1.4.62, 1.5.3, 1.6.4, 1.7.1 or higher compatibility</li>
                   <li>no dependencies to other third-party libraries</li>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,8 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         model.setSelectedIndex(0);
         comboBox.setModel(model);
         comboBox.setCustomTextAllowed(true);
+        comboBox.setLazyRenderingEnabled(true);
+        comboBox.setVisibleRows(10);
 
         DatePicker picker = new DatePicker(new Date());
         picker.setWidth("100%");
@@ -63,7 +65,6 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         suggestionBox.setExpressionLength(1);
         suggestionBox.setModel(new SuggestionBoxDataModel(new SuggestionBoxHandler()));
         suggestionBox.setWidth("100%");
-
 
         SuggestionBox complexSuggestionBox = new SuggestionBox();
         complexSuggestionBox.setExpressionLength(1);

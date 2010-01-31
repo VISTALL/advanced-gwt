@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,13 +78,21 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         Editable gridModel = getGrid().getModel();
         int gridColumn = getGrid().getColumnByModelColumn(column);
         if (gridModel instanceof Composite && ((Composite)gridModel).getExpandableColumn() == column) {
+            TreeGridRow parentRow = null;
+
+            if (row < getGrid().getRowCount() && row >= 0
+                    && getGrid().getCellCount(0) > ((Composite)gridModel).getExpandableColumn()) {
+                TreeCell cell = ((TreeGrid)getGrid()).getTreeCell(row);
+                parentRow = cell.getGridRow().getParent();
+            } else
+                parentRow = (TreeGridRow) getCurrentRows().get();
+
             Composite model = (Composite) gridModel;
             int modelRow = getModelRow(row);
 
             GridCell gridCell = getCellFactory().create(row, gridColumn, data);
             gridCell.displayActive(false);
 
-            TreeGridRow parentRow = (TreeGridRow) getCurrentRows().get();
             TreeGridRow currentRow = model.getRow(parentRow, modelRow);
 
             TreeCell cell = (TreeCell) getCellFactory().create(row, gridColumn, gridCell);

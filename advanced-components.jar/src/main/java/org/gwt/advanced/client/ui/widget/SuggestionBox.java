@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * This class implements suggestion box logic.<p/>
  * To use it properly you should specify the data model that is instance of
- * the {@link org.gwt.advanced.client.datamodel.SuggestionBoxDataModel} class. Otheriwse it will work as
+ * the {@link org.gwt.advanced.client.datamodel.SuggestionBoxDataModel} class. Otherwise it will work as
  * a simple combo box.<br/>
  * See also {@link #setModel(org.gwt.advanced.client.datamodel.SuggestionBoxDataModel)}.
  *
@@ -42,7 +42,9 @@ import java.util.List;
  * @since 1.2.0
  */
 public class SuggestionBox extends ComboBox {
-    /** default request timeout between last expression change and getting data */
+    /**
+     * default request timeout between last expression change and getting data
+     */
     public static final int DEFAULT_REQUEST_TIMEOUT = 500;
     /**
      * suggestion expression length
@@ -64,7 +66,9 @@ public class SuggestionBox extends ComboBox {
      * a keyboard listener to set focus when a user types any text
      */
     private ExpressionKeyboardListener keyboardListener;
-    /** request timeout value */
+    /**
+     * request timeout value
+     */
     private int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
 
     /**
@@ -199,19 +203,19 @@ public class SuggestionBox extends ComboBox {
     public void cleanSelection() {
         super.cleanSelection();
         if (getModel() instanceof SuggestionBoxDataModel)
-            ((SuggestionBoxDataModel)getModel()).setExpression(null);
+            ((SuggestionBoxDataModel) getModel()).setExpression(null);
     }
 
     /**
      * Additionally listens for events produced by the
      * {@link org.gwt.advanced.client.datamodel.SuggestionBoxDataModel}.
-     *
+     * <p/>
      * {@inheritDoc}
      */
     public void onModelEvent(ListModelEvent event) {
         if (event.getType() == SuggestionModelEvent.EXPRESSION_CHANGED
-                && !getText().equals(((SuggestionModelEvent)event).getExpression())) {
-            setText(((SuggestionModelEvent)event).getExpression());
+                && !getText().equals(((SuggestionModelEvent) event).getExpression())) {
+            setText(((SuggestionModelEvent) event).getExpression());
             getListPanel().adjustSize();
         } else if (event.getType() != SuggestionModelEvent.EXPRESSION_CHANGED) {
             super.onModelEvent(event);
@@ -225,6 +229,9 @@ public class SuggestionBox extends ComboBox {
      * @param event is an event containing data about the added item.
      */
     protected void add(ListModelEvent event) {
+        if (event.getItemIndex() > getItemCount())
+            return;
+
         getTimer().cancel();
         if (!isListPanelOpened()) {
             getListPanel().getList().clear();
@@ -282,6 +289,11 @@ public class SuggestionBox extends ComboBox {
         return focusListener;
     }
 
+    /** {@inheritDoc} */
+    public void showList(boolean prepareList) {
+        getTimer().schedule(getRequestTimeout());
+    }
+
     /**
      * Getter for property 'keyboardListener'.
      *
@@ -291,6 +303,13 @@ public class SuggestionBox extends ComboBox {
         if (keyboardListener == null)
             keyboardListener = new ExpressionKeyboardListener();
         return keyboardListener;
+    }
+
+    /**
+     * Immediately cancels the {@link #timer} if it's run.
+     */
+    protected void cancelTimer() {
+        getTimer().cancel();
     }
 
     /**
@@ -334,7 +353,7 @@ public class SuggestionBox extends ComboBox {
          * {@inheritDoc}
          */
         public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-            if (!getText().equals(lastExpression)) {
+            if (!getText().equals(lastExpression) && keyCode != KeyboardListener.KEY_ENTER) {
                 lastExpression = getText();
                 setSelectedId(null);
                 getTimer().schedule(getRequestTimeout());

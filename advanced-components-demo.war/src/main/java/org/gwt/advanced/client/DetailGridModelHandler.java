@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package org.gwt.advanced.client;
 
 import org.gwt.advanced.client.datamodel.DataModelCallbackHandler;
-import org.gwt.advanced.client.datamodel.GridDataModel;
 import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.ui.widget.GridPanel;
+import org.gwt.advanced.client.datamodel.GridDataModel;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
+import org.gwt.advanced.client.ui.widget.GridPanel;
 
 /**
  * This class is a demo of data handler for detail grid.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.gwt.advanced.client.datamodel;
 
 /**
  * This interface describes pageable object (normally a row set of the grid).<p>
- * Implementations of this inteface are usually used by pagers.
+ * Implementations of this interface are usually used by pagers.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
@@ -79,7 +79,7 @@ public interface Pageable {
     /**
      * This method returns a page size.
      *
-     * @return a page size (number of displyable rows).
+     * @return a page size (number of displayable rows).
      */
     int getPageSize ();
 

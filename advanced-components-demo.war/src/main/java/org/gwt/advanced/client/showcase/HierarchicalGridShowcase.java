@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@
 package org.gwt.advanced.client.showcase;
 
 import com.google.gwt.user.client.ui.Widget;
-import org.gwt.advanced.client.ui.widget.GridPanel;
-import org.gwt.advanced.client.ui.widget.EditableGrid;
-import org.gwt.advanced.client.ui.widget.HierarchicalGrid;
-import org.gwt.advanced.client.ui.widget.AdvancedTabPanel;
-import org.gwt.advanced.client.ui.widget.cell.TextBoxCell;
-import org.gwt.advanced.client.ui.widget.cell.LongCell;
 import org.gwt.advanced.client.AbstractShowcase;
 import org.gwt.advanced.client.DemoModelFactory;
 import org.gwt.advanced.client.GridPanelFactoryImpl;
+import org.gwt.advanced.client.ui.widget.AdvancedTabPanel;
+import org.gwt.advanced.client.ui.widget.EditableGrid;
+import org.gwt.advanced.client.ui.widget.GridPanel;
+import org.gwt.advanced.client.ui.widget.HierarchicalGrid;
+import org.gwt.advanced.client.ui.widget.cell.LongCell;
+import org.gwt.advanced.client.ui.widget.cell.TextBoxCell;
 
 /**
  * This is a show case for the {@link HierarchicalGrid} widget.

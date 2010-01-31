@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package org.gwt.advanced.client;
 
-import org.gwt.advanced.client.datamodel.*;
+import com.google.gwt.user.client.ui.ListBox;
+import org.gwt.advanced.client.datamodel.DataModelCallbackHandler;
+import org.gwt.advanced.client.datamodel.Editable;
+import org.gwt.advanced.client.datamodel.GridDataModel;
+import org.gwt.advanced.client.datamodel.LazyLoadable;
 import org.gwt.advanced.client.ui.widget.GridPanel;
 
 import java.util.*;
-
-import com.google.gwt.user.client.ui.ListBox;
 
 /**
  * This is a demo model handler.<p>

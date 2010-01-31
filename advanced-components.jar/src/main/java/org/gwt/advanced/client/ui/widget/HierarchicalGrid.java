@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.datamodel.Hierarchical;
 import org.gwt.advanced.client.datamodel.EditableModelEvent;
 import org.gwt.advanced.client.datamodel.GridColumn;
+import org.gwt.advanced.client.datamodel.Hierarchical;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
 import org.gwt.advanced.client.ui.GridEventManager;
@@ -33,11 +33,7 @@ import org.gwt.advanced.client.ui.widget.cell.ExpandableCellFactory;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
 import org.gwt.advanced.client.util.GWTUtil;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This is a hierarchical grid implementation.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,7 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
         this.timeVisible = timeVisible;
         if (getDate() != null)
             getSelectedValue().setText(getFormat().format(date));
+        getCalendar().setShowTime(timeVisible);
     }
 
     /** {@inheritDoc} */

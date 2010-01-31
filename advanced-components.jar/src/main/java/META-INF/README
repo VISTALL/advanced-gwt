@@ -3,6 +3,17 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 1.5.0 includes:
+
+Bug fixes:
+1. TreeGrid instantiated with wrong GridRenderer
+2. ComboBox doesn't select a value on model events
+3. DatePicker doesn't display time if the calendar is opened
+
+New features:
+1. Lazy rendering support fro ComboBox and SuggestionBox
+
+====================================================================================================================
 Release 1.4.9 includes:
 
 Bug fixes:

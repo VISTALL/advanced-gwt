@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,10 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      */
     private MouseListener mouseEventsListener;
     /**
+     * list of displayed items scroll listener
+     */
+    private ScrollListener listScrollListener;
+    /**
      * the row that is currently hightlight in the list but my be not selected in the model
      */
     private int highlightRow = -1;
@@ -75,6 +79,10 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      * the top item index to be displayed in the visible area of the list
      */
     private int startItemIndex = 0;
+    /**
+     * enables or disables lazy rendering of the items list
+     */
+    private boolean lazyRenderingEnabled;
 
     /**
      * Creates an instance of this class and sets the parent combo box value.
@@ -87,12 +95,11 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
 
         setStyleName("advanced-ListPopupPanel");
 
-        prepareList();
         setWidget(getScrollPanel());
 
         getList().setWidth("100%");
         getList().setStyleName("list");
-        
+
         addPopupListener(new AutoPopupListener());
     }
 
@@ -135,11 +142,43 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     }
 
     /**
-     * Sets the hight light row number.
+     * This method gets an actual number of items displayed in the drop down.
+     *
+     * @return an item count.
+     */
+    public int getItemCount() {
+        return getList().getWidgetCount();
+    }
+
+    /**
+     * Gets an item by its index<p/>
+     * If index < 0 or index >= {@link #getItemCount()} it throws an exception.
+     *
+     * @param index is an index of the item to get.
+     * @return a foudn item.
+     * @throws IndexOutOfBoundsException if index is invalid.
+     */
+    public Widget getItem(int index) {
+        return getList().getWidget(index);
+    }
+
+    /**
+     * Gets an item index if it's displayed in the drop down list.<p/>
+     * Otherwise returns <code>-1</code>.
+     *
+     * @param item an item that is required to return.
+     * @return an item index value or <code>-1</code>.
+     */
+    public int getItemIndex(Widget item) {
+        return getList().getWidgetIndex(item);
+    }
+
+    /**
+     * Sets the highlight row number.
      *
      * @param row is a row number to become highlight.
      */
-    protected void setHightlightRow(int row) {
+    protected void setHighlightRow(int row) {
         if (row >= 0 && row < getList().getWidgetCount()) {
             Widget widget = null;
             if (this.highlightRow >= 0 && getList().getWidgetCount() > this.highlightRow)
@@ -151,6 +190,17 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
             widget = getList().getWidget(this.highlightRow);
             widget.addStyleName("selected-row");
         }
+    }
+
+    /**
+     * Sets the highlight row number.
+     * Overloads the {@link #setHighlightRow(int)} method introduced because of spelling mistake in the name of
+     * this method.
+     *
+     * @param row is a row number to become highlight.
+     */
+    protected void setHightlightRow(int row) {
+        setHighlightRow(row);
     }
 
     /**
@@ -182,12 +232,8 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      * {@inheritDoc}
      */
     public void hide() {
-        try {
-            getComboBox().getDelegateListener().onLostFocus(this);
-        } finally {
-            super.hide();
-            setHidden(true);
-        }
+        super.hide();
+        setHidden(true);
     }
 
     /**
@@ -201,8 +247,8 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
                 getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
 
         adjustSize();
-        
-        setHightlightRow(getComboBox().getModel().getSelectedIndex());
+
+        setHighlightRow(getComboBox().getModel().getSelectedIndex());
         getComboBox().getDelegateListener().onFocus(this);
     }
 
@@ -253,15 +299,15 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     protected void adjustSize() {
         ScrollPanel table = getScrollPanel();
         int visibleRows = getVisibleRows();
-        
+
         if (visibleRows <= 0) {
             if (table.getOffsetHeight() > Window.getClientHeight() * 0.3) {
                 table.setHeight((int) (Window.getClientHeight() * 0.3) + "px");
             }
-            setHightlightRow(0);
-        } else if (getComboBox().getModel().getCount() > visibleRows){
+            setHighlightRow(0);
+        } else if (getComboBox().getModel().getCount() > visibleRows) {
             int index = getStartItemIndex();
-            int count = getList().getWidgetCount();
+            int count = getItemCount();
 
             if (index + visibleRows > count) {
                 index = count - visibleRows + 1;
@@ -280,12 +326,12 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
             }
             table.setSize(table.getOffsetWidth() + "px", listHeight + "px");
             table.setScrollPosition(scrollPosition);
-            setHightlightRow(index);
+            setHighlightRow(index);
         }
 
         int absoluteBottom = getAbsoluteTop() + getOffsetHeight();
         if (absoluteBottom > Window.getClientHeight()
-            && getOffsetHeight() <= getComboBox().getAbsoluteTop()) {
+                && getOffsetHeight() <= getComboBox().getAbsoluteTop()) {
             setPopupPosition(getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
         }
     }
@@ -299,20 +345,88 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     }
 
     /**
+     * Checks whether the lazy rendering option is enabled.
+     *
+     * @return a result of check.
+     */
+    protected boolean isLazyRenderingEnabled() {
+        return lazyRenderingEnabled;
+    }
+
+    /**
+     * Enables or disables lazy rendering option.<p/>
+     * If this option is enabled the list displays only several items on lazily reders other ones on scroll down.<p/>
+     * By default lazy rendering is disabled. Switch it on for really large (over 500 items) lists only.
+     *
+     * @param lazyRenderingEnabled is an option value.
+     */
+    protected void setLazyRenderingEnabled(boolean lazyRenderingEnabled) {
+        this.lazyRenderingEnabled = lazyRenderingEnabled;
+    }
+
+    /**
      * This method prepares the list of items for displaying.
      */
     protected void prepareList() {
         VerticalPanel panel = getList();
         panel.clear();
 
-        ComboBoxDataModel model = getComboBox().getModel();
-        ListItemFactory itemFactory = getComboBox().getListItemFactory();
-
-        for (int i = 0; i < model.getCount(); i++)
-            panel.add(adoptItemWidget(itemFactory.createWidget(model.get(i))));
+        fillList();
 
         selectRow(getComboBox().getModel().getSelectedIndex());
         getScrollPanel().setWidth(getComboBox().getOffsetWidth() + "px");
+    }
+
+    /**
+     * Fills the list of items starting from the current position and ending with rendering limits<p/>
+     * See {2link #isRenderingLimitReached()} for additional details since it's used in the body of this method.
+     */
+    protected void fillList() {
+        VerticalPanel panel = getList();
+        ComboBoxDataModel model = getComboBox().getModel();
+        ListItemFactory itemFactory = getComboBox().getListItemFactory();
+
+        int count = getItemCount();
+        int previouslyLoadedRows = count;
+        while (!isRenderingLimitReached(previouslyLoadedRows))
+            panel.add(adoptItemWidget(itemFactory.createWidget(model.get(count++))));
+    }
+
+    /**
+     * This method checks whether the limit of displayed items reached.<p/>
+     * It takes into account different aspects including setting of the widget, geometrical size of the
+     * drop down list and selected value that must be displayed.<p/>
+     * This method optimally chooses a number of items to display.
+     *
+     * @param previouslyRenderedRows is a number of rows previously loaded in the list
+     *                               (items count before filling the list).
+     * @return a result of check.
+     */
+    protected boolean isRenderingLimitReached(int previouslyRenderedRows) {
+        ComboBoxDataModel model = getComboBox().getModel();
+        int previousHeight = 0;
+
+        if (previouslyRenderedRows > 0) {
+            Widget last = getItem(previouslyRenderedRows - 1);
+            Widget first = getItem(0);
+
+            previousHeight = last.getOffsetHeight() + last.getAbsoluteTop() - first.getAbsoluteTop();
+        }
+
+        return model.getCount() <= 0 // no data
+                // OR a selected value has already been displayed
+                || getItemCount() >= getComboBox().getSelectedIndex()
+                // AND one of the following conditions is true:
+                && (getItemCount() >= model.getCount() //no items any more
+                // OR no limit but there aren too many items
+                || isLazyRenderingEnabled() && getVisibleRows() <= 0
+                && getList().getOffsetHeight() - previousHeight >= Window.getClientHeight() * 0.6
+                // OR visible rows number is limited and there was a new page rendered excepting the first page
+                // since two pages may be displayed if the list is rendered first time
+                || isLazyRenderingEnabled() && getVisibleRows() > 0 && getItemCount() - previouslyRenderedRows > 0
+                && (getItemCount() - previouslyRenderedRows) % getVisibleRows() == 0
+                && (getItemCount() -previouslyRenderedRows) / getVisibleRows() != 1);
+
     }
 
     /**
@@ -392,12 +506,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
             scrollPanel.setAlwaysShowScrollBars(false);
             scrollPanel.setWidget(getList());
             DOM.setStyleAttribute(scrollPanel.getElement(), "overflowX", "hidden");
-
-            scrollPanel.addScrollListener(new ScrollListener(){
-                public void onScroll(Widget widget, int scrollLeft, int scrollTop) {
-                    getComboBox().setFocus(true);
-                }
-            });
+            scrollPanel.addScrollListener(getListScrollListener());
         }
         return scrollPanel;
     }
@@ -407,7 +516,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      *
      * @return Value for property 'itemClickListener'.
      */
-    public ClickListener getItemClickListener() {
+    protected ClickListener getItemClickListener() {
         if (itemClickListener == null)
             itemClickListener = new ItemClickListener(this);
         return itemClickListener;
@@ -418,10 +527,22 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      *
      * @return Value for property 'mouseEventsListener'.
      */
-    public MouseListener getMouseEventsListener() {
+    protected MouseListener getMouseEventsListener() {
         if (mouseEventsListener == null)
             mouseEventsListener = new ListMouseListener();
         return mouseEventsListener;
+    }
+
+    /**
+     * Getter for property 'listScrollListener'.
+     *
+     * @return Value for property 'listScrollListener'.
+     */
+    public ScrollListener getListScrollListener() {
+        if (listScrollListener == null) {
+            listScrollListener = new ListScrollListener();
+        }
+        return listScrollListener;
     }
 
     /**
@@ -466,7 +587,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
 
     /**
      * This listener is required to handle mouse moving events over the list.
-     */                                                                             
+     */
     protected class ListMouseListener extends MouseListenerAdapter {
         /**
          * {@inheritDoc}
@@ -478,7 +599,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
             if (index >= 0)
                 getList().getWidget(index).removeStyleName("selected-row");
             sender.addStyleName("selected-row");
-            setHightlightRow(getList().getWidgetIndex(sender));
+            setHighlightRow(getList().getWidgetIndex(sender));
         }
 
         /**
@@ -503,6 +624,29 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
                 hide();
                 getComboBox().getChoiceButton().setDown(false);
             }
+        }
+    }
+
+    /**
+     * This scroll listener is invoked on any scrolling event caotured by the items list.<p/>
+     * It check whether the scrolling position value is equal to the last item position and tries to
+     * render the next page of data.
+     */
+    protected class ListScrollListener implements ScrollListener {
+        private boolean autoScrollingEnabled;
+
+        /** see class docs */
+        public void onScroll(Widget widget, int scrollLeft, int scrollTop) {
+            if (!autoScrollingEnabled
+                    && getList().getOffsetHeight() - getScrollPanel().getScrollPosition() <= getScrollPanel().getOffsetHeight()) {
+                int firstItemOnNextPage = getItemCount() - 1;
+                fillList(); //next page of data
+                if (firstItemOnNextPage >= 0 && firstItemOnNextPage < getItemCount()) {
+                    autoScrollingEnabled = true;
+                    ensureVisible(getItem(firstItemOnNextPage));
+                } 
+            } else
+                autoScrollingEnabled = false;
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Sergey Skladchikov
+ * Copyright 2010 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
@@ -48,7 +48,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
      * @param columnWidgetClasses is a list of appropriate cell classes.
      */
     public TreeGrid(String[] headers, Class[] columnWidgetClasses) {
-        super(headers, columnWidgetClasses);
+        this(headers, columnWidgetClasses, true);
     }
 
     /**
