@@ -16,6 +16,9 @@
 
 package org.gwt.advanced.client.showcase;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -28,6 +31,7 @@ import org.gwt.advanced.client.datamodel.SuggestionBoxDataModel;
 import org.gwt.advanced.client.ui.widget.ComboBox;
 import org.gwt.advanced.client.ui.widget.DatePicker;
 import org.gwt.advanced.client.ui.widget.SuggestionBox;
+import org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent;
 
 import java.util.Date;
 

@@ -6,6 +6,11 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
+        <release version="2.0.0" date="2010-04-13" description="Latest stable version">
+            <action type="fix" issue="66" system="google">ComboBox doesn't send ChangeHandler if a row is choosen on enter key press</action>
+            <action type="fix" issue="67" system="google">Drop down list resizing works improperly</action>
+            <action type="fix" issue="68" system="google">setKeyPressed() is not invoked if key up or key down is pressed</action>
+        </release>
         <release version="2.0.0" date="2010-04-11" description="Latest stable version">
             <action type="add" issue="62" system="google">Remove deprecated API usage</action>
             <action type="fix" issue="61" system="google">DatePicker fails to go to the next month in Chrome browser</action>
