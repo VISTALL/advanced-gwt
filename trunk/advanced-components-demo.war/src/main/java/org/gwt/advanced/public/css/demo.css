@@ -1,0 +1,95 @@
+body {
+    background: #D8E0FA url("../images/background.gif") repeat-x;
+}
+
+h1 {
+    color: white;
+    font-size: 20px;
+    font-family: sans-serif;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.demo-Showcase {
+    width: 100%;
+    height: 100%;
+}
+
+.demo-HintLabel {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.demo-HintLabel .round-container {
+    padding: 10px;
+}
+
+.gwt-HTML {
+    height: 100%;
+}
+
+.demo-Source {
+    width: 100%;
+    height: 100%;
+}
+
+.demo-Layout {
+    width: 100%;
+    height: 100%;
+}
+
+.demo-Layout .advanced-SingleBorder {
+    width: 100%;
+}
+
+.demo-Layout .border .round-container, .demo-Layout .border .single-container {
+    text-align: center;
+    height: 50px;
+    padding-top: 22px;
+}
+
+.demo-Border .line {
+    border: solid red;
+}
+
+.demo-Border .round-container {
+    border: solid red;
+}
+
+.demo-Border div {
+    background-color: green;
+}
+
+.demo-ControlLabel {
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+.demo-Table {
+    width: 100%;
+    padding: 2px;
+}
+
+.demo-Theme {
+    font-size: 12px;
+    font-family: sans-serif;
+    padding: 2px;
+}
+
+.demo-Theme select {
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+.demo-FormLabel {
+    font-size: 12px;
+    font-family: sans-serif;
+    font-weight: normal;
+}
+
+.demo-TextBox {
+    font-size: 12px;
+    font-family: sans-serif;
+    font-weight: normal;
+    width: 300px;
+}
