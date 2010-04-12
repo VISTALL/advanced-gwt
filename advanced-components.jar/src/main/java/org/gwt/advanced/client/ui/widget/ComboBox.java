@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListModelEvent;
 import org.gwt.advanced.client.datamodel.ListModelListener;
+import org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent;
 import org.gwt.advanced.client.ui.widget.combo.DefaultListItemFactory;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
 
@@ -74,11 +75,12 @@ public class ComboBox extends TextButtonPanel
      * @param model Value to set for property 'model'.
      */
     public void setModel(ComboBoxDataModel model) {
-        if (model != null) {
+        if (model != null && this.model != model) {
             if (this.model != null)
                 this.model.removeListModelListener(this);
             this.model = model;
             this.model.addListModelListener(this);
+            prepareSelectedValue();
         }
     }
 
@@ -313,14 +315,14 @@ public class ComboBox extends TextButtonPanel
      * Gets a highlight row number.<p/>
      * Note that sometimes this value is not equal to the selected row.
      *
-     * @return a hightlight row number or <code>-1</code> if nothing is highlight.
+     * @return a highlight row number or <code>-1</code> if nothing is highlight.
      */
-    public int getHightlightRow() {
+    public int getHighlightRow() {
         return getListPanel().getHighlightRow();
     }
 
     /**
-     * Sets a hightlight row number and display the row as selected but not actually
+     * Sets a highlight row number and display the row as selected but not actually
      * select it.
      *
      * @param row is a row number to highlight. If it's out of range thus method does nothing.
@@ -445,7 +447,7 @@ public class ComboBox extends TextButtonPanel
 
     /**
      * Enables or disables lazy rendering option.<p/>
-     * If this option is enabled the widget displays only several items on lazily reders other ones on scroll down.<p/>
+     * If this option is enabled the widget displays only several items on lazily renders other ones on scroll down.<p/>
      * By default lazy rendering is disabled. Switch it on for really large (over 500 items) lists only.<p/>
      * Note that <i>lazy rendering</i> is not <i>lazy data loading</i>. The second one means that the data is loaded into
      * the model on request where as the first option assumes that all necessary data has already been loaded and put
@@ -763,8 +765,12 @@ public class ComboBox extends TextButtonPanel
                         moveCursor(1);
                         cancelAndPrevent(event);
                     } else if (button == KeyCodes.KEY_ENTER && !hasModifiers) {
-                        select(getHightlightRow());
+                        select(getHighlightRow());
                         getChoiceButton().setFocus(false);
+                        ChangeEvent changeEvent = new ComboBoxChangeEvent(
+                                getHighlightRow(), ComboBoxChangeEvent.ChangeEventInputDevice.KEYBOARD
+                        );
+                        fireEvent(changeEvent);
                         setKeyPressed(false);
                     } else if (button == KeyCodes.KEY_ESCAPE && !hasModifiers) {
                         hideList();

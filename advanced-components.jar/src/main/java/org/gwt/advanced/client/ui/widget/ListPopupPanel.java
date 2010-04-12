@@ -27,6 +27,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.ui.AdvancedWidget;
+import org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
 
 /**
@@ -162,17 +163,6 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
     }
 
     /**
-     * Sets the highlight row number.
-     * Overloads the {@link #setHighlightRow(int)} method introduced because of spelling mistake in the name of
-     * this method.
-     *
-     * @param row is a row number to become highlight.
-     */
-    protected void setHightlightRow(int row) {
-        setHighlightRow(row);
-    }
-
-    /**
      * Checks whether the specified item is visible in the scroll area.<p/>
      * The result is <code>true</code> if whole item is visible.
      *
@@ -270,9 +260,10 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         int visibleRows = getVisibleRows();
 
         if (visibleRows <= 0) {
-            if (table.getOffsetHeight() > Window.getClientHeight() * 0.3) {
+            if (table.getOffsetHeight() > Window.getClientHeight() * 0.3)
                 table.setHeight((int) (Window.getClientHeight() * 0.3) + "px");
-            }
+            else
+                table.setHeight("auto");
             setHighlightRow(0);
         } else if (getComboBox().getModel().getCount() > visibleRows) {
             int index = getStartItemIndex();
@@ -297,10 +288,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
             table.setScrollPosition(scrollPosition);
             setHighlightRow(index);
         }
-
-        int absoluteBottom = getAbsoluteTop() + getOffsetHeight();
-        if (absoluteBottom > Window.getClientHeight()
-                && getOffsetHeight() <= getComboBox().getAbsoluteTop()) {
+        if (getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight() + getOffsetHeight() > Window.getClientHeight()) {
             setPopupPosition(getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
         }
     }
@@ -509,9 +497,12 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         /** {@inheritDoc} */
         @Override
         public void onClick(ClickEvent event) {
-            selectRow(getList().getWidgetIndex((Widget) event.getSource()));
-            fireEvent(new ChangeEvent() {
-            });
+            int row = getList().getWidgetIndex((Widget) event.getSource());
+            selectRow(row);
+            ChangeEvent changeEvent = new ComboBoxChangeEvent(
+                    row, ComboBoxChangeEvent.ChangeEventInputDevice.MOUSE
+            );
+            fireEvent(changeEvent);
         }
     }
 
@@ -578,9 +569,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
 
             getScrollPanel().setWidth(getComboBox().getOffsetWidth() + "px");
 
-            int absoluteBottom = getAbsoluteTop() + getOffsetHeight();
-            if (absoluteBottom > Window.getClientHeight()
-                    && getOffsetHeight() <= getComboBox().getAbsoluteTop()) {
+            if (getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight() + getOffsetHeight() > Window.getClientHeight()) {
                 setPopupPosition(getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
             } else {
                 setPopupPosition(getComboBox().getAbsoluteLeft(),
