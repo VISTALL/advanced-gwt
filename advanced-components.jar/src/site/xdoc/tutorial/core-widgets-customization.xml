@@ -49,12 +49,12 @@ editableGrid.setGridRenderer(new DefaultGridRenderer() {
             </source>
             <p>
                 The sample above creates a new renderer implementation that always display data model values as
-                texttual string.
+                textual string.
             </p>
             <p>
                 And finally if decorators and renderers are not enough flexible you can extend a widget class. Note that
                 widgets like the <i>DatePicker</i>, <i>ComboBox</i>, <i>SuggestionBox</i> and <i>SimpleGrid</i> don't
-                support decorators and renderers, so extention might be a good solution.
+                support decorators and renderers, so extension might be a good solution.
             </p>
             <p>
                 Working on Advanced GWT Components the team kept in mind that users may want to add new features

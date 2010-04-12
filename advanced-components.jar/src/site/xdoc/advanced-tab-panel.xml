@@ -25,8 +25,8 @@
                     </ul>
                 </p>
                 <p>
-                    In opposite to other advanced components it doesn't requery <i>display()</i> method
-                    invokation and redraws tabs band every time a new tab added or selected. 
+                    In opposite to other advanced components it doesn't require <i>display()</i> method
+                    invocation and redraws tabs band every time a new tab added or selected. 
                 </p>
                 <p>
                     You can find sample of Advanced TabPanel usage below.

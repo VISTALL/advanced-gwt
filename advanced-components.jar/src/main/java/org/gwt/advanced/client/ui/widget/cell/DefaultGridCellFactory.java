@@ -30,6 +30,7 @@ import java.util.Date;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
+@SuppressWarnings({"UnusedDeclaration"})
 public class DefaultGridCellFactory implements GridCellFactory {
     /** a grid instance */
     private EditableGrid grid;
@@ -240,8 +241,6 @@ public class DefaultGridCellFactory implements GridCellFactory {
      * @return a {@link org.gwt.advanced.client.ui.widget.cell.ComboBoxCell} instance.
      */
     protected GridCell create (ComboBox comboBox) {
-        if (comboBox != null)
-            comboBox.display();
         return new ComboBoxCell();
     }
 

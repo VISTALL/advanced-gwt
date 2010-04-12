@@ -16,9 +16,13 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.CalendarListener;
 import org.gwt.advanced.client.ui.widget.Calendar;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
@@ -34,7 +38,7 @@ import java.util.Date;
  */
 public class DateCell extends AbstractCell {
     /** a calendart change listener */
-    private CalendarListener changeListener;
+    private CalendarListener<Calendar> changeListener;
     /** a calendar widget */
     private Calendar calendar;
     /** a date picker popup */
@@ -93,23 +97,24 @@ public class DateCell extends AbstractCell {
     /** {@inheritDoc} */
     protected void addListeners(Widget widget) {
         if (changeListener == null) {
-            changeListener = new CalendarListener() {
-                public void onChange(Widget sender, Date date) {
+            changeListener = new CalendarListener<Calendar>() {
+                @Override
+                public void onChange(Calendar sender, Date oldValue) {
                     getPopup().hide();
 
                     FlexTable table = getGrid();
-//                    boolean valid = true;
                     EditableGrid grid = (EditableGrid) table;
                     GridPanel gridPanel = grid.getGridPanel();
-                    gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyboardListener.KEY_ENTER, 0);
+                    gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyCodes.KEY_ENTER, 0);
                     grid.setCurrentCell(getRow(), getColumn());
                 }
 
-                public void onCancel(Widget sender) {
+                @Override
+                public void onCancel(Calendar sender) {
                     getPopup().hide();
                     EditableGrid grid = (EditableGrid) getGrid();
                     GridPanel gridPanel = grid.getGridPanel();
-                    gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyboardListener.KEY_ENTER, 0);
+                    gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyCodes.KEY_ENTER, 0);
                     grid.setCurrentCell(getRow(), getColumn());
                 }
             };

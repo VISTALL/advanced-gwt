@@ -33,7 +33,7 @@ public class GridRow implements IndexedEntity {
     /** this index number */
     private int index;
     /** delegate list */
-    private List delegate;
+    private List<Object> delegate;
 
     /**
      * Constructs a new GridRow.
@@ -41,13 +41,13 @@ public class GridRow implements IndexedEntity {
      * @param initialCapacity is an initial capacity value.
      */
     protected GridRow(int initialCapacity) {
-        this.delegate =  new ArrayList(initialCapacity);
+        this.delegate =  new ArrayList<Object>(initialCapacity);
         this.identifier = generateUniqueString();
     }
 
     /** Constructs a new GridRow. */
     protected GridRow() {
-        this.delegate = new ArrayList();
+        this.delegate = new ArrayList<Object>();
         this.identifier = generateUniqueString();
     }
 
@@ -56,8 +56,8 @@ public class GridRow implements IndexedEntity {
      *
      * @param c is an initial collection.
      */
-    protected GridRow(Collection c) {
-        this.delegate = new ArrayList(c);
+    protected GridRow(Collection<Object> c) {
+        this.delegate = new ArrayList<Object>(c);
         this.identifier = generateUniqueString();
     }
 
@@ -142,7 +142,7 @@ public class GridRow implements IndexedEntity {
      *
      * @return Value for property 'delegate'.
      */
-    protected List getDelegate() {
+    protected List<Object> getDelegate() {
         return delegate;
     }
 

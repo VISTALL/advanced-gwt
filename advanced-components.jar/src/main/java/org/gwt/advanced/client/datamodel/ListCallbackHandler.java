@@ -22,11 +22,11 @@ package org.gwt.advanced.client.datamodel;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
  */
-public interface ListCallbackHandler {
+public interface ListCallbackHandler<T extends ListDataModel> {
     /**
      * See class docs.
      *
      * @param model is a model to be refreshed.
      */
-    void fill(ListDataModel model);
+    void fill(T model);
 }

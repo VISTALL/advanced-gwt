@@ -18,7 +18,10 @@ package org.gwt.advanced.client.datamodel;
 
 import com.google.gwt.core.client.GWT;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is an implementation of the data model interface for the ComboBox widget.
@@ -28,17 +31,17 @@ import java.util.*;
  */
 public class ComboBoxDataModel implements ListDataModel {
     /** a list of item IDs where each item is instance of <code>String</code> */
-    private List itemIds = new ArrayList();
+    private List<String> itemIds = new ArrayList<String>();
     /** a map of items where each item is pair of <code>String</code> ID and <code>Object</code> value */
-    private Map items = new HashMap();
+    private Map<String, Object> items = new HashMap<String, Object>();
     /** a selected item ID */
     private String selectedId;
     /** {@link org.gwt.advanced.client.datamodel.ListModelListener}s */
-    private List listeners = new ArrayList();
+    private List<ListModelListener> listeners = new ArrayList<ListModelListener>();
 
     /** {@inheritDoc} */
     public void add(String id, Object item) {
-        List ids = getItemIds();
+        List<String> ids = getItemIds();
         if (!ids.contains(id))
             ids.add(id);
         getItems().put(id, item);
@@ -48,7 +51,7 @@ public class ComboBoxDataModel implements ListDataModel {
 
     /** {@inheritDoc} */
     public void add(int index, String id, Object item) {
-        List ids = getItemIds();
+        List<String> ids = getItemIds();
         index = getValidIndex(index);
 
         if (!ids.contains(id))
@@ -65,7 +68,7 @@ public class ComboBoxDataModel implements ListDataModel {
     /** {@inheritDoc} */
     public Object get(int index) {
         if (isIndexValid(index))
-            return get((String) getItemIds().get(index));
+            return get(getItemIds().get(index));
         else
             return null;
     }
@@ -82,7 +85,7 @@ public class ComboBoxDataModel implements ListDataModel {
     /** {@inheritDoc} */
     public void remove(int index) {
         if (isIndexValid(index))
-            remove((String) getItemIds().get(index));
+            remove(getItemIds().get(index));
     }
 
     /** {@inheritDoc} */
@@ -113,26 +116,26 @@ public class ComboBoxDataModel implements ListDataModel {
             selectedId = null;
             return;
         }
-        List ids = getItemIds();
+        List<String> ids = getItemIds();
         if (ids.size() > 0)
-            setSelectedId((String) ids.get(index));
+            setSelectedId(ids.get(index));
     }
 
     /** {@inheritDoc} */
     public void clear() {
-        itemIds.clear();
+        getItemIds().clear();
 
         fireEvent(new ListModelEvent(this, ListModelEvent.CLEAN));
     }
 
     /** {@inheritDoc} */
     public boolean isEmpty() {
-        return itemIds.isEmpty();
+        return getItemIds().isEmpty();
     }
 
     /** {@inheritDoc} */
     public int getCount() {
-        return itemIds.size();
+        return getItemIds().size();
     }
 
     /**
@@ -160,8 +163,7 @@ public class ComboBoxDataModel implements ListDataModel {
      * @param event is an event to fire.
      */
     protected void fireEvent(ListModelEvent event) {
-        for (Iterator iterator = listeners.iterator(); iterator.hasNext();) {
-            ListModelListener listener = (ListModelListener) iterator.next();
+        for (ListModelListener listener : listeners) {
             try {
                 listener.onModelEvent(event);
             } catch (Throwable t) {
@@ -175,7 +177,7 @@ public class ComboBoxDataModel implements ListDataModel {
      *
      * @return Value for property 'itemIds'.
      */
-    protected List getItemIds() {
+    protected List<String> getItemIds() {
         return itemIds;
     }
 
@@ -184,7 +186,7 @@ public class ComboBoxDataModel implements ListDataModel {
      *
      * @return Value for property 'items'.
      */
-    protected Map getItems() {
+    protected Map<String, Object> getItems() {
         return items;
     }
 
@@ -207,7 +209,7 @@ public class ComboBoxDataModel implements ListDataModel {
      * @return a valid index value.
      */
     protected int getValidIndex(int invalidIndex) {
-        List ids = getItemIds();
+        List<String> ids = getItemIds();
 
         if (invalidIndex < 0)
             invalidIndex = 0;

@@ -16,6 +16,8 @@
 
 package org.gwt.advanced.client.showcase;
 
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.AbstractShowcase;
 import org.gwt.advanced.client.datamodel.EditableGridDataModel;
@@ -28,7 +30,6 @@ import org.gwt.advanced.client.ui.widget.border.RoundCornerBorder;
 import org.gwt.advanced.client.ui.widget.cell.TextBoxCell;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public class MVPShowcase extends AbstractShowcase {
     /** the grid panel that contains a resulting grid */
     private GridPanel gridPanel;
     /** displayed text boxes (need it for text cleaning) */
-    private List textBoxes = new ArrayList();
+    private List<TextBox> textBoxes = new ArrayList<TextBox>();
 
     /** {@inheritDoc} */
     protected Widget getWidget() {
@@ -115,7 +116,7 @@ public class MVPShowcase extends AbstractShowcase {
             TextBox box = new TextBox();
             box.setStyleName("demo-TextBox");
             formTable.setWidget(i, 1, box);
-            box.addKeyboardListener(new FormKeyboardListener(i, model));
+            box.addKeyUpHandler(new FormKeyboardHandler(i, model));
             textBoxes.add(box);
         }
     }
@@ -140,8 +141,8 @@ public class MVPShowcase extends AbstractShowcase {
      */
     protected void setTextBoxValues(Object[] values) {
         int count = 0;
-        for (Iterator iterator = textBoxes.iterator(); iterator.hasNext();) {
-            TextBox textBox = (TextBox) iterator.next();
+        for (Object textBoxe : textBoxes) {
+            TextBox textBox = (TextBox) textBoxe;
             textBox.setText(String.valueOf(values[count++]));
         }
     }
@@ -163,37 +164,30 @@ public class MVPShowcase extends AbstractShowcase {
     }
 
     /**
-     * This listener is added to the text boxes and being invoked updates the data model
+     * This handler is added to the text boxes and being invoked updates the data model
      * getting row number by the selected row in the grid.
      */
-    protected class FormKeyboardListener implements KeyboardListener {
+    protected class FormKeyboardHandler implements KeyUpHandler {
         /** column to update */
         private int column;
         /** the model to be updated */
         private EditableGridDataModel model;
 
         /**
-         * Creates an instance of this listener and initializes internal variables.
+         * Creates an instance of this handler and initializes internal variables.
          *
          * @param column is a column to be associated with the text box.
          * @param model is a model to be updated.
          */
-        public FormKeyboardListener(int column, EditableGridDataModel model) {
+        public FormKeyboardHandler(int column, EditableGridDataModel model) {
             this.column = column;
             this.model = model;
         }
-
-        /** does nothing */
-        public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-        }
-
-        /** does nothing */
-        public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-        }
-
+        
         /** See class docs. */
-        public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-            model.update(gridPanel.getGrid().getCurrentRow(), column, ((TextBox) sender).getText());
+        @Override
+        public void onKeyUp(KeyUpEvent event) {
+            model.update(gridPanel.getGrid().getCurrentRow(), column, ((TextBox) event.getSource()).getText());
         }
     }
 

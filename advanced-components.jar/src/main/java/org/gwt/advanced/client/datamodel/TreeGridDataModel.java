@@ -26,11 +26,11 @@ import java.util.*;
  */
 public class TreeGridDataModel implements Composite {
     /** a map of nested rows */
-    private Map subRows = new HashMap();
+    private Map<TreeGridRow, List<TreeGridRow>> subRows = new HashMap<TreeGridRow, List<TreeGridRow>>();
     /** paging enabled / disbaled flags */
-    private Map pagingFlags = new HashMap();
+    private Map<TreeGridRow, Boolean> pagingFlags = new HashMap<TreeGridRow, Boolean>();
     /** removed rows of the subtrees */
-    private Map removedRowsMap = new HashMap();
+    private Map<TreeGridRow, List<TreeGridRow>> removedRowsMap = new HashMap<TreeGridRow, List<TreeGridRow>>();
     /** delegate model required to perform standard operations */
     private EditableGridDataModel delegate;
     /** an expandable column index */
@@ -50,7 +50,7 @@ public class TreeGridDataModel implements Composite {
      *
      * @param handler is a handler instance to load data.
      */
-    protected TreeGridDataModel(DataModelCallbackHandler handler) {
+    protected TreeGridDataModel(DataModelCallbackHandler<Editable> handler) {
         setDelegate(new DelegateEditableGridDataModel(handler));
     }
 
@@ -65,8 +65,8 @@ public class TreeGridDataModel implements Composite {
     public TreeGridRow[] getRows(TreeGridRow parent) {
         if (parent == null)
             return getRootRows();
-        List children = getChildrenList(parent);
-        return (TreeGridRow[]) children.toArray(new TreeGridRow[children.size()]);
+        List<TreeGridRow> children = getChildrenList(parent);
+        return children.toArray(new TreeGridRow[children.size()]);
     }
 
     /** {@inheritDoc} */
@@ -85,7 +85,7 @@ public class TreeGridDataModel implements Composite {
             else
                 gridRow.add(null);
         }
-        List siblings = getChildrenList(parent);
+        List<TreeGridRow> siblings = getChildrenList(parent);
         siblings.add(gridRow);
         int index = siblings.size() - 1;
         gridRow.setIndex(index);
@@ -104,8 +104,8 @@ public class TreeGridDataModel implements Composite {
         }
 
         removeAll(parent);
-        for (int i = 0; i < children.length; i++)
-            addRow(parent, children[i]);
+        for (Object[] aChildren : children)
+            addRow(parent, aChildren);
 
         getDelegate().fireEvent(new CompositeModelEvent(EditableModelEvent.UPDATE_ALL, parent));
     }
@@ -130,7 +130,7 @@ public class TreeGridDataModel implements Composite {
         if (parent == null)
             removeRow(row);
         else {
-            TreeGridRow removeRow = (TreeGridRow) getChildrenList(parent).get(row);
+            TreeGridRow removeRow = getChildrenList(parent).get(row);
             int size = getChildrenList(removeRow).size();
             for (int i = size - 1; i >= 0; i--)
                 removeRow(removeRow, i);
@@ -169,7 +169,7 @@ public class TreeGridDataModel implements Composite {
             return getTotalPagesNumber();
         if (!isSubtreePagingEnabled(parent))
             return getTotalRowCount() > 0 ? 1 : 0;
-        List rows = (List) getSubRows().get(parent);
+        List<TreeGridRow> rows = getSubRows().get(parent);
         if (rows == null)
             return 0;
 
@@ -230,12 +230,12 @@ public class TreeGridDataModel implements Composite {
     public void setSubtreePagingEnabled(TreeGridRow parent, boolean enabled) {
         if (parent == null)
             return;
-        getPagingFlags().put(parent, Boolean.valueOf(enabled));
+        getPagingFlags().put(parent, enabled);
     }
 
     /** {@inheritDoc} */
     public boolean isSubtreePagingEnabled(TreeGridRow parent) {
-        return parent == null || Boolean.valueOf(String.valueOf(getPagingFlags().get(parent))).booleanValue();
+        return parent == null || Boolean.valueOf(String.valueOf(getPagingFlags().get(parent)));
     }
 
     /** {@inheritDoc} */
@@ -284,7 +284,7 @@ public class TreeGridDataModel implements Composite {
     }
 
     /** {@inheritDoc} */
-    public void setSortColumn(TreeGridRow parent, int column, Comparator comparator) {
+    public void setSortColumn(TreeGridRow parent, int column, Comparator<Object> comparator) {
         if (parent == null) {
             setSortColumn(column, comparator);
             return;
@@ -298,6 +298,7 @@ public class TreeGridDataModel implements Composite {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings({"unchecked"})
     public void setParent(TreeGridRow parent, TreeGridRow child) {
         TreeGridRow oldParent = child.getParent();
         if (oldParent != null)
@@ -305,12 +306,12 @@ public class TreeGridDataModel implements Composite {
         else
             getDelegate().getDataList().remove(child);
 
-        List children;
+        List<TreeGridRow> children;
         if (parent != null) {
             children = getChildrenList(parent);
             children.add(child);
         } else {
-            children = getDelegate().getDataList();
+            children = (List<TreeGridRow>)getDelegate().getDataList();
             children.add(child);
         }
 
@@ -363,8 +364,8 @@ public class TreeGridDataModel implements Composite {
         TreeGridRow row = (TreeGridRow) getRow(rowNumber);
 
         TreeGridRow[] children = getRows(row);
-        for (int i = 0; i < children.length; i++)
-            removeRow(row, children[i].getIndex());
+        for (TreeGridRow aChildren : children)
+            removeRow(row, aChildren.getIndex());
 
         getDelegate().removeRow(rowNumber);
         remapIndexes(null);
@@ -402,10 +403,8 @@ public class TreeGridDataModel implements Composite {
 
     /** {@inheritDoc} */
     public void removeAll() {
-        for (Iterator iterator = getSubRows().keySet().iterator(); iterator.hasNext();) {
-            TreeGridRow parent = (TreeGridRow) iterator.next();
+        for (TreeGridRow parent : getSubRows().keySet())
             getRemovedRowsList(parent).addAll(getChildrenList(parent));
-        }
 
         getSubRows().clear();
         getPagingFlags().clear();
@@ -419,13 +418,13 @@ public class TreeGridDataModel implements Composite {
     }
 
     /** {@inheritDoc} */
-    public void setSortColumn(int sortColumn, Comparator comparator) {
+    public void setSortColumn(int sortColumn, Comparator<Object> comparator) {
         getDelegate().setSortColumn(sortColumn, comparator);
         remapIndexes(null);
     }
 
     /** {@inheritDoc} */
-    public DataModelCallbackHandler getHandler() {
+    public DataModelCallbackHandler<Editable> getHandler() {
         return getDelegate().getHandler();
     }
 
@@ -435,7 +434,7 @@ public class TreeGridDataModel implements Composite {
     }
 
     /** {@inheritDoc} */
-    public void setHandler(DataModelCallbackHandler handler) {
+    public void setHandler(DataModelCallbackHandler<Editable> handler) {
         getDelegate().setHandler(handler);
     }
 
@@ -446,22 +445,18 @@ public class TreeGridDataModel implements Composite {
 
     /** {@inheritDoc} */
     public Object[][] getRemovedRows() {
-        List result = new ArrayList();
+        List<Object[]> result = new ArrayList<Object[]>();
         Object[][] rootRows = getDelegate().getRemovedRows();
-        for (int i = 0; i < rootRows.length; i++)
-            result.add(rootRows[i]);
+        result.addAll(Arrays.asList(rootRows));
 
-        Map removeRows = getRemovedRowsMap();
-        for (Iterator iterator = removeRows.keySet().iterator(); iterator.hasNext();) {
-            TreeGridRow parent = (TreeGridRow) iterator.next();
-            List list = getRemovedRowsList(parent);
-            for (Iterator iterator1 = list.iterator(); iterator1.hasNext();) {
-                TreeGridRow row = (TreeGridRow) iterator1.next();
+        Map<TreeGridRow, List<TreeGridRow>> removeRows = getRemovedRowsMap();
+        for (TreeGridRow parent : removeRows.keySet()) {
+            List<TreeGridRow> list = getRemovedRowsList(parent);
+            for (TreeGridRow row : list)
                 result.add(row.getData());
-            }
         }
 
-        return (Object[][]) result.toArray(new Object[result.size()][getTotalColumnCount()]);
+        return result.toArray(new Object[result.size()][getTotalColumnCount()]);
     }
 
     /** {@inheritDoc} */
@@ -637,10 +632,10 @@ public class TreeGridDataModel implements Composite {
      * @param parent is a parent row.
      * @return a list of {@link GridRow children}.
      */
-    protected List getChildrenList(TreeGridRow parent) {
-        List children = (List) getSubRows().get(parent);
+    protected List<TreeGridRow> getChildrenList(TreeGridRow parent) {
+        List<TreeGridRow> children = getSubRows().get(parent);
         if (children == null) {
-            children = new ArrayList();
+            children = new ArrayList<TreeGridRow>();
             getSubRows().put(parent, children);
         }
         return children;
@@ -652,10 +647,10 @@ public class TreeGridDataModel implements Composite {
      * @param parent is a parent row.
      * @return a list of removed rows.
      */
-    protected List getRemovedRowsList(TreeGridRow parent) {
-        List rows = (List) getRemovedRowsMap().get(parent);
+    protected List<TreeGridRow> getRemovedRowsList(TreeGridRow parent) {
+        List<TreeGridRow> rows = getRemovedRowsMap().get(parent);
         if (rows == null) {
-            rows = new ArrayList();
+            rows = new ArrayList<TreeGridRow>();
             getRemovedRowsMap().put(parent, rows);
         }
         return rows;
@@ -666,7 +661,7 @@ public class TreeGridDataModel implements Composite {
      *
      * @return Value for property 'subRows'.
      */
-    protected Map getSubRows() {
+    protected Map<TreeGridRow, List<TreeGridRow>> getSubRows() {
         return subRows;
     }
 
@@ -675,7 +670,7 @@ public class TreeGridDataModel implements Composite {
      *
      * @param subRows Value to set for property 'subRows'.
      */
-    protected void setSubRows(Map subRows) {
+    protected void setSubRows(Map<TreeGridRow, List<TreeGridRow>> subRows) {
         this.subRows = subRows;
     }
 
@@ -684,7 +679,7 @@ public class TreeGridDataModel implements Composite {
      *
      * @return Value for property 'pagingFlags'.
      */
-    protected Map getPagingFlags() {
+    protected Map<TreeGridRow, Boolean> getPagingFlags() {
         return pagingFlags;
     }
 
@@ -693,12 +688,12 @@ public class TreeGridDataModel implements Composite {
      *
      * @param pagingFlags Value to set for property 'pagingFlags'.
      */
-    protected void setPagingFlags(Map pagingFlags) {
+    protected void setPagingFlags(Map<TreeGridRow, Boolean> pagingFlags) {
         this.pagingFlags = pagingFlags;
     }
 
     /** {@inheritDoc} */
-    protected Map getRemovedRowsMap() {
+    protected Map<TreeGridRow, List<TreeGridRow>> getRemovedRowsMap() {
         return removedRowsMap;
     }
 
@@ -767,7 +762,7 @@ public class TreeGridDataModel implements Composite {
          *
          * @param handler is a data handler to be used for synchronization.
          */
-        protected DelegateEditableGridDataModel(DataModelCallbackHandler handler) {
+        protected DelegateEditableGridDataModel(DataModelCallbackHandler<Editable> handler) {
             super(handler);
         }
 

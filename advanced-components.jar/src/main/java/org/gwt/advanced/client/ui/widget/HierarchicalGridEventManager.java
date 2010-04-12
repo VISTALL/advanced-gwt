@@ -16,8 +16,9 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.user.client.ui.HTMLTable;
 
 /**
  * This is the event manager for the hierarchical grid.<p/>
@@ -37,12 +38,16 @@ public class HierarchicalGridEventManager extends DefaultGridEventManager {
     }
 
     /** {@inheritDoc} */
-    public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
+    public void onClick(ClickEvent event) {
         EditableGrid grid = getPanel().getGrid();
+        HTMLTable.Cell cellForEvent = grid.getCellForEvent(event);
+        int row = cellForEvent.getRowIndex();
+        int cell = cellForEvent.getCellIndex();
 
         if (!isSubgridRow(row)) {
-            if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn() && !grid.hasActiveCell() && getSelectionModifier() == 0)
-                dispatch(getPanel(), (char) KeyboardListener.KEY_ENTER, 0);
+            if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn()
+                    && !grid.hasActiveCell() && getSelectionModifier() == 0)
+                dispatch(getPanel(), (char) KeyCodes.KEY_ENTER, 0);
             else if (!grid.hasActiveCell())
                 grid.setFocus(true);
 

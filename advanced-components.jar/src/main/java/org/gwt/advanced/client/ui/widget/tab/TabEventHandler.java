@@ -16,18 +16,19 @@
 
 package org.gwt.advanced.client.ui.widget.tab;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.TableListener;
+import com.google.gwt.user.client.ui.HTMLTable;
 import org.gwt.advanced.client.ui.widget.AdvancedTabPanel;
 
 /**
- * This listener changes the currently selected tab when a user clicks on it.
+ * This handler changes the currently selected tab when a user clicks on it.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.6
  */
-public class TabEventListener implements TableListener {
+public class TabEventHandler implements ClickHandler {
     /** target tabs panel */
     private AdvancedTabPanel panel;
 
@@ -36,18 +37,20 @@ public class TabEventListener implements TableListener {
      *
      * @param panel is a targer tabs panel.
      */
-    public TabEventListener(AdvancedTabPanel panel) {
+    public TabEventHandler(AdvancedTabPanel panel) {
         this.panel = panel;
     }
 
     /**
      * See class docs.
      */
-    public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
-        FlexTable tabs = (FlexTable) sender;
-        String name = tabs.getCellFormatter().getStyleName(row, cell);
+    @Override
+    public void onClick(ClickEvent event) {
+        FlexTable tabs = (FlexTable) event.getSource();
+        HTMLTable.Cell cell = tabs.getCellForEvent(event);
+        String name = tabs.getCellFormatter().getStyleName(cell.getRowIndex(), cell.getCellIndex());
 
         if (name != null && name.indexOf("unselected") != -1)
-            panel.setSelected(Math.max(row / 2, cell / 2));
+            panel.setSelected(Math.max(cell.getRowIndex() / 2, cell.getCellIndex() / 2));
     }
 }

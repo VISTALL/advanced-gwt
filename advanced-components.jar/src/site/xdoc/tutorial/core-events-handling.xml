@@ -159,11 +159,12 @@
 GridPanel panel = new GridPanel();
 ...
 panel.setGridEventManager(new DefaultGridEventManager() {
-    public void dispatch(GridPanel panel, char keyCode, int modifiers) {
+    public boolean dispatch(GridPanel panel, char keyCode, int modifiers) {
         if (KeyboardListener.KEY_ENTER == keyCode) {
             Window.alert("Enter key pressed!");
+            return false;
         }
-        super.dispatch(panel, keyCode, modifiers);
+        return super.dispatch(panel, keyCode, modifiers);
     }
 })
             </source>
@@ -173,6 +174,6 @@ panel.setGridEventManager(new DefaultGridEventManager() {
             </p>
         </section>
 <div class="googleAds"><google-ads-horizontal-banner/></div>
-        <div class="navigator"><a href="core-using-widgets.html">Previous</a> | <a href="index.html">Table of contents</a> | <a href="core-usign-themes.html">Next</a></div>
+        <div class="navigator"><a href="core-using-widgets.html">Previous</a> | <a href="index.html">Table of contents</a> | <a href="core-using-themes.html">Next</a></div>
     </body>
 </document>

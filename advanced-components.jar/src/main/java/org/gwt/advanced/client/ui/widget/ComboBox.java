@@ -16,11 +16,16 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.EventPreview;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListModelEvent;
 import org.gwt.advanced.client.datamodel.ListModelListener;
@@ -37,7 +42,7 @@ import java.util.Set;
  * @since 1.2.0
  */
 public class ComboBox extends TextButtonPanel
-        implements SourcesFocusEvents, SourcesChangeEvents, SourcesKeyboardEvents, SourcesClickEvents, ListModelListener {
+        implements HasAllFocusHandlers, HasAllKeyHandlers, HasClickHandlers, ListModelListener, HasChangeHandlers {
     /**
      * a combo box data model
      */
@@ -53,7 +58,7 @@ public class ComboBox extends TextButtonPanel
     /**
      * a combo box delegate listener
      */
-    private DelegateListener delegateListener;
+    private DelegateHandler delegateHandler;
     /**
      * a keyboard events listener that switches off default browser handling and replaces it with conponents'
      */
@@ -89,80 +94,39 @@ public class ComboBox extends TextButtonPanel
             getListPanel().prepareList();
     }
 
-    /**
-     * This method adds a change listener that will be invoked on value change.
-     *
-     * @param listener is a listener to be added.
-     */
-    public void addChangeListener(ChangeListener listener) {
-        removeChangeListener(listener);
-        getDelegateListener().getChangeListeners().add(listener);
+    @Override
+    public HandlerRegistration addBlurHandler(BlurHandler handler) {
+        return addHandler(handler, BlurEvent.getType());
     }
 
-    /**
-     * This method removes the change listener.
-     *
-     * @param listener a change listener to be removed.
-     */
-    public void removeChangeListener(ChangeListener listener) {
-        getDelegateListener().getChangeListeners().remove(listener);
+    @Override
+    public HandlerRegistration addFocusHandler(FocusHandler handler) {
+        return addHandler(handler, FocusEvent.getType());
     }
 
-    /**
-     * This method adds a click listener that will be invoked on widget click.
-     *
-     * @param listener is a listener to be added.
-     */
-    public void addClickListener(ClickListener listener) {
-        removeClickListener(listener);
-        getDelegateListener().getClickListeners().add(listener);
+    @Override
+    public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
+        return addHandler(handler, KeyUpEvent.getType());
     }
 
-    /**
-     * This method removes the click listener.
-     *
-     * @param listener is a listener to be removed.
-     */
-    public void removeClickListener(ClickListener listener) {
-        getDelegateListener().getClickListeners().remove(listener);
+    @Override
+    public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
+        return addHandler(handler, KeyDownEvent.getType());
     }
 
-    /**
-     * This method adds a focus lister that will be invoked on focus capture.
-     *
-     * @param listener is a listener to be added.
-     */
-    public void addFocusListener(FocusListener listener) {
-        removeFocusListener(listener);
-        getDelegateListener().getFocusListeners().add(listener);
+    @Override
+    public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
+        return addHandler(handler, KeyPressEvent.getType());
     }
 
-    /**
-     * This method removes the focus listener.
-     *
-     * @param listener is a focus listener to be removed.
-     */
-    public void removeFocusListener(FocusListener listener) {
-        getDelegateListener().getFocusListeners().remove(listener);
+    @Override
+    public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+        return addHandler(handler, ChangeEvent.getType());
     }
 
-    /**
-     * This method adds a keyboard listener that will be invoked on keyboard events.
-     *
-     * @param listener is a listener to be added.
-     */
-    public void addKeyboardListener(KeyboardListener listener) {
-        removeKeyboardListener(listener);
-        getDelegateListener().getKeyboardListeners().add(listener);
-    }
-
-    /**
-     * This method removes the keyboard listener.
-     *
-     * @param listener is a keyboard listener to be removed.
-     */
-    public void removeKeyboardListener(KeyboardListener listener) {
-        getDelegateListener().getKeyboardListeners().remove(listener);
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addHandler(handler, ClickEvent.getType());
     }
 
     /**
@@ -518,6 +482,7 @@ public class ComboBox extends TextButtonPanel
      *
      * @param event is a clean event.
      */
+    @SuppressWarnings({"UnusedDeclaration"})
     protected void clean(ListModelEvent event) {
         if (isListPanelOpened()) {
             getListPanel().getList().clear();
@@ -592,21 +557,18 @@ public class ComboBox extends TextButtonPanel
         TextBox value = getSelectedValue();
         ToggleButton button = getChoiceButton();
 
-        getListPanel().addChangeListener(getDelegateListener());
-        value.removeChangeListener(getDelegateListener());
-        value.addChangeListener(getDelegateListener());
-        button.removeFocusListener(getDelegateListener());
-        button.addFocusListener(getDelegateListener());
-        value.removeFocusListener(getDelegateListener());
-        value.addFocusListener(getDelegateListener());
-        button.removeFocusListener(getDelegateListener());
-        button.addFocusListener(getDelegateListener());
-        value.removeClickListener(getDelegateListener());
-        value.addClickListener(getDelegateListener());
-        button.removeClickListener(getDelegateListener());
-        button.addClickListener(getDelegateListener());
-        value.removeKeyboardListener(getDelegateListener());
-        value.addKeyboardListener(getDelegateListener());
+        getListPanel().addChangeHandler(getDelegateHandler());
+
+        value.addChangeHandler(getDelegateHandler());
+        button.addFocusHandler(getDelegateHandler());
+        value.addFocusHandler(getDelegateHandler());
+        button.addBlurHandler(getDelegateHandler());
+        value.addBlurHandler(getDelegateHandler());
+        value.addClickHandler(getDelegateHandler());
+        button.addClickHandler(getDelegateHandler());
+        value.addKeyUpHandler(getDelegateHandler());
+        value.addKeyDownHandler(getDelegateHandler());
+        value.addKeyPressHandler(getDelegateHandler());
     }
 
     /**
@@ -622,14 +584,14 @@ public class ComboBox extends TextButtonPanel
     }
 
     /**
-     * Getter for property 'delegateListener'.
+     * Getter for property 'delegateHandler'.
      *
-     * @return Value for property 'delegateListener'.
+     * @return Value for property 'delegateHandler'.
      */
-    protected DelegateListener getDelegateListener() {
-        if (delegateListener == null)
-            delegateListener = new DelegateListener(this);
-        return delegateListener;
+    protected DelegateHandler getDelegateHandler() {
+        if (delegateHandler == null)
+            delegateHandler = new DelegateHandler();
+        return delegateHandler;
     }
 
     /**
@@ -644,50 +606,45 @@ public class ComboBox extends TextButtonPanel
     }
 
     /**
-     * Universal listener that delegates all events handling to custom listeners.
+     * Universal handler that delegates all events handling to custom handlers.
      */
-    protected class DelegateListener implements FocusListener, ClickListener, ChangeListener, KeyboardListener {
+    protected class DelegateHandler implements FocusHandler, BlurHandler, ClickHandler,
+            ChangeHandler, KeyUpHandler, KeyDownHandler, KeyPressHandler {
         /**
          * a list of focused controls
          */
-        private Set focuses;
-        /**
-         * a combo box widget
-         */
-        private Widget widget;
-        /**
-         * a list of custom focus listeners
-         */
-        private FocusListenerCollection focusListeners;
-        /**
-         * a list of custom click listeners
-         */
-        private ClickListenerCollection clickListeners;
-        /**
-         * a list of custom change listeners
-         */
-        private ChangeListenerCollection changeListeners;
-        /**
-         * s list of keyboard listeners
-         */
-        private KeyboardListenerCollection keyboardListeners;
+        private Set<Object> focuses;
+        /** keyboard manager handler registration */
+        private HandlerRegistration keyboardManagerRegistration;
 
-        /**
-         * Creates an instance of this class passing a widget that will be an event sender.
-         *
-         * @param widget is a widget to be used.
-         */
-        public DelegateListener(Widget widget) {
-            this.widget = widget;
+        @Override
+        public void onBlur(BlurEvent event) {
+            if (!isFocus())
+                return;
+
+            if (keyboardManagerRegistration != null) {
+                keyboardManagerRegistration.removeHandler();
+                keyboardManagerRegistration = null;
+            }
+
+            Object sender = event.getSource();
+            getFocuses().remove(sender);
+
+            TextBox value = getSelectedValue();
+            if (sender == value && !isCustomTextAllowed())
+                value.removeStyleName("selected-row");
+
+            if (!isFocus())
+                fireEvent(event);
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public void onFocus(Widget sender) {
+        @Override
+        public void onFocus(FocusEvent event) {
+            Object sender = event.getSource();
             getFocuses().add(sender);
 
-            DOM.addEventPreview(getKeyboardManager());
+            if (keyboardManagerRegistration == null)
+                keyboardManagerRegistration = Event.addNativePreviewHandler(getKeyboardManager());
 
             TextBox value = getSelectedValue();
             if (sender == value) {
@@ -696,139 +653,64 @@ public class ComboBox extends TextButtonPanel
                     if (isChoiceButtonVisible())
                         getChoiceButton().setFocus(true);
                 }
-            } else if (sender == getListPanel()) {
+            } else if (sender == null || sender == getListPanel()) { //on drop down list show
                 Widget widget = getSelectedWidget();
                 if (widget != null)
                     getListPanel().ensureVisible(widget);
             }
 
             if (focuses.size() == 1)
-                getFocusListeners().fireFocus(widget);
+                fireEvent(event);
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public void onLostFocus(Widget sender) {
-            if (!isFocus())
-                return;
-
-            DOM.removeEventPreview(getKeyboardManager());
-
-            getFocuses().remove(sender);
-
-            TextBox value = getSelectedValue();
-            if (sender == value && !isCustomTextAllowed())
-                value.removeStyleName("selected-row");
-
-            if (!isFocus())
-                getFocusListeners().fireLostFocus(widget);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void onClick(Widget sender) {
-            int count = getModel().getCount();
-            if (sender instanceof ToggleButton || !isCustomTextAllowed()) {
-                if (count > 0) {
-                    getListPanel().show();
-                    getListPanel().prepareList();
-                    if (getItemCount() <= 0)
-                        getListPanel().hide();
-                    getChoiceButton().setDown(true);
-                } else
-                    getChoiceButton().setDown(false);
-            }
-            getClickListeners().fireClick(widget);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void onChange(Widget sender) {
-            if (sender == getListPanel()) {
+        @Override
+        public void onChange(ChangeEvent event) {
+            if (event.getSource() == getListPanel()) {
                 getSelectedValue().setText(getListItemFactory().convert(getModel().getSelected()));
                 getListPanel().hide();
                 getSelectedValue().removeStyleName("selected-row");
                 getChoiceButton().setDown(false);
             }
-            getChangeListeners().fireChange(widget);
+            fireEvent(event);
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-            getKeyboardListeners().fireKeyDown(widget, keyCode, modifiers);
+        @Override
+        public void onClick(ClickEvent event) {
+            int count = getModel().getCount();
+            Object sender = event.getSource();
+            if (sender instanceof ToggleButton || !isCustomTextAllowed()) {
+                if (count > 0 && !getListPanel().isShowing()) {
+                    getListPanel().show();
+                    getListPanel().prepareList();
+                    if (getItemCount() <= 0)
+                        getListPanel().hide();
+                    getChoiceButton().setDown(true);
+                } else {
+                    getListPanel().hide();              
+                    getChoiceButton().setDown(false);
+                }
+            }
+            fireEvent(event);
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-            getKeyboardListeners().fireKeyPress(widget, keyCode, modifiers);
+        @Override
+        public void onKeyUp(KeyUpEvent event) {
+            fireEvent(event);
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-            getKeyboardListeners().fireKeyUp(widget, keyCode, modifiers);
+        @Override
+        public void onKeyPress(KeyPressEvent event) {
+            fireEvent(event);
         }
 
-        /**
-         * Getter for property 'focusListeners'.
-         *
-         * @return Value for property 'focusListeners'.
-         */
-        protected FocusListenerCollection getFocusListeners() {
-            if (focusListeners == null)
-                focusListeners = new FocusListenerCollection();
-            return focusListeners;
+        @Override
+        public void onKeyDown(KeyDownEvent event) {
+            fireEvent(event);
         }
 
-        /**
-         * Getter for property 'clickListeners'.
-         *
-         * @return Value for property 'clickListeners'.
-         */
-        protected ClickListenerCollection getClickListeners() {
-            if (clickListeners == null)
-                clickListeners = new ClickListenerCollection();
-            return clickListeners;
-        }
-
-        /**
-         * Getter for property 'changeListeners'.
-         *
-         * @return Value for property 'changeListeners'.
-         */
-        protected ChangeListenerCollection getChangeListeners() {
-            if (changeListeners == null)
-                changeListeners = new ChangeListenerCollection();
-            return changeListeners;
-        }
-
-        /**
-         * Getter for property 'keyboardListeners'.
-         *
-         * @return Value for property 'keyboardListeners'.
-         */
-        protected KeyboardListenerCollection getKeyboardListeners() {
-            if (keyboardListeners == null)
-                keyboardListeners = new KeyboardListenerCollection();
-            return keyboardListeners;
-        }
-
-        /**
-         * Getter for property 'focuses'.
-         *
-         * @return Value for property 'focuses'.
-         */
-        protected Set getFocuses() {
+        protected Set<Object> getFocuses() {
             if (focuses == null)
-                focuses = new HashSet();
+                focuses = new HashSet<Object>();
             return focuses;
         }
 
@@ -847,60 +729,68 @@ public class ComboBox extends TextButtonPanel
      * It prevents default browser event handling for system keys like arrow up / down, escape, enter and tab.
      * This manager is activated on widget focus and is used for opening / closing the drop down list and
      * swicthing a cursor position in the list.<p/>
-     * It also supports Alt+Tab combination but skips other modifiers.
+     * It also supports Shift+Tab combination but skips other modifiers.
      */
-    protected class ComboBoxKeyboardManager implements EventPreview {
+    protected class ComboBoxKeyboardManager implements Event.NativePreviewHandler {
         /**
          * See class docs
          */
-        public boolean onEventPreview(Event event) {
-            Element target = DOM.eventGetTarget(event);
+        @Override
+        public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+            NativeEvent nativeEvent = event.getNativeEvent();
+            Element target = (Element) Element.as(nativeEvent.getEventTarget());
 
-            int type = DOM.eventGetType(event);
+            int type = event.getTypeInt();
             if (type == Event.ONKEYDOWN) {
                 setKeyPressed(true);
                 if (DOM.getCaptureElement() != null)
-                    return true;
+                    return;
 
                 boolean eventTargetsPopup = (target != null)
                         && DOM.isOrHasChild(getElement(), target);
-                int button = DOM.eventGetKeyCode(event);
-                boolean alt = DOM.eventGetAltKey(event);
-                boolean ctrl = DOM.eventGetCtrlKey(event);
-                boolean shift = DOM.eventGetShiftKey(event);
+                int button = nativeEvent.getKeyCode();
+                boolean alt = nativeEvent.getAltKey();
+                boolean ctrl = nativeEvent.getCtrlKey();
+                boolean shift = nativeEvent.getShiftKey();
 
                 boolean hasModifiers = alt || ctrl || shift;
 
                 if (eventTargetsPopup && isListPanelOpened()) {
-                    if (button == KeyboardListener.KEY_UP && !hasModifiers) {
+                    if (button == KeyCodes.KEY_UP && !hasModifiers) {
                         moveCursor(-1);
-                        return false;
-                    } else if (button == KeyboardListener.KEY_DOWN && !hasModifiers) {
+                        cancelAndPrevent(event);
+                    } else if (button == KeyCodes.KEY_DOWN && !hasModifiers) {
                         moveCursor(1);
-                        return false;
-                    } else if (button == KeyboardListener.KEY_ENTER && !hasModifiers) {
+                        cancelAndPrevent(event);
+                    } else if (button == KeyCodes.KEY_ENTER && !hasModifiers) {
                         select(getHightlightRow());
+                        getChoiceButton().setFocus(false);
                         setKeyPressed(false);
-                        return true;
-                    } else if (button == KeyboardListener.KEY_ESCAPE && !hasModifiers) {
+                    } else if (button == KeyCodes.KEY_ESCAPE && !hasModifiers) {
                         hideList();
                         setKeyPressed(false);
-                        return true;
-                    } else if (button == KeyboardListener.KEY_TAB && (!hasModifiers || !alt && !ctrl && shift)) {
+                    } else if (button == KeyCodes.KEY_TAB && (!hasModifiers || !alt && !ctrl && shift)) {
                         hideList();
                         setKeyPressed(false);
-                        return true;
                     }
                 } else if (eventTargetsPopup && !hasModifiers
-                        && button == KeyboardListener.KEY_ENTER && getModel().getCount() > 0) {
+                        && button == KeyCodes.KEY_ENTER && getModel().getCount() > 0) {
                     showList(true);
-                    return true;
                 }
             } else if (type == Event.ONKEYUP) {
                 setKeyPressed(false);
             }
+        }
 
-            return true;
+        /**
+         * This method cancels and prevents default actions of the specified event.<p/>
+         * It's useful for stupid browsers like Opera.
+         *
+         * @param event is an event to cancel and prevent.
+         */
+        protected void cancelAndPrevent(Event.NativePreviewEvent event) {
+            event.getNativeEvent().preventDefault();
+            event.cancel();
         }
     }
 }

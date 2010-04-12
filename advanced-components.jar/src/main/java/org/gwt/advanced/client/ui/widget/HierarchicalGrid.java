@@ -20,10 +20,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
-import org.gwt.advanced.client.datamodel.Editable;
-import org.gwt.advanced.client.datamodel.EditableModelEvent;
-import org.gwt.advanced.client.datamodel.GridColumn;
-import org.gwt.advanced.client.datamodel.Hierarchical;
+import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
 import org.gwt.advanced.client.ui.GridEventManager;
@@ -33,7 +30,10 @@ import org.gwt.advanced.client.ui.widget.cell.ExpandableCellFactory;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
 import org.gwt.advanced.client.util.GWTUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This is a hierarchical grid implementation.
@@ -41,7 +41,7 @@ import java.util.*;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class HierarchicalGrid extends EditableGrid implements ExpandCellEventProducer {
+public class HierarchicalGrid extends EditableGrid<Editable> implements ExpandCellEventProducer {
     /**
      * subgrid row style name
      */
@@ -49,15 +49,15 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
     /**
      * a list of expandable cell listeners
      */
-    private Set expandableCellListeners = new HashSet();
+    private Set<ExpandableCellListener> expandableCellListeners = new HashSet<ExpandableCellListener>();
     /**
      * a grid panel cache
      */
-    private Map gridPanelCache = new HashMap();
+    private Map<GridDataModel, GridPanel> gridPanelCache = new HashMap<GridDataModel, GridPanel>();
     /**
      * grid panel factories
      */
-    private Map gridPanelFactories = new HashMap();
+    private Map<Integer, GridPanelFactory> gridPanelFactories = new HashMap<Integer, GridPanelFactory>();
     /**
      * original instance of the event manager
      */
@@ -111,7 +111,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      * @param factory is a factory instance.
      */
     public void addGridPanelFactory(int column, GridPanelFactory factory) {
-        getGridPanelFactories().put(new Integer(column), factory);
+        getGridPanelFactories().put(column, factory);
         GridColumn gridColumn = getModel().getGridColumn(getModelColumn(column));
         if (gridColumn.getIndex() < getModel().getTotalColumnCount() && gridColumn.getIndex() > 0) {
             getGridRenderer().drawColumn(gridColumn.getData(), column, true);
@@ -132,8 +132,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
             collapseCell(cell.getRow(), cell.getColumn());
         }
 
-        for (Iterator iterator = getExpandableCellListeners().iterator(); iterator.hasNext();) {
-            ExpandableCellListener listener = (ExpandableCellListener) iterator.next();
+        for (ExpandableCellListener listener : getExpandableCellListeners()) {
             listener.onCellClick(cell);
         }
     }
@@ -179,7 +178,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
     public GridPanel getGridPanel(int parentRow, int parentColumn) {
         Hierarchical model = (Hierarchical) getModel();
         int modelRow = getModelRow(parentRow);
-        return (GridPanel) getGridPanelCache().get(model.getSubgridModel(modelRow, parentColumn));
+        return getGridPanelCache().get(model.getSubgridModel(modelRow, parentColumn));
     }
 
     /**
@@ -187,10 +186,8 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      */
     public void resize() {
         super.resize();
-        for (Iterator iterator = getGridPanelCache().values().iterator(); iterator.hasNext();) {
-            GridPanel gridPanel = (GridPanel) iterator.next();
+        for (GridPanel gridPanel : getGridPanelCache().values())
             gridPanel.resize();
-        }
     }
 
     /**
@@ -385,7 +382,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      * @return <code>true</code> if the column is expandable.
      */
     public boolean isExpandable(int column) {
-        return getGridPanelFactories().get(new Integer(column)) != null;
+        return getGridPanelFactories().get(column) != null;
     }
 
     /**
@@ -393,7 +390,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      *
      * @return Value for property 'expandableCellListeners'.
      */
-    protected Set getExpandableCellListeners() {
+    protected Set<ExpandableCellListener> getExpandableCellListeners() {
         return expandableCellListeners;
     }
 
@@ -424,7 +421,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      *
      * @return Value for property 'gridPanelCache'.
      */
-    protected Map getGridPanelCache() {
+    protected Map<GridDataModel, GridPanel> getGridPanelCache() {
         return gridPanelCache;
     }
 
@@ -433,7 +430,7 @@ public class HierarchicalGrid extends EditableGrid implements ExpandCellEventPro
      *
      * @return Value for property 'gridPanelFactories'.
      */
-    protected Map getGridPanelFactories() {
+    protected Map<Integer, GridPanelFactory> getGridPanelFactories() {
         return gridPanelFactories;
     }
 

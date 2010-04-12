@@ -3,6 +3,18 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 2.0.0 includes:
+
+Bug fixes:
+1. DatePicker fails to go to the next month in Chrome browser
+2. ComboBox remains active after selecting value
+3. Wrong 12am &lt;-&gt; 12pm switching
+4. ComboBox choice button doesn't close the drop down list
+
+New features:
+1. Remove deprecated API usage
+
+====================================================================================================================
 Release 1.5.0 includes:
 
 Bug fixes:
@@ -11,7 +23,7 @@ Bug fixes:
 3. DatePicker doesn't display time if the calendar is opened
 
 New features:
-1. Lazy rendering support fro ComboBox and SuggestionBox
+1. Lazy rendering support for ComboBox and SuggestionBox
 
 ====================================================================================================================
 Release 1.4.9 includes:

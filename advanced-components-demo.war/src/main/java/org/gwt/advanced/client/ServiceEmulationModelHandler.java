@@ -31,7 +31,7 @@ import java.util.*;
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  */
-public class ServiceEmulationModelHandler implements DataModelCallbackHandler {
+public class ServiceEmulationModelHandler implements DataModelCallbackHandler<Editable> {
     /** persistent data */
     private Object[][] data;
     /** a grid panel */
@@ -47,20 +47,20 @@ public class ServiceEmulationModelHandler implements DataModelCallbackHandler {
     }
 
     /** {@inheritDoc} */
-    public void synchronize(GridDataModel model) {
+    public void synchronize(Editable model) {
         if (panel != null)
             panel.lock();
         saveData(model);
-        List rows = Arrays.asList(data);
+        List<Object[]> rows = Arrays.asList(data);
         Collections.sort(rows, new DataComparator(model.getSortColumn(), model.isAscending()));
 
         ((LazyLoadable)model).setTotalRowCount(data.length);
-        List result = new ArrayList();
+        List<Object[]> result = new ArrayList<Object[]>();
         for (int i = model.getStartRow(); i < rows.size() && i < model.getStartRow() + model.getPageSize(); i++) {
             result.add(rows.get(i));
         }
 
-        ((Editable)model).update((Object[][])result.toArray(new Object[result.size()][]));
+        model.update(result.toArray(new Object[result.size()][]));
         if (panel != null)
             panel.unlock();
     }
@@ -73,18 +73,17 @@ public class ServiceEmulationModelHandler implements DataModelCallbackHandler {
     private void saveData (GridDataModel model) {
         Object[][] modelData = model.getData();
 
-        List dataList = new ArrayList(Arrays.asList(data));
+        List<Object[]> dataList = new ArrayList<Object[]>(Arrays.asList(data));
         for (int j = 0; j < dataList.size(); j++) {
-            Object[] persistentRow = (Object[]) dataList.get(j);
+            Object[] persistentRow = dataList.get(j);
             Long persistentId = (Long) persistentRow[persistentRow.length - 1];
-            for (int i = 0; i < modelData.length; i++) {
-                Object[] row = modelData[i];
+            for (Object[] row : modelData) {
                 Long id = (Long) row[row.length - 1];
                 if (persistentId.equals(id)) {
                     dataList.set(j, row);
                     break;
                 } else if (id == null) {
-                    row[row.length - 1] = new Long(System.currentTimeMillis());
+                    row[row.length - 1] = System.currentTimeMillis();
                     dataList.add(row);
                     break;
                 }
@@ -92,11 +91,10 @@ public class ServiceEmulationModelHandler implements DataModelCallbackHandler {
         }
         
         Object[][] removedRows = ((Editable) model).getRemovedRows();
-        for (int i = 0; i < removedRows.length; i++) {
-            Object[] row = removedRows[i];
+        for (Object[] row : removedRows) {
             Long id = (Long) row[row.length - 1];
             for (int j = 0; j < dataList.size(); j++) {
-                Object[] persistentRow = (Object[]) dataList.get(j);
+                Object[] persistentRow = dataList.get(j);
                 Long persistentId = (Long) persistentRow[persistentRow.length - 1];
                 if (persistentId.equals(id)) {
                     dataList.remove(j);
@@ -105,7 +103,7 @@ public class ServiceEmulationModelHandler implements DataModelCallbackHandler {
             }
         }
 
-        data = (Object[][]) dataList.toArray(new Object[dataList.size()][]);
+        data = dataList.toArray(new Object[dataList.size()][]);
     }
 
     /**
@@ -130,7 +128,7 @@ public class ServiceEmulationModelHandler implements DataModelCallbackHandler {
      * This is a data comparator to emulate server-side sorting.<p/>
      * In your applications you will use database sorting.
      */
-    private static class DataComparator implements Comparator {
+    private static class DataComparator implements Comparator<Object> {
         /** sort column number */
         private int sortColumn;
         /** sort order */
@@ -148,6 +146,7 @@ public class ServiceEmulationModelHandler implements DataModelCallbackHandler {
         }
 
         /** {@inheritDoc} */
+        @SuppressWarnings({"unchecked"})
         public int compare (Object o1, Object o2) {
             Object[] row1 = (Object[]) o1;
             Object[] row2 = (Object[]) o2;

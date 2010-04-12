@@ -16,16 +16,18 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * This widget displays a scrollable list of items.<p/>
@@ -34,55 +36,31 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
  */
-public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
-    /**
-     * a list of items
-     */
+public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasChangeHandlers {
+    /** a list of items */
     private VerticalPanel list;
-    /**
-     * items scrolling widget
-     */
+    /** items scrolling widget */
     private ScrollPanel scrollPanel;
-    /**
-     * a flag meaning whether this widget is hidden
-     */
+    /** a flag meaning whether this widget is hidden */
     private boolean hidden = true;
-    /**
-     * a parent selection box
-     */
+    /** a parent selection box */
     private ComboBox comboBox;
-    /**
-     * a list of change listeners
-     */
-    private List changeListeners;
-    /**
-     * item click  listener
-     */
-    private ClickListener itemClickListener;
-    /**
-     * mouse event listener
-     */
-    private MouseListener mouseEventsListener;
-    /**
-     * list of displayed items scroll listener
-     */
-    private ScrollListener listScrollListener;
-    /**
-     * the row that is currently hightlight in the list but my be not selected in the model
-     */
+    /** item click handler */
+    private ClickHandler itemClickHandler;
+    /** mouse event handler */
+    private ListMouseHandler mouseEventsListener;
+    /** list of displayed items scroll handler */
+    private ScrollHandler listScrollHandler;
+    /** the row that is currently highlight in the list but my be not selected in the model */
     private int highlightRow = -1;
-    /**
-     * number of visible rows in the scrollable area of the popup list. Limited by 30% of screen height by default
-     */
+    /** number of visible rows in the scrollable area of the popup list. Limited by 30% of screen height by default */
     private int visibleRows = -1;
-    /**
-     * the top item index to be displayed in the visible area of the list
-     */
+    /** the top item index to be displayed in the visible area of the list */
     private int startItemIndex = 0;
-    /**
-     * enables or disables lazy rendering of the items list
-     */
+    /** enables or disables lazy rendering of the items list */
     private boolean lazyRenderingEnabled;
+    /** registration of the {@link org.gwt.advanced.client.ui.widget.ListPopupPanel.ClickSpyHandler} */
+    private HandlerRegistration clickSpyRegistration;
 
     /**
      * Creates an instance of this class and sets the parent combo box value.
@@ -90,7 +68,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      * @param selectionTextBox is a selection box value.
      */
     protected ListPopupPanel(ComboBox selectionTextBox) {
-        super(true, false);
+        super(false, false);
         this.comboBox = selectionTextBox;
 
         setStyleName("advanced-ListPopupPanel");
@@ -100,26 +78,17 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         getList().setWidth("100%");
         getList().setStyleName("list");
 
-        addPopupListener(new AutoPopupListener());
+        Window.addResizeHandler(new ListWindowResizeHandler());
     }
 
     /**
-     * This method adds a listener that will be invoked on choice.
+     * This method adds a handler that will be invoked on choice.
      *
-     * @param listener is a listener to be added.
+     * @param handler is a handler to be added.
      */
-    public void addChangeListener(ChangeListener listener) {
-        removeChangeListener(listener);
-        getChangeListeners().add(listener);
-    }
-
-    /**
-     * This method removes the change listener.
-     *
-     * @param listener a change listener.
-     */
-    public void removeChangeListener(ChangeListener listener) {
-        getChangeListeners().remove(listener);
+    @Override
+    public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+        return addHandler(handler, ChangeEvent.getType());
     }
 
     /**
@@ -132,8 +101,8 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
     }
 
     /**
-     * Gets a currently hightlight row.<p/>
-     * Note that it may not be equl to the selected row index in the model.
+     * Gets a currently highlight row.<p/>
+     * Note that it may not be equal to the selected row index in the model.
      *
      * @return a row number that is currently highlight.
      */
@@ -155,7 +124,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      * If index < 0 or index >= {@link #getItemCount()} it throws an exception.
      *
      * @param index is an index of the item to get.
-     * @return a foudn item.
+     * @return a found item.
      * @throws IndexOutOfBoundsException if index is invalid.
      */
     public Widget getItem(int index) {
@@ -228,18 +197,19 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public void hide() {
+        if (clickSpyRegistration != null) {
+            clickSpyRegistration.removeHandler();
+            clickSpyRegistration = null;
+        }
         super.hide();
         setHidden(true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public void show() {
+        clickSpyRegistration = Event.addNativePreviewHandler(new ClickSpyHandler());
         setHidden(false);
         super.show();
 
@@ -249,7 +219,8 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         adjustSize();
 
         setHighlightRow(getComboBox().getModel().getSelectedIndex());
-        getComboBox().getDelegateListener().onFocus(this);
+        getComboBox().getDelegateHandler().onFocus(new FocusEvent() {
+        });
     }
 
     /**
@@ -293,9 +264,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         return startItemIndex;
     }
 
-    /**
-     * Adjusts drop down list sizes to make it take optimal area on the screen.
-     */
+    /** Adjusts drop down list sizes to make it take optimal area on the screen. */
     protected void adjustSize() {
         ScrollPanel table = getScrollPanel();
         int visibleRows = getVisibleRows();
@@ -364,9 +333,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         this.lazyRenderingEnabled = lazyRenderingEnabled;
     }
 
-    /**
-     * This method prepares the list of items for displaying.
-     */
+    /** This method prepares the list of items for displaying. */
     protected void prepareList() {
         VerticalPanel panel = getList();
         panel.clear();
@@ -425,7 +392,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
                 // since two pages may be displayed if the list is rendered first time
                 || isLazyRenderingEnabled() && getVisibleRows() > 0 && getItemCount() - previouslyRenderedRows > 0
                 && (getItemCount() - previouslyRenderedRows) % getVisibleRows() == 0
-                && (getItemCount() -previouslyRenderedRows) / getVisibleRows() != 1);
+                && (getItemCount() - previouslyRenderedRows) / getVisibleRows() != 1);
 
     }
 
@@ -449,8 +416,9 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
         FocusPanel panel = new FocusPanel(widget);
         panel.setWidth("100%");
         widget.setWidth("100%");
-        panel.addClickListener(getItemClickListener());
-        panel.addMouseListener(getMouseEventsListener());
+        panel.addClickHandler(getItemClickHandler());
+        panel.addMouseOverHandler(getMouseEventsHandler());
+        panel.addMouseOutHandler(getMouseEventsHandler());
         panel.setStyleName("item");
         return panel;
     }
@@ -471,17 +439,6 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      */
     protected ComboBox getComboBox() {
         return comboBox;
-    }
-
-    /**
-     * Getter for property 'changeListeners'.
-     *
-     * @return Value for property 'changeListeners'.
-     */
-    protected List getChangeListeners() {
-        if (changeListeners == null)
-            changeListeners = new ArrayList();
-        return changeListeners;
     }
 
     /**
@@ -506,20 +463,20 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
             scrollPanel.setAlwaysShowScrollBars(false);
             scrollPanel.setWidget(getList());
             DOM.setStyleAttribute(scrollPanel.getElement(), "overflowX", "hidden");
-            scrollPanel.addScrollListener(getListScrollListener());
+            scrollPanel.addScrollHandler(getListScrollHandler());
         }
         return scrollPanel;
     }
 
     /**
-     * Getter for property 'itemClickListener'.
+     * Getter for property 'itemClickHandler'.
      *
-     * @return Value for property 'itemClickListener'.
+     * @return Value for property 'itemClickHandler'.
      */
-    protected ClickListener getItemClickListener() {
-        if (itemClickListener == null)
-            itemClickListener = new ItemClickListener(this);
-        return itemClickListener;
+    protected ClickHandler getItemClickHandler() {
+        if (itemClickHandler == null)
+            itemClickHandler = new ItemClickHandler();
+        return itemClickHandler;
     }
 
     /**
@@ -527,116 +484,73 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
      *
      * @return Value for property 'mouseEventsListener'.
      */
-    protected MouseListener getMouseEventsListener() {
+    protected ListMouseHandler getMouseEventsHandler() {
         if (mouseEventsListener == null)
-            mouseEventsListener = new ListMouseListener();
+            mouseEventsListener = new ListMouseHandler();
         return mouseEventsListener;
     }
 
     /**
-     * Getter for property 'listScrollListener'.
+     * Getter for property 'listScrollHandler'.
      *
-     * @return Value for property 'listScrollListener'.
+     * @return Value for property 'listScrollHandler'.
      */
-    public ScrollListener getListScrollListener() {
-        if (listScrollListener == null) {
-            listScrollListener = new ListScrollListener();
+    public ScrollHandler getListScrollHandler() {
+        if (listScrollHandler == null) {
+            listScrollHandler = new ListScrollHandler();
         }
-        return listScrollListener;
+        return listScrollHandler;
     }
 
     /**
-     * This is a click listener required to dispatch click events.
+     * This is a click handler required to dispatch click events.
      */
-    protected class ItemClickListener implements ClickListener {
-        /**
-         * a list panel instance
-         */
-        private ListPopupPanel panel;
-
-        /**
-         * Creates an instance of this class and initializes internal fields.
-         *
-         * @param panel is a list panel.
-         */
-        public ItemClickListener(ListPopupPanel panel) {
-            this.panel = panel;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void onClick(Widget sender) {
-            selectRow(getList().getWidgetIndex(sender));
-
-            for (Iterator iterator = getChangeListeners().iterator(); iterator.hasNext();) {
-                ChangeListener changeListener = (ChangeListener) iterator.next();
-                changeListener.onChange(getPanel());
-            }
-        }
-
-        /**
-         * Getter for property 'panel'.
-         *
-         * @return Value for property 'panel'.
-         */
-        public ListPopupPanel getPanel() {
-            return panel;
+    protected class ItemClickHandler implements ClickHandler {
+        /** {@inheritDoc} */
+        @Override
+        public void onClick(ClickEvent event) {
+            selectRow(getList().getWidgetIndex((Widget) event.getSource()));
+            fireEvent(new ChangeEvent() {
+            });
         }
     }
 
-    /**
-     * This listener is required to handle mouse moving events over the list.
-     */
-    protected class ListMouseListener extends MouseListenerAdapter {
-        /**
-         * {@inheritDoc}
-         */
-        public void onMouseEnter(Widget sender) {
+    /** This listener is required to handle mouse moving events over the list. */
+    protected class ListMouseHandler implements MouseOverHandler, MouseOutHandler {
+        /** {@inheritDoc} */
+        @Override
+        public void onMouseOut(MouseOutEvent event) {
+            if (getComboBox().isKeyPressed())
+                return;
+            ((Widget) event.getSource()).removeStyleName("selected-row");
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void onMouseOver(MouseOverEvent event) {
             if (getComboBox().isKeyPressed())
                 return;
             int index = getComboBox().getModel().getSelectedIndex();
             if (index >= 0)
                 getList().getWidget(index).removeStyleName("selected-row");
+            Widget sender = (Widget) event.getSource();
             sender.addStyleName("selected-row");
             setHighlightRow(getList().getWidgetIndex(sender));
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void onMouseLeave(Widget sender) {
-            if (getComboBox().isKeyPressed())
-                return;
-            sender.removeStyleName("selected-row");
-        }
     }
 
     /**
-     * This is listener that sets the choice button in up state, if the panel has been closed automatically.
-     */
-    protected class AutoPopupListener implements PopupListener {
-        /**
-         * {@inheritDoc}
-         */
-        public void onPopupClosed(PopupPanel sender, boolean autoClosed) {
-            if (autoClosed) {
-                hide();
-                getComboBox().getChoiceButton().setDown(false);
-            }
-        }
-    }
-
-    /**
-     * This scroll listener is invoked on any scrolling event caotured by the items list.<p/>
+     * This scroll handler is invoked on any scrolling event caotured by the items list.<p/>
      * It check whether the scrolling position value is equal to the last item position and tries to
      * render the next page of data.
      */
-    protected class ListScrollListener implements ScrollListener {
+    protected class ListScrollHandler implements ScrollHandler {
+        /** the list has been scrolled programatically */
         private boolean autoScrollingEnabled;
 
         /** see class docs */
-        public void onScroll(Widget widget, int scrollLeft, int scrollTop) {
+        @Override
+        public void onScroll(ScrollEvent event) {
             if (!autoScrollingEnabled
                     && getList().getOffsetHeight() - getScrollPanel().getScrollPosition() <= getScrollPanel().getOffsetHeight()) {
                 int firstItemOnNextPage = getItemCount() - 1;
@@ -644,9 +558,55 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget {
                 if (firstItemOnNextPage >= 0 && firstItemOnNextPage < getItemCount()) {
                     autoScrollingEnabled = true;
                     ensureVisible(getItem(firstItemOnNextPage));
-                } 
+                }
             } else
                 autoScrollingEnabled = false;
+        }
+    }
+
+    /**
+     * This handler is invoked on window resize and changes opened list popup panel position
+     * according to new coordinates of the {@link ComboBox}.
+     */
+    protected class ListWindowResizeHandler implements ResizeHandler {
+        /** See class docs */
+        @Override
+        public void onResize(ResizeEvent resizeEvent) {
+            if (!isShowing()) {
+                return;
+            }
+
+            getScrollPanel().setWidth(getComboBox().getOffsetWidth() + "px");
+
+            int absoluteBottom = getAbsoluteTop() + getOffsetHeight();
+            if (absoluteBottom > Window.getClientHeight()
+                    && getOffsetHeight() <= getComboBox().getAbsoluteTop()) {
+                setPopupPosition(getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
+            } else {
+                setPopupPosition(getComboBox().getAbsoluteLeft(),
+                        getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
+            }
+        }
+    }
+
+    /**
+     * This handler spies for click events if the list is opened and hides it if there is any element clicked excepting
+     * the combo box elements and list elements. 
+     */
+    protected class ClickSpyHandler implements Event.NativePreviewHandler {
+        /** See class docs */
+        @Override
+        public void onPreviewNativeEvent(Event.NativePreviewEvent nativePreviewEvent) {
+            if (nativePreviewEvent.getTypeInt() != Event.ONCLICK) {
+                return;
+            }
+
+            Element source = (Element) Element.as(nativePreviewEvent.getNativeEvent().getEventTarget());
+            if (!DOM.isOrHasChild(getElement(), source)
+                    && !DOM.isOrHasChild(getComboBox().getElement(), source)) {
+                hide();
+                getComboBox().getChoiceButton().setDown(false);
+            }
         }
     }
 }

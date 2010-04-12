@@ -16,9 +16,13 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ToggleButton;
 import org.gwt.advanced.client.ui.CalendarListener;
 
 import java.util.Date;
@@ -29,21 +33,19 @@ import java.util.Date;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class DatePicker extends TextButtonPanel implements CalendarListener {
-    /** change value listeners */
-    private ChangeListenerCollection listeners;
+public class DatePicker extends TextButtonPanel implements CalendarListener<Calendar>, HasChangeHandlers {
     /** calendar popup panel */
     private PopupPanel calendarPanel;
     /** calendar widget */
     private Calendar calendar;
-    /** open calendar event listener */
-    private ClickListener openCalendarClickListener;
+    /** open calendar event handler */
+    private ClickHandler openCalendarClickHandler;
     /** the date */
     private Date date;
     /** time visibility flag */
     private boolean timeVisible = false;
     /** date and time format for the widget */
-    private String format; 
+    private String format;
 
     /**
      * Creates an instance of this class and does nothing else.
@@ -85,17 +87,25 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
     }
 
     /** {@inheritDoc} */
-    public void onChange(Widget sender, Date oldValue) {
+    @Override
+    public void onChange(Calendar sender, Date oldValue) {
         getCalendarPanel().hide();
         Date date = getCalendar().getDate();
         getSelectedValue().setText(getFormat().format(date));
         this.date = date;
-        getListeners().fireChange(this);
+        fireEvent(new ChangeEvent(){});
     }
 
     /** {@inheritDoc} */
-    public void onCancel(Widget sender) {
+    @Override
+    public void onCancel(Calendar sender) {
         getCalendarPanel().hide();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+        return addHandler(handler, ChangeEvent.getType());
     }
 
     /**
@@ -122,6 +132,8 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
      *
      * @deprecated you don't have to invoke this method any more 
      */
+    @SuppressWarnings({"deprecation"})
+    @Override
     public void display() {
     }
 
@@ -165,18 +177,15 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
     /**
      * This method adds different listeners to elements of the widget.
      */
+    @SuppressWarnings({"unchecked"})
     protected void addComponentListeners() {
-        if (openCalendarClickListener == null)
-            openCalendarClickListener = new OpenCalendarClickListener();
+        if (openCalendarClickHandler == null) {
+            openCalendarClickHandler = new OpenCalendarClickHandler();
 
-        if (isChoiceButtonVisible()) {
             ToggleButton calendarButton = getChoiceButton();
-            calendarButton.removeClickListener(openCalendarClickListener);
-            calendarButton.addClickListener(openCalendarClickListener);
-        } else {
+            calendarButton.addClickHandler(openCalendarClickHandler);
             TextBox box = getSelectedValue();
-            box.removeClickListener(openCalendarClickListener);
-            box.addClickListener(openCalendarClickListener);
+            box.addClickHandler(openCalendarClickHandler);
         }
 
         getCalendar().addCalendarListener(this);
@@ -230,24 +239,17 @@ public class DatePicker extends TextButtonPanel implements CalendarListener {
     }
 
     /**
-     * Getter for property 'listeners'.
-     *
-     * @return Value for property 'listeners'.
-     */
-    public ChangeListenerCollection getListeners() {
-        if (listeners == null)
-            listeners = new ChangeListenerCollection();
-        return listeners;
-    }
-
-    /**
-     * This is an open calendar evbent listener implementation.
+     * This is an open calendar evbent handler implementation.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
-    protected class OpenCalendarClickListener implements ClickListener {
+    protected class OpenCalendarClickHandler implements ClickHandler {
         /** {@inheritDoc} */
-        public void onClick (Widget sender) {
+        @Override
+        public void onClick(ClickEvent event) {
+            if (event.getSource() == getSelectedValue() && isChoiceButtonVisible())
+                return;
+            
             Calendar calendar = getCalendar();
 
             if (getDate() != null)

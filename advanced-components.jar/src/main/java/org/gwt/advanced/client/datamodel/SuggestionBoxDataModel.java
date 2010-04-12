@@ -92,6 +92,7 @@ public class SuggestionBoxDataModel extends ComboBoxDataModel implements Suggest
     /**
      * This method fills the list with the values.
      */
+    @SuppressWarnings({"unchecked"})
     protected void fill() {
         getHandler().fill(this);
     }

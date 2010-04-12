@@ -17,6 +17,7 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.Pageable;
 import org.gwt.advanced.client.ui.AdvancedWidget;
@@ -43,10 +44,10 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     private FlexTable table = new FlexTable();
     /** pageable data model */
     private Pageable model;
-    /** left arrow click listener */
-    private ClickListener leftClickListener;
-    /** right arrow click listener */
-    private ClickListener rightClickListener;
+    /** left arrow click handler */
+    private ClickHandler leftClickHandler;
+    /** right arrow click handler */
+    private ClickHandler rightClickHandler;
     /** left arrow image */
     private Image left = new ThemeImage();
     /** right arrow image */
@@ -192,7 +193,9 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     protected TextBox getPageNumber() {
         if (pageNumber == null) {
             pageNumber = new TextBox();
-            pageNumber.addFocusListener(new PageBoxListener());
+            PageBoxHandler boxHandler = new PageBoxHandler();
+            pageNumber.addFocusHandler(boxHandler);
+            pageNumber.addBlurHandler(boxHandler);
         }
         return pageNumber;
     }
@@ -240,12 +243,12 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
             ToggleButton button = new ToggleButton(getSubmit());
             final Pager pager = this;
-            button.addClickListener(new ClickListener(){
-                /** @see com.google.gwt.user.client.ui.ClickListener#onClick(Widget) */
-                public void onClick(Widget sender) {
-                    setCurrentPageNumber(Integer.valueOf(getPageNumber().getText()).intValue() - 1);
+            button.addClickHandler(new ClickHandler(){
+                @Override
+                public void onClick(ClickEvent event) {
+                    setCurrentPageNumber(Integer.valueOf(getPageNumber().getText()) - 1);
                     getGridPanel().getMediator().firePageChangeEvent(pager, getModel().getCurrentPageNumber());
-                    ((ToggleButton)sender).setDown(false);
+                    ((ToggleButton)event.getSource()).setDown(false);
                 }
             });
             button.setStyleName("button");
@@ -281,16 +284,16 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     }
 
     /**
-     * Getter for property 'leftClickListener'.
+     * Getter for property 'leftClickHandler'.
      *
-     * @return Value for property 'leftClickListener'.
+     * @return Value for property 'leftClickHandler'.
      */
-    protected ClickListener getLeftClickListener() {
-        if (leftClickListener == null) {
+    protected ClickHandler getLeftClickHandler() {
+        if (leftClickHandler == null) {
             final Pager pager = this;
-            leftClickListener = new ClickListener() {
-                /** @see com.google.gwt.user.client.ui.ClickListener#onClick(Widget) */
-                public void onClick (Widget sender) {
+            leftClickHandler = new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
                     Pageable pageable = getModel();
 
                     int startPage = pageable.getStartPage() - pageable.getDisplayedPages();
@@ -300,25 +303,25 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
                     setCurrentPageNumber(startPage);
                     getGridPanel().getMediator().firePageChangeEvent(pager, startPage);
-                    ((ToggleButton)sender).setDown(false);
+                    ((ToggleButton)event.getSource()).setDown(false);
                 }
             };
         }
 
-        return leftClickListener;
+        return leftClickHandler;
     }
 
     /**
-     * Getter for property 'rightClickListener'.
+     * Getter for property 'rightClickHandler'.
      *
-     * @return Value for property 'rightClickListener'.
+     * @return Value for property 'rightClickHandler'.
      */
-    protected ClickListener getRightClickListener() {
-        if (rightClickListener == null) {
+    protected ClickHandler getRightClickHandler() {
+        if (rightClickHandler == null) {
             final Pager pager = this;
-            rightClickListener = new ClickListener() {
-                /** @see com.google.gwt.user.client.ui.ClickListener#onClick(Widget) */
-                public void onClick (Widget sender) {
+            rightClickHandler = new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
                     Pageable pageable = getModel();
 
                     int startPage = pageable.getStartPage() + pageable.getDisplayedPages();
@@ -330,12 +333,12 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
                     setCurrentPageNumber(startPage);
                     getGridPanel().getMediator().firePageChangeEvent(pager, startPage);
-                    ((ToggleButton)sender).setDown(false);
+                    ((ToggleButton)event.getSource()).setDown(false);
                 }
             };
         }
 
-        return rightClickListener;
+        return rightClickHandler;
     }
 
     /**
@@ -347,12 +350,12 @@ public class Pager extends SimplePanel implements AdvancedWidget {
         final Pager pager = this;
         for (int i = pageable.getStartPage(); i <= pageable.getEndPage(); i++) {
             if (pageable.getCurrentPageNumber() != i) {
-                Hyperlink hyperlink = new Hyperlink(String.valueOf(i + 1), "");
+                Anchor hyperlink = new Anchor(String.valueOf(i + 1), "javascript:void(0)");
 
                 final int page = i;
-                hyperlink.addClickListener(new ClickListener() {
-                    /** @see com.google.gwt.user.client.ui.ClickListener#onClick(Widget) */
-                    public void onClick (Widget sender) {
+                hyperlink.addClickHandler(new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
                         setCurrentPageNumber(page);
                         getGridPanel().getMediator().firePageChangeEvent(pager, page);
                     }
@@ -387,7 +390,7 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
             if (pageable.getCurrentPageNumber() >= pageable.getDisplayedPages()) {
                 left.setUrl("left.gif");
-                leftButton.addClickListener(getLeftClickListener());
+                leftButton.addClickHandler(getLeftClickHandler());
             } else {
                 left.setUrl("left-disabled.gif");
                 leftButton.setEnabled(false);
@@ -395,7 +398,7 @@ public class Pager extends SimplePanel implements AdvancedWidget {
 
             if (pageable.getStartPage() + pageable.getDisplayedPages() <= pageable.getTotalPagesNumber()) {
                 right.setUrl("right.gif");
-                rightButton.addClickListener(getRightClickListener());
+                rightButton.addClickHandler(getRightClickHandler());
             } else {
                 right.setUrl("right-disabled.gif");
                 rightButton.setEnabled(false);
@@ -404,39 +407,39 @@ public class Pager extends SimplePanel implements AdvancedWidget {
     }
 
     /**
-     * This listener restores the previous value in the text box if the new one doesn't match restrictions required
+     * This handler restores the previous value in the text box if the new one doesn't match restrictions required
      * for the page number values.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
-    protected class PageBoxListener implements FocusListener {
+    protected class PageBoxHandler implements FocusHandler, BlurHandler {
         /** previous page number */
         private int previousValue;
 
-        /** {@inheritDoc} */
-        public void onFocus(Widget sender) {
-            TextBox box = (TextBox) sender;
-            String text = box.getText();
-
-            if (text != null && text.length() > 0)
-                this.previousValue = Integer.valueOf(text).intValue();
-            else
-                this.previousValue = 1;    
-        }
-
-        /** {@inheritDoc} */
-        public void onLostFocus(Widget sender) {
-            TextBox box = (TextBox) sender;
+        @Override
+        public void onBlur(BlurEvent event) {
+            TextBox box = (TextBox) event.getSource();
             String text = box.getText();
 
             if (
                 text != null
                 && (!text.matches(INTEGER_PATTERN)
-                   || Integer.valueOf(text).intValue() < 1
-                   || Integer.valueOf(text).intValue() > getModel().getTotalPagesNumber())
+                   || Integer.valueOf(text) < 1
+                   || Integer.valueOf(text) > getModel().getTotalPagesNumber())
             ) {
                 box.setText(String.valueOf(this.previousValue));
             }
+        }
+
+        @Override
+        public void onFocus(FocusEvent event) {
+            TextBox box = (TextBox) event.getSource();
+            String text = box.getText();
+
+            if (text != null && text.length() > 0)
+                this.previousValue = Integer.valueOf(text);
+            else
+                this.previousValue = 1;
         }
     }
 }

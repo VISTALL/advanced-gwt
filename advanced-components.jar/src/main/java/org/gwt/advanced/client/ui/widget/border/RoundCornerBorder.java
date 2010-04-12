@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class RoundCornerBorder extends AbstractBorder {
     /** top & bottom line masks and sizes */
-    private static final Map SIZE_ATTRIBUTES = new HashMap();
+    private static final Map<Integer, int[][]> SIZE_ATTRIBUTES = new HashMap<Integer, int[][]>();
     /** shadow colors number (number of shadow lines) */
     private static final int SHADOW_COLORS = 3;
     /** radius of the corner circles */  
@@ -46,97 +46,97 @@ public class RoundCornerBorder extends AbstractBorder {
 
     static {
         // none visible
-        SIZE_ATTRIBUTES.put(new Integer(0x0), new int[][]{
+        SIZE_ATTRIBUTES.put(0x0, new int[][]{
             {0,0,0,0,0},{0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},
             {0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,0}
         });
 
         // all the lines visible
-        SIZE_ATTRIBUTES.put(new Integer(0xF), new int[][]{
+        SIZE_ATTRIBUTES.put(0xF, new int[][]{
             {1,1,4,4,0},{2,2,2,2,1},{1,1,1,1,1},{1,1,1,1,1},
             {1,1,1,1,1},{1,1,1,1,1},{2,2,2,2,1},{1,1,4,4,0}
         });
 
         //only top
-        SIZE_ATTRIBUTES.put(new Integer(0x1), new int[][]{
+        SIZE_ATTRIBUTES.put(0x1, new int[][]{
             {1,1,0,0,0},{0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},
             {0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,0}
         });
 
         //only bottom
-        SIZE_ATTRIBUTES.put(new Integer(0x8), new int[][]{
+        SIZE_ATTRIBUTES.put(0x8, new int[][]{
             {0,0,0,0,0},{0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},
             {0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},{1,1,0,0,0}
         });
 
         //only left
-        SIZE_ATTRIBUTES.put(new Integer(0x2), new int[][]{
+        SIZE_ATTRIBUTES.put(0x2, new int[][]{
             {0,0,0,0,0},{1,0,0,0,1},{1,0,0,0,1},{1,0,0,0,1},
             {0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,0}
         });
 
         //only right
-        SIZE_ATTRIBUTES.put(new Integer(0x4), new int[][]{
+        SIZE_ATTRIBUTES.put(0x4, new int[][]{
             {0,0,0,0,0},{0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},
             {0,1,0,0,1},{0,1,0,0,1},{0,1,0,0,1},{0,0,0,0,0}
         });
 
         // top & bottom
-        SIZE_ATTRIBUTES.put(new Integer(0x9), new int[][]{
+        SIZE_ATTRIBUTES.put(0x9, new int[][]{
             {1,1,0,0,0},{0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},
             {0,0,0,0,1},{0,0,0,0,1},{0,0,0,0,1},{1,1,0,0,0}
         });
 
         // left & right
-        SIZE_ATTRIBUTES.put(new Integer(0x6), new int[][]{
+        SIZE_ATTRIBUTES.put(0x6, new int[][]{
             {0,0,0,0,0},{1,1,0,0,1},{1,1,0,0,1},{1,1,0,0,1},
             {1,1,0,0,1},{1,1,0,0,1},{1,1,0,0,1},{0,0,0,0,0}
         });
 
         // top & left
-        SIZE_ATTRIBUTES.put(new Integer(0x3), new int[][]{
+        SIZE_ATTRIBUTES.put(0x3, new int[][]{
             {1,0,4,0,0},{2,0,2,0,1},{1,0,1,0,1},{1,0,1,0,1},
             {1,0,0,0,1},{1,0,0,0,1},{1,0,0,0,1},{0,0,0,0,0}
         });
 
         // top & right
-        SIZE_ATTRIBUTES.put(new Integer(0x5), new int[][]{
+        SIZE_ATTRIBUTES.put(0x5, new int[][]{
             {0,1,0,4,0},{0,2,0,2,1},{0,1,0,1,1},{0,1,0,1,1},
             {0,1,0,0,1},{0,1,0,0,1},{0,1,0,0,1},{0,0,0,0,0}
         });
 
         // bottom & left
-        SIZE_ATTRIBUTES.put(new Integer(0xA), new int[][]{
+        SIZE_ATTRIBUTES.put(0xA, new int[][]{
             {0,0,0,0,0},{1,0,0,0,1},{1,0,0,0,1},{1,0,0,0,1},
             {1,0,1,0,1},{1,0,1,0,1},{2,0,2,0,1},{1,0,4,0,0}
         });
 
         // bottom & right
-        SIZE_ATTRIBUTES.put(new Integer(0xC), new int[][]{
+        SIZE_ATTRIBUTES.put(0xC, new int[][]{
             {0,0,0,0,0},{0,1,0,0,1},{0,1,0,0,1},{0,1,0,0,1},
             {0,1,0,1,1},{0,1,0,1,1},{0,2,0,2,1},{0,1,0,4,0}
         });
 
         // top & left & right
-        SIZE_ATTRIBUTES.put(new Integer(0x7), new int[][]{
+        SIZE_ATTRIBUTES.put(0x7, new int[][]{
             {1,1,4,4,0},{2,2,2,2,1},{1,1,1,1,1},{1,1,1,1,1},
             {1,1,0,0,1},{1,1,0,0,1},{1,1,0,0,1},{1,1,0,0,1}
         });
 
         // bottom & left & right
-        SIZE_ATTRIBUTES.put(new Integer(0xE), new int[][]{
+        SIZE_ATTRIBUTES.put(0xE, new int[][]{
             {1,1,0,0,1},{1,1,0,0,1},{1,1,0,0,1},{1,1,0,0,1},
             {1,1,1,1,1},{1,1,1,1,1},{2,2,2,2,1},{1,1,4,4,0}
         });
 
         // top & bottom & left
-        SIZE_ATTRIBUTES.put(new Integer(0xB), new int[][]{
+        SIZE_ATTRIBUTES.put(0xB, new int[][]{
             {1,0,4,0,0},{2,0,2,0,1},{1,0,1,0,1},{1,0,1,0,1},
             {1,0,1,0,1},{1,0,1,0,1},{2,0,2,0,1},{1,0,4,0,0}
         });
 
         // top & bottom & right
-        SIZE_ATTRIBUTES.put(new Integer(0xD), new int[][]{
+        SIZE_ATTRIBUTES.put(0xD, new int[][]{
             {0,1,0,4,0},{0,2,0,2,1},{0,1,0,1,1},{0,1,0,1,1},
             {0,1,0,1,1},{0,1,0,1,1},{0,2,0,2,1},{0,1,0,4,0}
         });
@@ -162,10 +162,10 @@ public class RoundCornerBorder extends AbstractBorder {
         super(DOM.createDiv());
         this.layout = getElement();
 
-        linesVisibility.put(BorderLine.TOP, Boolean.valueOf(top));
-        linesVisibility.put(BorderLine.LEFT, Boolean.valueOf(left));
-        linesVisibility.put(BorderLine.RIGHT, Boolean.valueOf(right));
-        linesVisibility.put(BorderLine.BOTTOM, Boolean.valueOf(bottom));
+        linesVisibility.put(BorderLine.TOP, top);
+        linesVisibility.put(BorderLine.LEFT, left);
+        linesVisibility.put(BorderLine.RIGHT, right);
+        linesVisibility.put(BorderLine.BOTTOM, bottom);
         this.container = DOM.createDiv();
 
         setStyleName("advanced-RoundCornerBorder");
@@ -198,7 +198,7 @@ public class RoundCornerBorder extends AbstractBorder {
         DOM.setInnerText(layout, "");
 
         adoptContainer(1);
-        int[][] sizes = (int[][]) SIZE_ATTRIBUTES.get(new Integer(encodeVisibility()));
+        int[][] sizes = SIZE_ATTRIBUTES.get(encodeVisibility());
         for (int i = 0; i < sizes.length; i++) {
             int[] size = sizes[i];
             DOM.appendChild(

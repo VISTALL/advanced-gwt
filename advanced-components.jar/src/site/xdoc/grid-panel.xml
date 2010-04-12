@@ -17,7 +17,7 @@
                 <p>
                     Grid Panel, Pager, and Grid Toolbar are additional GWT widgets which simplify grids management.
                     You can use the grids without these components and / or develop your own prototypes but the best
-                    practise is to apply them the following purposes:
+                    practice is to apply them the following purposes:
 
                     <ul>
                         <li>Grid Panel. It's a layout widget for the grids. It also creates new grids, pagers and toolbars and handle events</li>
@@ -31,7 +31,7 @@
                     <ul>
                         <li>grid paging controls</li>
                         <li>grid rows management (saving, adding, removing, etc)</li>
-                        <li>centralized grid event (mouse na dkeyboard) handling</li>
+                        <li>centralized grid event (mouse and keyboard) handling</li>
                         <li>factory methods to create new grid instances</li>
                         <li>facade methods to control the nested grid</li>
                         <li>centralized columns resizing</li>

@@ -24,7 +24,6 @@ import org.gwt.advanced.client.ui.widget.cell.TreeCell;
 import org.gwt.advanced.client.util.Stack;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,10 +35,14 @@ import java.util.Set;
  * @since 1.4.0
  */
 public class TreeGridRenderer extends DefaultGridRenderer {
-    /** this field contains a stack of rows which have already been drawn */
-    private Stack currentRows;
-    /** grid to model row mapping */
-    private Map rowMapping = new HashMap();
+    /**
+     * this field contains a stack of rows which have already been drawn
+     */
+    private Stack<TreeGridRow> currentRows;
+    /**
+     * grid to model row mapping
+     */
+    private Map<Integer, TreeGridRow> rowMapping = new HashMap<Integer, TreeGridRow>();
 
     /**
      * Creates an instance of this class and initializes the grid cell factory.
@@ -50,7 +53,9 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         super(grid);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void drawContent(GridDataModel gridModel) {
         if (!(gridModel instanceof Composite)) {
             super.drawContent(gridModel);
@@ -73,19 +78,21 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void drawCell(Object data, int row, int column, boolean active) {
         Editable gridModel = getGrid().getModel();
         int gridColumn = getGrid().getColumnByModelColumn(column);
-        if (gridModel instanceof Composite && ((Composite)gridModel).getExpandableColumn() == column) {
-            TreeGridRow parentRow = null;
+        if (gridModel instanceof Composite && ((Composite) gridModel).getExpandableColumn() == column) {
+            TreeGridRow parentRow;
 
             if (row < getGrid().getRowCount() && row >= 0
-                    && getGrid().getCellCount(0) > ((Composite)gridModel).getExpandableColumn()) {
-                TreeCell cell = ((TreeGrid)getGrid()).getTreeCell(row);
+                    && getGrid().getCellCount(row) > ((Composite) gridModel).getExpandableColumn()) {
+                TreeCell cell = ((TreeGrid) getGrid()).getTreeCell(row);
                 parentRow = cell.getGridRow().getParent();
             } else
-                parentRow = (TreeGridRow) getCurrentRows().get();
+                parentRow = getCurrentRows().get();
 
             Composite model = (Composite) gridModel;
             int modelRow = getModelRow(row);
@@ -104,25 +111,27 @@ public class TreeGridRenderer extends DefaultGridRenderer {
             super.drawCell(data, row, column, active);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getModelRow(int row) {
         Editable editable = getGrid().getModel();
         if (editable instanceof Composite) {
-            return ((TreeGridRow)getRowMapping().get(new Integer(row))).getIndex();
+            return getRowMapping().get(row).getIndex();
         } else
             return super.getModelRow(row);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getRowByModelRow(int modelRow) {
         Editable editable = getGrid().getModel();
         if (editable instanceof Composite) {
-            for (Iterator iterator = getRowMapping().entrySet().iterator(); iterator.hasNext();) {
-                Map.Entry entry = (Map.Entry) iterator.next();
-                TreeGridRow gridRow = (TreeGridRow) entry.getValue();
-                if (gridRow.getIndex() == modelRow) {
-                    return ((Integer)entry.getKey()).intValue();
-                }
+            for (Map.Entry<Integer, TreeGridRow> entry : getRowMapping().entrySet()) {
+                TreeGridRow gridRow = entry.getValue();
+                if (gridRow.getIndex() == modelRow)
+                    return entry.getKey();
             }
             return -1;
         } else
@@ -132,19 +141,17 @@ public class TreeGridRenderer extends DefaultGridRenderer {
     /**
      * This method gets a row number in the grid for the specified model row number.
      *
-     * @param parent is a parent row.
+     * @param parent   is a parent row.
      * @param modelRow is a model row number (in the subtree).
-     * @return a grid row number.                             
+     * @return a grid row number.
      */
     public int getRowByModelRow(TreeGridRow parent, int modelRow) {
         Editable editable = getGrid().getModel();
         if (editable instanceof Composite) {
-            for (Iterator iterator = getRowMapping().entrySet().iterator(); iterator.hasNext();) {
-                Map.Entry entry = (Map.Entry) iterator.next();
-                TreeGridRow gridRow = (TreeGridRow) entry.getValue();
-                if (gridRow.getIndex() == modelRow && parent == gridRow.getParent()) {
-                    return ((Integer)entry.getKey()).intValue();
-                }
+            for (Map.Entry<Integer, TreeGridRow> entry : getRowMapping().entrySet()) {
+                TreeGridRow gridRow = entry.getValue();
+                if (gridRow.getIndex() == modelRow && parent == gridRow.getParent())
+                    return entry.getKey();
             }
             return -1;
         } else
@@ -155,7 +162,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      * This method draws tree grid rows recusrsively.<p/>
      * If the specified row has children and it is expanded subrows will be rendered as well.
      *
-     * @param row is a row to be rendered.
+     * @param row       is a row to be rendered.
      * @param rowNumber is a row number (index) in the grid.
      * @return the next row number.
      */
@@ -163,11 +170,11 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         if (rowNumber < getGrid().getRowCount()) {
             getGrid().insertRow(rowNumber < 0 ? 0 : rowNumber);
         }
-        getRowMapping().put(new Integer(rowNumber < 0 ? 0 : rowNumber), row);
+        getRowMapping().put(rowNumber < 0 ? 0 : rowNumber, row);
         drawRow(row.getData(), rowNumber);
         if (row.getParent() != null)
             getGrid().getRowFormatter().addStyleName(rowNumber, "grid-subrow");
-        drawPager(((TreeGrid)getGrid()).getTreeCell(rowNumber));
+        drawPager(((TreeGrid) getGrid()).getTreeCell(rowNumber));
         rowNumber++;
 
         Composite model = (Composite) getGrid().getModel();
@@ -175,7 +182,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
             getCurrentRows().add(row);
 
             try {
-                ((TreeGrid)getGrid()).sortOnClient(row);
+                ((TreeGrid) getGrid()).sortOnClient(row);
 
                 int start = model.getStartRow(row);
                 int end = model.getEndRow(row);
@@ -194,7 +201,6 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      * This method renders a pager assotiated with the parent row.
      *
      * @param cell is a parent expandable cell.
-     *
      * @return <code>true</code> if the pager has been displayed.
      */
     protected boolean drawPager(TreeCell cell) {
@@ -218,7 +224,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
     protected void drawSubtree(TreeCell parent) {
         TreeGridRow gridRow = parent.getGridRow();
         Composite composite = (Composite) getGrid().getModel();
-        ((TreeGrid)getGrid()).sortOnClient(gridRow);
+        ((TreeGrid) getGrid()).sortOnClient(gridRow);
         int start = composite.getStartRow(gridRow);
         int end = composite.getEndRow(gridRow);
 
@@ -232,7 +238,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         drawPager(parent);
 
         int nextRow = parent.getRow() + 1;
-        
+
         getCurrentRows().add(gridRow);
         try {
             for (int i = start; i <= end; i++) {
@@ -250,21 +256,20 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      * This method remaps indexes in the rows mapping.
      *
      * @param startRow is a grid row number to start remaping from.
-     * @param step is a row number increasing / decreasing step.
+     * @param step     is a row number increasing / decreasing step.
      */
     protected void remapIndexes(int startRow, int step) {
-        Set keys = getRowMapping().keySet();
-        Map mapping = new HashMap();
-        for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
-            Integer key = (Integer) iterator.next();
-            Object value = getRowMapping().get(key);
+        Set<Integer> keys = getRowMapping().keySet();
+        Map<Integer, TreeGridRow> mapping = new HashMap<Integer, TreeGridRow>();
+        for (Integer key : keys) {
+            TreeGridRow value = getRowMapping().get(key);
 
-            if (key.intValue() >= startRow)
-                mapping.put(new Integer(key.intValue() + step), value);
+            if (key >= startRow)
+                mapping.put(key + step, value);
             else
                 mapping.put(key, value);
         }
-        
+
         getRowMapping().clear();
         getRowMapping().putAll(mapping);
     }
@@ -273,7 +278,6 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      * Removes a subtree that belongs to the specified parent.
      *
      * @param parent is a parent cell.
-     *
      * @return number of removed rows in the grid.
      */
     protected int removeSubtree(TreeCell parent) {
@@ -291,7 +295,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
                 if (getGrid().getCurrentRow() == treeCell.getRow())
                     getGrid().setCurrentRow(parent.getRow());
                 getGrid().removeRow(row);
-                getRowMapping().remove(new Integer(row));
+                getRowMapping().remove(row);
                 remapIndexes(row + 1, -1);
                 count++;
                 treeCell = grid.getTreeCell(row);
@@ -308,9 +312,9 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      *
      * @return Value for property 'currentRows'.
      */
-    protected Stack getCurrentRows() {
+    protected Stack<TreeGridRow> getCurrentRows() {
         if (currentRows == null)
-            currentRows = new Stack();
+            currentRows = new Stack<TreeGridRow>();
         return currentRows;
     }
 
@@ -319,7 +323,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      *
      * @return Value for property 'rowMapping'.
      */
-    protected Map getRowMapping() {
+    protected Map<Integer, TreeGridRow> getRowMapping() {
         return rowMapping;
     }
 
@@ -329,7 +333,9 @@ public class TreeGridRenderer extends DefaultGridRenderer {
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
     protected class DrawTreeRowCommand extends DrawRowCommand {
-        /** current grid row number */
+        /**
+         * current grid row number
+         */
         private int rowNumber;
 
         /**
@@ -342,11 +348,13 @@ public class TreeGridRenderer extends DefaultGridRenderer {
             super(start, end);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         public boolean execute() {
             if (!(getGrid().getModel() instanceof Composite))
                 return super.execute();
-            
+
             Composite model = (Composite) getGrid().getModel();
             int index = getCurrent() - getStart();
             int pageSize = getEnd() - getStart() + 1;

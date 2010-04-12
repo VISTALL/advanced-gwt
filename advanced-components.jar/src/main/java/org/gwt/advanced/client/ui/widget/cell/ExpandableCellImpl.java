@@ -16,7 +16,12 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
 
@@ -32,7 +37,7 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
     /** a node image */
     private Image image;
     /** image click listener */
-    private ClickListener imageClickListener;
+    private ClickHandler imageClickHandler;
     /** expanded flag */
     private boolean expanded;
     /** leaf flag */
@@ -84,10 +89,10 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
 
     /** {@inheritDoc} */
     protected void addListeners(Widget widget) {
-        if (imageClickListener == null) {
+        if (imageClickHandler == null) {
             final ExpandableCell cell = this;
-            imageClickListener = new ClickListener() {
-                public void onClick(Widget sender) {
+            imageClickHandler = new ClickHandler() {
+                public void onClick(ClickEvent clickEvent) {
                     setExpanded(!isExpanded());
 
                     DockPanel panel = getPanel();
@@ -100,10 +105,8 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
                         ((ExpandCellEventProducer)getGrid()).fireExpandCell(cell);
                 }
             };
+            getImage().addClickHandler(imageClickHandler);
         }
-
-        getImage().removeClickListener(imageClickListener);
-        getImage().addClickListener(imageClickListener);
     }
 
     /** {@inheritDoc} */
@@ -185,11 +188,11 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
     }
 
     /**
-     * Getter for property 'imageClickListener'.
+     * Getter for property 'imageClickHandler'.
      *
-     * @return Value for property 'imageClickListener'.
+     * @return Value for property 'imageClickHandler'.
      */
-    protected ClickListener getImageClickListener() {
-        return imageClickListener;
+    public ClickHandler getImageClickHandler() {
+        return imageClickHandler;
     }
 }

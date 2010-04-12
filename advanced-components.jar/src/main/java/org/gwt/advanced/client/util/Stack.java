@@ -25,16 +25,16 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.0
  */
-public class Stack {
+public class Stack<T> {
     /** values storage */
-    private List values = new ArrayList();
+    private List<T> values = new ArrayList<T>();
 
     /**
      * Adds a new value at the end of this stack.
      *
      * @param value is a value to be added.
      */
-    public void add(Object value) {
+    public void add(T value) {
         values.add(value);
     }
 
@@ -43,8 +43,8 @@ public class Stack {
      *
      * @param values is a list of values.
      */
-    public void add(List values) {
-        this.values.add(values);
+    public void add(List<? extends T> values) {
+        this.values.addAll(values);
     }
 
     /**
@@ -52,7 +52,7 @@ public class Stack {
      *
      * @return a last element. <code>null</code> if there are no elements.
      */
-    public Object get() {
+    public T get() {
         int size = size();
         if (size > 0)
             return values.get(size - 1);
@@ -64,8 +64,8 @@ public class Stack {
      *
      * @return a last element. <code>null</code> if there are no elements.
      */
-    public Object getAndRemove() {
-        Object result = get();
+    public T getAndRemove() {
+        T result = get();
         remove();
         return result;
     }

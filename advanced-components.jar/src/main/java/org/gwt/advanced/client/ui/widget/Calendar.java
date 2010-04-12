@@ -17,6 +17,8 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.AdvancedWidget;
@@ -26,7 +28,6 @@ import org.gwt.advanced.client.util.DateHelper;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -77,12 +78,12 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
     private ListBox minutes;
     /** seconds list box */
     private ListBox seconds;
-    /** switch date listener */
-    private ClickListener switchDateListener;
-    /** date choice listener */
-    private TableListener dateChoiceListener;
+    /** switch date handler */
+    private ClickHandler switchDateHandler;
+    /** date choice handler */
+    private ClickHandler dateChoiceHandler;
     /** a set of calendar listeners */
-    private Set calendarListeners;
+    private Set<CalendarListener<Calendar>> calendarListeners;
 
     /** the date */
     private Date date;
@@ -183,7 +184,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
      *
      * @param listener a listener instance.
      */
-    public void addCalendarListener(CalendarListener listener) {
+    public void addCalendarListener(CalendarListener<Calendar> listener) {
         getCalendarListeners().add(listener);
     }
 
@@ -235,7 +236,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
      * This method renders the days section.
      */
     protected void prepareDays() {
-        int startWeekDay = Integer.valueOf(constants.firstDayOfWeek()).intValue();
+        int startWeekDay = Integer.valueOf(constants.firstDayOfWeek());
 
         FlexTable daysTable = getDaysTable();
         FlexTable layout = getLayout();
@@ -395,6 +396,11 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
             remove(getLayout());
             layout = null;
             daysTable = null;
+            closeButton = null;
+            yearBeforeButton = null;
+            monthBeforeButton = null;
+            yearAfterButton = null;
+            monthAfterButton = null;
         }
     }
 
@@ -407,7 +413,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
         if (closeButton== null) {
             closeButton = new ToggleButton("X");
             closeButton.setStyleName("switch-button");
-            closeButton.addClickListener(getSwitchDateListener());
+            closeButton.addClickHandler(getSwitchDateHandler());
         }
         
         return closeButton;
@@ -422,7 +428,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
         if (yearBeforeButton == null) {
             yearBeforeButton = new ToggleButton("<<");
             yearBeforeButton.setStyleName("switch-button");
-            yearBeforeButton.addClickListener(getSwitchDateListener());
+            yearBeforeButton.addClickHandler(getSwitchDateHandler());
         }
 
         return yearBeforeButton;
@@ -437,7 +443,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
         if (monthBeforeButton == null) {
             monthBeforeButton = new ToggleButton("<");
             monthBeforeButton.setStyleName("switch-button");
-            monthBeforeButton.addClickListener(getSwitchDateListener());
+            monthBeforeButton.addClickHandler(getSwitchDateHandler());
         }
 
         return monthBeforeButton;
@@ -452,7 +458,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
         if (yearAfterButton == null) {
             yearAfterButton = new ToggleButton(">>");
             yearAfterButton.setStyleName("switch-button");
-            yearAfterButton.addClickListener(getSwitchDateListener());
+            yearAfterButton.addClickHandler(getSwitchDateHandler());
         }
 
         return yearAfterButton;
@@ -467,7 +473,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
         if (monthAfterButton == null) {
             monthAfterButton = new ToggleButton(">");
             monthAfterButton.setStyleName("switch-button");
-            monthAfterButton.addClickListener(getSwitchDateListener());
+            monthAfterButton.addClickHandler(getSwitchDateHandler());
         }
         
         return monthAfterButton;
@@ -482,7 +488,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
         if (todayButton == null) {
             todayButton = new ToggleButton(constants.today());
             todayButton.setStyleName("today-button");
-            todayButton.addClickListener(getSwitchDateListener());
+            todayButton.addClickHandler(getSwitchDateHandler());
         }
         
         return todayButton;
@@ -497,7 +503,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
         if (daysTable == null) {
             daysTable = new FlexTable();
             daysTable.setStyleName("days-table");
-            daysTable.addTableListener(getDateChoiceListener());
+            daysTable.addClickHandler(getDateChoiceHandler());
         }
         
         return daysTable;
@@ -556,14 +562,14 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
     }
 
     /**
-     * Getter for property 'switchDateListener'.
+     * Getter for property 'switchDateHandler'.
      *
-     * @return Value for property 'switchDateListener'.
+     * @return Value for property 'switchDateHandler'.
      */
-    protected ClickListener getSwitchDateListener() {
-        if (switchDateListener == null)
-            switchDateListener = new SwitchDateListener(this);
-        return switchDateListener;
+    protected ClickHandler getSwitchDateHandler() {
+        if (switchDateHandler == null)
+            switchDateHandler = new SwitchDateHandler(this);
+        return switchDateHandler;
     }
 
     /**
@@ -581,14 +587,14 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
     }
     
     /**
-     * Getter for property 'dateChoiceListener'.
+     * Getter for property 'dateChoiceHandler'.
      *
-     * @return Value for property 'dateChoiceListener'.
+     * @return Value for property 'dateChoiceHandler'.
      */
-    protected TableListener getDateChoiceListener() {
-        if (dateChoiceListener == null)
-            dateChoiceListener = new DateChoiceListener(this);
-        return dateChoiceListener;
+    protected ClickHandler getDateChoiceHandler() {
+        if (dateChoiceHandler == null)
+            dateChoiceHandler = new DateChoiceHandler(this);
+        return dateChoiceHandler;
     }
 
     /**
@@ -596,16 +602,17 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
      *
      * @return Value for property 'calendarListeners'.
      */
-    protected Set getCalendarListeners() {
+    protected Set<CalendarListener<Calendar>> getCalendarListeners() {
         if (calendarListeners == null)
-            calendarListeners = new HashSet();
+            calendarListeners = new HashSet<CalendarListener<Calendar>>();
         return calendarListeners;
     }
 
     /**
-     * This is a buton click listener.
+     * This is a buttons click handler that updates encapsulated data model
+     * on these events.
      */
-    protected class SwitchDateListener implements ClickListener {
+    protected class SwitchDateHandler implements ClickHandler {
         /** this calendar widget */
         private Calendar calendar;
 
@@ -614,12 +621,13 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
          *
          * @param calendar is a calendar widget.
          */
-        public SwitchDateListener(Calendar calendar) {
+        public SwitchDateHandler(Calendar calendar) {
             this.calendar = calendar;
         }
 
-        /** {@inheritDoc} */
-        public void onClick(Widget sender) {
+        /** See class docs */
+        public void onClick(ClickEvent clickEvent) {
+            Object sender = clickEvent.getSource();
             if (sender == getTodayButton()) {
                 setDate(new DateHelper(new Date()).trim());
             } else if (sender == getYearBeforeButton()) {
@@ -631,10 +639,8 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
             } else if (sender == getMonthAfterButton()) {
                 setDate(new DateHelper(getDate()).addMonths(1));
             } else if (sender == getCloseButton()) {
-                for (Iterator iterator = getCalendarListeners().iterator(); iterator.hasNext();) {
-                    CalendarListener calendarListener = (CalendarListener) iterator.next();
+                for (CalendarListener<Calendar> calendarListener : getCalendarListeners())
                     calendarListener.onCancel(getCalendar());
-                }
                 setDate(getSelectedDate());
             }
             display();
@@ -653,7 +659,7 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
     /**
      * This is a date choice listener.
      */
-    protected class DateChoiceListener implements TableListener {
+    protected class DateChoiceHandler implements ClickHandler {
         /** this calendar */
         private Calendar calendar;
 
@@ -662,18 +668,21 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
          *
          * @param calendar is a calendar widget.
          */
-        public DateChoiceListener(Calendar calendar) {
+        public DateChoiceHandler(Calendar calendar) {
             this.calendar = calendar;
         }
 
-        /** {@inheritDoc} */
-        public void onCellClicked(SourcesTableEvents sender, int row, int cell) {
+        public void onClick(ClickEvent clickEvent) {
+            FlexTable table = (FlexTable) clickEvent.getSource();
+            HTMLTable.Cell td = table.getCellForEvent(clickEvent);
+            int cell = td.getCellIndex();
+            int row = td.getRowIndex();
+
             if (isShowWeeksColumn() && cell == 0 || row == 0)
                 return;
 
             Date oldValue = getDate();
             DateHelper dateHelper = new DateHelper(oldValue);
-            FlexTable table = (FlexTable) sender;
 
             int month = dateHelper.getMonth();
             int year = dateHelper.getYear();
@@ -684,16 +693,25 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
             int seconds = 0;
 
             if (isShowTime()) {
-                hours = Integer.valueOf(getHours().getValue(getHours().getSelectedIndex())).intValue();
+                hours = Integer.valueOf(getHours().getValue(getHours().getSelectedIndex()));
                 if (
                     "12".equals(constants.hoursCircleBasis())
                     && "PM".equals(getAmPmMarker().getValue(getAmPmMarker().getSelectedIndex()))
+                    && hours != 12
                 ) {
                     hours+=12;
                 }
 
-                minutes = Integer.valueOf(getMinutes().getValue(getMinutes().getSelectedIndex())).intValue();
-                seconds = Integer.valueOf(getSeconds().getValue(getSeconds().getSelectedIndex())).intValue();
+                if (
+                    "12".equals(constants.hoursCircleBasis())
+                    && "AM".equals(getAmPmMarker().getValue(getAmPmMarker().getSelectedIndex()))
+                    && hours == 12
+                ) {
+                    hours=0;
+                }
+
+                minutes = Integer.valueOf(getMinutes().getValue(getMinutes().getSelectedIndex()));
+                seconds = Integer.valueOf(getSeconds().getValue(getSeconds().getSelectedIndex()));
             }
 
             if (row == 1 && day > 22) {
@@ -704,13 +722,11 @@ public class Calendar extends SimplePanel implements AdvancedWidget {
 
             setDate(new DateHelper(year, month, day, hours, minutes, seconds).getDate());
             setSelectedDate(getDate());
-            
+
             display();
 
-            for (Iterator iterator = getCalendarListeners().iterator(); iterator.hasNext();) {
-                CalendarListener calendarListener = (CalendarListener) iterator.next();
+            for (CalendarListener<Calendar> calendarListener : getCalendarListeners())
                 calendarListener.onChange(getCalendar(), oldValue);
-            }
         }
 
         /**

@@ -16,9 +16,9 @@
             </p>
             <p>
                 The latest stable version is
-                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/1.5.0/">1.5.0</a>.
-                <!-- You can try also a new one (released but may contain some bugs):
-                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/1.4.9-beta/">1.4.9-beta</a>.-->
+                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.0/">2.0.0</a>.
+                <!--You can try also a new one (released but may contain some bugs):
+                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.0-beta/">2.0.0-beta</a>.-->
             </p>
             <p>
                 Don't forget to look at our <a href="/demo/index.html">Live Demo</a>!
@@ -69,10 +69,47 @@
                   <li>data model events</li>
                   <li>lazy rendering for large drop down lists <span class="new">new</span></li>
                   <li>customizable event management and rendering</li>
-                  <li>GWT 1.4.62, 1.5.3, 1.6.4, 1.7.1 or higher compatibility</li>
+                  <li>GWT 1.4.62, 1.5.3, 1.6.4, 1.7.1, 2.0.3 or higher compatibility</li>
                   <li>no dependencies to other third-party libraries</li>
                   <li>theme runtime switching for non-styled widgets</li>
               </ul>
+            </p>
+        </section>
+        <section name="GWT Compatibility Matrix">
+            <p>
+                Advanced GWT Components were reworked in 2.0.0 release. Deprecated API usage was removed and Java generics
+                has been applied everywhere it was possible. The price for these improvements was different GWT versions
+                incompatibility. To check what library version is most suitable for your project see the table below.
+            </p>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>GWT 1.4.x</th>
+                    <th>GWT 1.5.x</th>
+                    <th>GWT 1.6.x</th>
+                    <th>GWT 1.7.x</th>
+                    <th>GWT 2.x</th>
+                </tr>
+                <tr>
+                    <th>1.x</th>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <th>2.x</th>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <p>
+                Note that older versions of the library (1.x) will be patched only in case of critical bug fixes. All
+                the new features are expected to be done in 2.x releases.
             </p>
         </section>
         <div class="googleAds"><google-ads-horizontal-banner/></div>

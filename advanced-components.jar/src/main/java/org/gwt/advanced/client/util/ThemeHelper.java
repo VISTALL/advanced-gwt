@@ -20,7 +20,6 @@ import com.google.gwt.core.client.GWT;
 import org.gwt.advanced.client.ui.widget.theme.ThemeApplicable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -39,7 +38,7 @@ public class ThemeHelper {
     /** base directory name (a subfolder to store themes) that can include a context name if starts with '/' */
     private String baseDirectory;
     /** the list of widgets which must do anything on theme change (see {@link ThemeApplicable}) */  
-    private List applicables = new ArrayList();
+    private List<ThemeApplicable> applicables = new ArrayList<ThemeApplicable>();
 
     /**
      * Creates an instance of this class.
@@ -64,10 +63,8 @@ public class ThemeHelper {
         if (name != null && !name.equals(themeName)) {
           themeName = name;
           StyleUtil.setLinkHref(LINK_ELEMENT_ID, getBaseDirectory() + "advanced/themes/" + name + "/theme.css");
-          for (Iterator iterator = applicables.iterator(); iterator.hasNext();) {
-            ThemeApplicable applicable = (ThemeApplicable) iterator.next();
-            applicable.apply(themeName);
-          }
+            for (ThemeApplicable applicable : applicables)
+                applicable.apply(themeName);
         }
     }
 

@@ -7,10 +7,10 @@
         <div class="navigator"><a href="introduction.html">Previous</a> | <a href="index.html">Table of contents</a> | <a href="core.html">Next</a></div>
         <section name="Architecture">
             <p>
-                Generally architecture of the library widgets is simple and defined the following types of entities:
+                Generally architecture of the library widgets is simple and defines the following types of entities:
                 <ul>
-                    <li>Data Model. It's a class (Java bean) that contains data to be displayed by a widget. The same data models may used by different widgets. However only in particular cases one widget can use different data models.</li>
-                    <li>Component. This is a class that views the model in widget specific way. If the widget is rather complicated it may delegate diplaying to a <i>renderer</i> (see below). In this case Component performs a function of a mediator object. Any Component extends the GWT <i>Widget</i> class.</li>
+                    <li>Data Model. It's a class (Java bean) that contains data to be displayed by a widget. The same data models may be used by different widgets. However only in particular cases one widget can use different data models.</li>
+                    <li>Component. This is a class that views the model in widget specific way. If the widget is rather complicated it may delegate displaying to a <i>renderer</i> (see below). In this case Component performs a function of a mediator object. Any Component extends the GWT <i>Widget</i> class.</li>
                     <li>Renderer. It is an optional part of the components. Some widgets have a rederer and others don't. The main idea of the Renderer is to build a complex view of the widget. Another purpose of the Renderer is to be dynamically assigned to a widget in runtime. The same widget may use different renderers.</li>
                 </ul>
             </p>

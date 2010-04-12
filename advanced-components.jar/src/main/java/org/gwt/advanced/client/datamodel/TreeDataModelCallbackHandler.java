@@ -22,7 +22,8 @@ package org.gwt.advanced.client.datamodel;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.0
  */
-public interface TreeDataModelCallbackHandler extends DataModelCallbackHandler {
+public interface TreeDataModelCallbackHandler<T extends Composite, R extends LazyTreeGridRow>
+        extends DataModelCallbackHandler {
     /**
      * This method synchronizes the subtree rows (but not the parent row!) data with any data source.<p/>
      * If the parent row is <code>null</code> it must invoke the {@link #synchronize(GridDataModel)} method.
@@ -35,5 +36,5 @@ public interface TreeDataModelCallbackHandler extends DataModelCallbackHandler {
      * @param parent is a parent row of the subtree.
      * @param model is a data model.
      */
-    void synchronize(LazyTreeGridRow parent, Composite model);
+    void synchronize(R parent, T model);
 }

@@ -41,7 +41,7 @@ public class DetailGridModelHandler implements DataModelCallbackHandler {
         try {
             EditableGrid grid = parent.getGrid();
             Object[] data = grid.getModel().getRowData(grid.getCurrentRow());
-            GridDataModel newModel = DemoModelFactory.createEployeesModel(((Long)data[data.length - 1]).longValue());
+            GridDataModel newModel = DemoModelFactory.createEployeesModel((Long) data[data.length - 1]);
             ((Editable)model).update(newModel.getData());
         } finally {
             panel.unlock();

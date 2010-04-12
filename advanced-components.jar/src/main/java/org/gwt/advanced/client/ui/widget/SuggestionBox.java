@@ -16,11 +16,8 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListModelEvent;
 import org.gwt.advanced.client.datamodel.SuggestionBoxDataModel;
@@ -28,7 +25,6 @@ import org.gwt.advanced.client.datamodel.SuggestionModelEvent;
 import org.gwt.advanced.client.ui.SuggestionBoxListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -53,19 +49,19 @@ public class SuggestionBox extends ComboBox {
     /**
      * a list of suggestion box listeners
      */
-    private List suggestionBoxListeners;
+    private List<SuggestionBoxListener> suggestionBoxListeners;
     /**
      * a timer that is activated when the text box catches focus
      */
     private Timer timer;
     /**
-     * a focus listener that is invoked when the text box catches focus
+     * a focus handler that is invoked when the text box catches focus
      */
-    private FocusListener focusListener;
+    private ExpressionFocusHandler focusHandler;
     /**
      * a keyboard listener to set focus when a user types any text
      */
-    private ExpressionKeyboardListener keyboardListener;
+    private ExpressionKeyboardHandler keyboardHandler;
     /**
      * request timeout value
      */
@@ -246,14 +242,19 @@ public class SuggestionBox extends ComboBox {
      * {@inheritDoc}
      */
     protected void addComponentListeners() {
-        super.addComponentListeners();
-        getSelectedValue().removeFocusListener(getFocusListener());
-        getSelectedValue().addFocusListener(getFocusListener());
-        getSelectedValue().removeKeyboardListener(getKeyboardListener());
-        getSelectedValue().addKeyboardListener(getKeyboardListener());
-        getSelectedValue().removeChangeListener(getKeyboardListener());
-        getSelectedValue().addChangeListener(getKeyboardListener());
-        getSelectedValue().removeFocusListener(getDelegateListener());
+        getSelectedValue().addFocusHandler(getExpressionFocusHandler());
+        getSelectedValue().addBlurHandler(getExpressionFocusHandler());
+        getSelectedValue().addKeyUpHandler(getExpressionKeyboardHandler());
+        getSelectedValue().addChangeHandler(getExpressionKeyboardHandler());
+        getSelectedValue().addClickHandler(getDelegateHandler());
+        getSelectedValue().addKeyDownHandler(getDelegateHandler());
+        getSelectedValue().addKeyPressHandler(getDelegateHandler());
+
+        getChoiceButton().addFocusHandler(getDelegateHandler());
+        getChoiceButton().addBlurHandler(getDelegateHandler());
+        getChoiceButton().addClickHandler(getDelegateHandler());
+		
+		getListPanel().addChangeHandler(getDelegateHandler());
     }
 
     /**
@@ -261,9 +262,9 @@ public class SuggestionBox extends ComboBox {
      *
      * @return Value for property 'suggestionBoxListeners'.
      */
-    protected List getSuggestionBoxListeners() {
+    protected List<SuggestionBoxListener> getSuggestionBoxListeners() {
         if (suggestionBoxListeners == null)
-            suggestionBoxListeners = new ArrayList();
+            suggestionBoxListeners = new ArrayList<SuggestionBoxListener>();
         return suggestionBoxListeners;
     }
 
@@ -279,14 +280,14 @@ public class SuggestionBox extends ComboBox {
     }
 
     /**
-     * Getter for property 'focusListener'.
+     * Getter for property 'focusHandler'.
      *
-     * @return Value for property 'focusListener'.
+     * @return Value for property 'focusHandler'.
      */
-    public FocusListener getFocusListener() {
-        if (focusListener == null)
-            focusListener = new ExpressionFocusListener();
-        return focusListener;
+    public ExpressionFocusHandler getExpressionFocusHandler() {
+        if (focusHandler == null)
+            focusHandler = new ExpressionFocusHandler();
+        return focusHandler;
     }
 
     /** {@inheritDoc} */
@@ -295,14 +296,14 @@ public class SuggestionBox extends ComboBox {
     }
 
     /**
-     * Getter for property 'keyboardListener'.
+     * Getter for property 'keyboardHandler'.
      *
-     * @return Value for property 'keyboardListener'.
+     * @return Value for property 'keyboardHandler'.
      */
-    protected ExpressionKeyboardListener getKeyboardListener() {
-        if (keyboardListener == null)
-            keyboardListener = new ExpressionKeyboardListener();
-        return keyboardListener;
+    protected ExpressionKeyboardHandler getExpressionKeyboardHandler() {
+        if (keyboardHandler == null)
+            keyboardHandler = new ExpressionKeyboardHandler();
+        return keyboardHandler;
     }
 
     /**
@@ -315,57 +316,50 @@ public class SuggestionBox extends ComboBox {
     /**
      * This is a focus listener that starts / cancels the timer.
      */
-    protected class ExpressionFocusListener implements FocusListener {
+    protected class ExpressionFocusHandler implements FocusHandler, BlurHandler {
         /**
          * {@inheritDoc}
          */
-        public void onFocus(Widget sender) {
+        @Override
+        public void onFocus(FocusEvent event) {
             getTimer().schedule(getRequestTimeout());
         }
 
         /**
          * {@inheritDoc}
          */
-        public void onLostFocus(Widget sender) {
+        @Override
+        public void onBlur(BlurEvent event) {
             getTimer().cancel();
         }
     }
 
     /**
-     * This listener is invoked when a user types any text and sets focus
+     * This handler is invoked when a user types any text and sets focus
      */
-    protected class ExpressionKeyboardListener implements KeyboardListener, ChangeListener {
+    protected class ExpressionKeyboardHandler implements KeyUpHandler, ChangeHandler {
+        /** last expression value before an event */
         private String lastExpression;
 
         /**
          * {@inheritDoc}
          */
-        public void onKeyDown(Widget sender, char keyCode, int modifiers) {
+        @Override
+        public void onChange(ChangeEvent event) {
+            getTimer().cancel();
+            setSelectedId(null);
         }
 
         /**
          * {@inheritDoc}
          */
-        public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-            if (!getText().equals(lastExpression) && keyCode != KeyboardListener.KEY_ENTER) {
+        @Override
+        public void onKeyUp(KeyUpEvent event) {
+            if (!getText().equals(lastExpression) && event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
                 lastExpression = getText();
                 setSelectedId(null);
                 getTimer().schedule(getRequestTimeout());
             }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void onChange(Widget sender) {
-            getTimer().cancel();
-            setSelectedId(null);
         }
     }
 
@@ -381,10 +375,8 @@ public class SuggestionBox extends ComboBox {
             if (text.length() < getExpressionLength())
                 return;
 
-            for (Iterator iterator = getSuggestionBoxListeners().iterator(); iterator.hasNext();) {
-                SuggestionBoxListener listener = (SuggestionBoxListener) iterator.next();
+            for (SuggestionBoxListener listener : getSuggestionBoxListeners())
                 listener.onChange(text);
-            }
         }
     }
 }

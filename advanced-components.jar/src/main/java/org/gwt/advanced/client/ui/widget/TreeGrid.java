@@ -23,7 +23,6 @@ import org.gwt.advanced.client.ui.ExpandableCellListener;
 import org.gwt.advanced.client.ui.widget.cell.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +34,11 @@ import java.util.Map;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.0
  */
-public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
+public class TreeGrid extends EditableGrid<Editable> implements ExpandCellEventProducer {
     /**
      * expandable cell listeners
      */
-    private List expandableCellListeners;
+    private List<ExpandableCellListener> expandableCellListeners;
 
     /**
      * Creates a tree grid with resizable columns by default.
@@ -88,8 +87,8 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         else
             collapseCell((TreeCell) cell);
 
-        for (Iterator iterator = getExpandableCellListeners().iterator(); iterator.hasNext();) {
-            ExpandableCellListener expandableCellListener = (ExpandableCellListener) iterator.next();
+        for (Object o : getExpandableCellListeners()) {
+            ExpandableCellListener expandableCellListener = (ExpandableCellListener) o;
             expandableCellListener.onCellClick(cell);
         }
     }
@@ -145,7 +144,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
      */
     public GridRow getGridRowByRowNumber(int row) {
         Map mapping = ((TreeGridRenderer) getGridRenderer()).getRowMapping();
-        return (GridRow) mapping.get(new Integer(row));
+        return (GridRow) mapping.get(row);
     }
 
     /**
@@ -182,7 +181,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         int modelColumn = getModelColumn(column);
         if (getModel() != null && getModel().getColumns().length > modelColumn) {
             Object[] data = getModel().getColumns()[modelColumn].getData();
-            List resultData = new ArrayList(getRowCount());
+            List<Object> resultData = new ArrayList<Object>(getRowCount());
 
             int end = getModel().getEndRow();
             int start = getModel().getStartRow();
@@ -209,13 +208,12 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
      *
      * @return a list of data values.
      */
-    protected List getSubtreeColumnData(TreeGridRow parent, int column, int count) {
-        List resultData = new ArrayList();
+    protected List<Object> getSubtreeColumnData(TreeGridRow parent, int column, int count) {
+        List<Object> resultData = new ArrayList<Object>();
         if (getRowCount() > count && getModel() instanceof Composite && getTreeCell(count).isExpanded()) {
             Composite composite = (Composite) getModel();
             TreeGridRow[] treeGridRows = composite.getRows(parent);
-            for (int j = 0; j < treeGridRows.length; j++) {
-                TreeGridRow treeGridRow = treeGridRows[j];
+            for (TreeGridRow treeGridRow : treeGridRows) {
                 resultData.add(treeGridRow.getData()[getModelColumn(column)]);
                 resultData.addAll(getSubtreeColumnData(treeGridRow, column, count + resultData.size()));
             }
@@ -276,7 +274,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
             for (int i = 0; i < indexes.length; i++) {
                 int currentRow = indexes[i];
                 int modelRow = getModelRow(currentRow);
-                TreeGridRow row = (TreeGridRow) mapping.get(new Integer(currentRow));
+                TreeGridRow row = (TreeGridRow) mapping.get(currentRow);
                 ((Composite) dataModel).removeRow(row.getParent(), modelRow);
 
                 for (int j = i + 1; j < indexes.length; j++) {
@@ -318,7 +316,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
         if (currentRow >= 0) {
             Map mapping = gridRenderer.getRowMapping();
 
-            mapping.remove(new Integer(currentRow));
+            mapping.remove(currentRow);
             gridRenderer.remapIndexes(currentRow + 1, -1);
 
             removeRow(currentRow);
@@ -341,8 +339,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
             return;
 
         int indexes[] = getCurrentRows();
-        for (int i = 0; i < indexes.length; i++) {
-            int currentRow = indexes[i];
+        for (int currentRow : indexes) {
             Composite model = (Composite) getModel();
             int column = model.getExpandableColumn();
             TreeCell cell =
@@ -366,8 +363,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
             return;
 
         int indexes[] = getCurrentRows();
-        for (int i = 0; i < indexes.length; i++) {
-            int currentRow = indexes[i];
+        for (int currentRow : indexes) {
             Composite model = (Composite) getModel();
             int column = model.getExpandableColumn();
             TreeCell cell = (TreeCell) getOriginalWidget(currentRow, column);
@@ -535,6 +531,7 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
      *
      * @param cell is a cell to expand.
      */
+    @SuppressWarnings({"unchecked"})
     protected void expandCell(TreeCell cell) {
         if (getModel() instanceof Composite) {
             cell.getGridRow().setExpanded(true);
@@ -577,9 +574,9 @@ public class TreeGrid extends EditableGrid implements ExpandCellEventProducer {
      *
      * @return Value for property 'expandableCellListeners'.
      */
-    protected List getExpandableCellListeners() {
+    protected List<ExpandableCellListener> getExpandableCellListeners() {
         if (expandableCellListeners == null)
-            expandableCellListeners = new ArrayList();
+            expandableCellListeners = new ArrayList<ExpandableCellListener>();
         return expandableCellListeners;
     }
 }

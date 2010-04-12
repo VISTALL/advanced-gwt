@@ -258,8 +258,10 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
      * @return Value for property 'selectedValue'.
      */
     protected TextBox getSelectedValue() {
-        if (selectedValue == null)
+        if (selectedValue == null) {
             selectedValue = new TextBox();
+            selectedValue.getElement().setAttribute("autocomplete", "off");
+        }
         return selectedValue;
     }
 
@@ -306,7 +308,6 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
      * This method unlocks the screen and redisplays the widget.
      */
     public void unlock() {
-        display();
         getLockingPanel().unlock();
         setLocked(false);
     }

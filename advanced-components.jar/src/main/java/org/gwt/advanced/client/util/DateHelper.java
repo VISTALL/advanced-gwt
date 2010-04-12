@@ -29,6 +29,7 @@ import java.util.Date;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
+@SuppressWarnings({"deprecation"})
 public class DateHelper {
     /**
      * number of days per month
@@ -56,7 +57,7 @@ public class DateHelper {
     public DateHelper(Date date) {
         this.date = date;
         this.firstDayOfWeek =
-                Integer.valueOf(((CalendarConstants) GWT.create(CalendarConstants.class)).firstDayOfWeek()).intValue();
+                Integer.valueOf(((CalendarConstants) GWT.create(CalendarConstants.class)).firstDayOfWeek());
     }
 
     /**
@@ -78,7 +79,7 @@ public class DateHelper {
      * Usually a week starts from Sunday (0), but in some localizations it can start from Monday. In this case
      * all numbers will be shifted, i.e. Monday (0), Tuesday (1),..., Sunday (6).
      *
-     * @return
+     * @return a number of week day.
      */
     public int getDayOfWeek() {
         int day = date.getDay() - firstDayOfWeek;
@@ -259,8 +260,7 @@ public class DateHelper {
      * @return <code>true</code> if the day is weekend.
      */
     public static boolean isWeekEndDay(int weekDay) {
-        for (int i = 0; i < WEEK_END_DAYS.length; i++) {
-            int holidayWeekDay = WEEK_END_DAYS[i];
+        for (int holidayWeekDay : WEEK_END_DAYS) {
             if (holidayWeekDay == weekDay)
                 return true;
         }

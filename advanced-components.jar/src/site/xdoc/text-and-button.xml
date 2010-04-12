@@ -7,16 +7,16 @@
         <section name="Description and Features List">
             <div class="imageLeft">
               <p>
-                  <img src="images/date-picker.gif" border="0" alt="Poup calendar simplifies date and time entering"/>
+                  <img src="images/date-picker.gif" border="0" alt="Pop-up calendar simplifies date and time entering"/>
               </p>
               <p>
-                  <i>Poup calendar simplifies date and time entering</i>
+                  <i>Pop-up calendar simplifies date and time entering</i>
               </p>
             </div>
             <div class="textRight">
                 <p>
                     Text and Button Components is a class of GWT widgets which has a text box and a button joined in one component.
-                    The oldest widget of this class is Date Picker. It allows entering date and time using poup calendar panel.
+                    The oldest widget of this class is the Date Picker. It allows entering date and time using pop-up calendar panel.
                     Major features of the Date Picker are:
 
                     <ul>
@@ -81,8 +81,6 @@
 <pre style="line-height: 110%;font-family:monospace;background-color:#ffffff"><span style="background-color:#ffffff;">DatePicker picker = </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> DatePicker(</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> Date());
 </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">// swicth off time entering
 </span><span style="background-color:#ffffff;">picker.setTimeVisible(</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">false</span><span style="background-color:#ffffff;">);
-</span><span style="color:#808080;background-color:#ffffff;font-style:italic;">// display the widget
-</span><span style="background-color:#ffffff;">picker.display();
 </span></pre>
 </source>
             <p>
@@ -115,13 +113,10 @@
 box.setModel(model);
 box.setMaxLength(</span><span style="color:#0000ff;background-color:#ffffff;">3</span><span style="background-color:#ffffff;">);
 
-</span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//display the box
-</span><span style="background-color:#ffffff;">box.display();
 </span></pre>
 </source>
           <p>
-              The source code for the Combo Box will be similra but note that you can't create callback handlers and
-              will have to fill the model one time before the widget is initialized only.
+              The source code for the Combo Box will be similar but note that you can't create callback handlers.
           </p>
         </section>
         <div class="googleAds"><google-ads-horizontal-banner/></div>

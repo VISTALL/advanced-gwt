@@ -128,14 +128,14 @@ public interface Editable extends GridDataModel {
      * @param sortColumn is a sort column.
      * @param comparator is a column comparator.
      */
-    void setSortColumn (int sortColumn, Comparator comparator);
+    void setSortColumn (int sortColumn, Comparator<Object> comparator);
 
     /**
      * This method returns a callback handler instance.
      *
      * @return a callback handler.
      */
-    DataModelCallbackHandler getHandler ();
+    DataModelCallbackHandler<Editable> getHandler ();
 
     /**
      * This method updates data in the model using the specified value.
@@ -149,7 +149,7 @@ public interface Editable extends GridDataModel {
      *
      * @param handler a callback handler.
      */
-    void setHandler (DataModelCallbackHandler handler);
+    void setHandler (DataModelCallbackHandler<Editable> handler);
 
     /**
      * This method returns a total row count.

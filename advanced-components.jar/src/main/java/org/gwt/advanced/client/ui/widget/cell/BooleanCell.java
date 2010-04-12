@@ -16,8 +16,9 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
@@ -29,29 +30,39 @@ import org.gwt.advanced.client.ui.widget.EditableGrid;
  * @since 1.0.0
  */
 public class BooleanCell extends AbstractCell {
-    /** a checkbox click listener */
-    private ClickListener clickListener;
-    /** a checkbox widget */
+    /**
+     * a checkbox click handler
+     */
+    private ClickHandler clickHandler;
+    /**
+     * a checkbox widget
+     */
     private CheckBox checkBox;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void setValue(Object value) {
         value = Boolean.valueOf(String.valueOf(value));
 
         if (getValue() == null)
-            getCheckBox().setChecked(((Boolean)value).booleanValue());
+            getCheckBox().setValue((Boolean) value);
 
         super.setValue(value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected Widget createActive() {
         removeStyleName("active-cell");
         addStyleName("passive-cell");
         return createInactive();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected Widget createInactive() {
         addStyleName("boolean-cell");
         CheckBox widget = getCheckBox();
@@ -59,22 +70,24 @@ public class BooleanCell extends AbstractCell {
         return widget;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected void addListeners(Widget widget) {
-        if (clickListener == null) {
+        if (clickHandler == null) {
             final GridCell cell = this;
-            clickListener = new ClickListener() {
-                public void onClick(Widget sender) {
+            clickHandler = new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
                     FlexTable table = getGrid();
 
-                    if (table instanceof EditableGrid && ((EditableGrid)table).fireStartEdit(cell))
-                        ((EditableGrid)table).fireFinishEdit(cell, getNewValue());
+                    if (table instanceof EditableGrid && ((EditableGrid) table).fireStartEdit(cell))
+                        ((EditableGrid) table).fireFinishEdit(cell, getNewValue());
                 }
             };
+            CheckBox checkBox = getCheckBox();
+            checkBox.addClickHandler(clickHandler);
         }
-        CheckBox checkBox = getCheckBox();
-        checkBox.removeClickListener(clickListener);
-        checkBox.addClickListener(clickListener);
     }
 
     /**
@@ -91,17 +104,21 @@ public class BooleanCell extends AbstractCell {
     protected CheckBox getCheckBox() {
         if (checkBox == null)
             checkBox = new CheckBox();
-        
+
         return checkBox;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void setFocus(boolean focus) {
         getCheckBox().setFocus(focus);
     }
 
-    /** {@inheritDoc} */
-    public Object getNewValue () {
-        return Boolean.valueOf(getCheckBox().isChecked());
+    /**
+     * {@inheritDoc}
+     */
+    public Object getNewValue() {
+        return getCheckBox().getValue();
     }
 }

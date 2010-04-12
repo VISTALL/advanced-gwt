@@ -18,7 +18,7 @@
                     Editable Grid is a most important widget of the library. It extends <a href="simple-grid.html">Simple Grid</a> and provides a wide range
                     of abilities. Being designed in best MVP traditions this component will be simple for undestanding if
                     you have expirience in Java Swing programming. As well as the Swing table component it's described by
-                    data model that usally contains custom data and grid display settings like number of page to be
+                    data model that usally contains custom data and grid display settings like number of pages to be
                     displayed, sorting column and order, total row number, etc.
 
                     There are two kinds of grid data models:
@@ -36,7 +36,7 @@
                     and include complex content. The library provides numerous cell types for different purposes. However
                     if you need your own non-standard cell you can develop a custom implementation and plug it in the grid.
 
-                    Starting from 1.3.0 version grid rendering has been optimized and currently draws textual reprsentation
+                    Starting from the 1.3.0 version grid rendering has been optimized and currently draws textual reprsentation
                     of the cells instead of widgets insertion. This approach allows saving time and improves rendering
                     perfomance.
 
@@ -93,7 +93,7 @@
                 put them into a root panel.
 
                 Note that the last step is important otherwise you won't see anything since the <i>GridPanel.display()</i> method
-                prepares widgets for displaying but doesn't diplay them in fact.
+                prepares widgets for displaying but doesn't display them in fact.
             </p>
 <source>
 <pre style="line-height: 110%;font-family:monospace;background-color:#ffffff"><span style="background-color:#ffffff;">Editable model = </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> EditableGridDataModel(</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">null</span><span style="background-color:#ffffff;">);

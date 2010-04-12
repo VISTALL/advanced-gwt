@@ -30,7 +30,7 @@ import java.util.Date;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class DefaultCellComparator implements Comparator {
+public class DefaultCellComparator implements Comparator<Object> {
     /** grid instance */
     private EditableGrid grid;
 
@@ -51,15 +51,17 @@ public class DefaultCellComparator implements Comparator {
      *
      * @return a result of comparison.
      */
-    public int compare (Object o1, Object o2) {
-        Object value1 = prepareValue(o1);
-        Object value2 = prepareValue(o2);
+    @SuppressWarnings({"unchecked"})
+    @Override
+    public int compare(Object o1, Object o2) {
+        Comparable value1 = prepareValue(o1);
+        Comparable value2 = prepareValue(o2);
 
         EditableGrid grid = getGrid();
         if (grid.isAscending(grid.getCurrentSortColumn().getColumn()))
-            return ((Comparable) value1).compareTo(value2);
+            return value1.compareTo(value2);
         else
-            return -((Comparable) value1).compareTo(value2);
+            return -value1.compareTo(value2);
     }
 
     /**
@@ -69,11 +71,11 @@ public class DefaultCellComparator implements Comparator {
      * @param value is a value to be prepared.
      * @return a prepared value.
      */
-    protected Object prepareValue(Object value) {
+    protected Comparable prepareValue(Object value) {
         Class columnType =
             getGrid().getColumnWidgetClasses()[getGrid().getCurrentSortColumn().getColumn()];
 
-        Object result;
+        Comparable result;
         if (TextBoxCell.class.equals(columnType)) {
             result = value == null ? "" : String.valueOf(value);
         } else if (ListCell.class.equals(columnType)) {
@@ -101,7 +103,7 @@ public class DefaultCellComparator implements Comparator {
         } else if (DateCell.class.equals(columnType)) {
             result = value == null ? new Date() : (Date) value;
         } else {
-            result = value == null ? "" : value;
+            result = value == null ? "" : (Comparable) value;
         }
 
         return result;

@@ -9,7 +9,7 @@
             <p>
                 This topic covers the features and functionality that are typical for all library components.
                 As any other tool Advanced GWT Components has a basic API that can be extended for custom purposes.
-                To know how this APi works you will have to read topics listed below. If you are familiar with
+                To know how this API works you will have to read topics listed below. If you are familiar with
                 the library and / or experienced in widgets programming you can skip them.
 
                 <ul>

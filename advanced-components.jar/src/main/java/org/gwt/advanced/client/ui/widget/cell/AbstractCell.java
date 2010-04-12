@@ -16,7 +16,12 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.HasBlurHandlers;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
 
 /**
@@ -28,7 +33,7 @@ import org.gwt.advanced.client.ui.widget.EditableGrid;
  */
 public abstract class AbstractCell extends SimplePanel implements GridCell {
     /** default cell focus listener */
-    private static FocusListener defaultFocusListener = new CellFocusListener();
+    private static BlurHandler defaultBlurHandler = new CellBlurHandler();
     /** cell value */
     private Object value;
     /** row number */
@@ -179,8 +184,8 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
      * @param widget is a content widget.
      */
     protected void addListeners(Widget widget) {
-        if (widget instanceof SourcesFocusEvents && !isDefaultFocusListenerAdded()) {
-            ((SourcesFocusEvents)widget).addFocusListener(defaultFocusListener);
+        if (widget instanceof HasBlurHandlers && !isDefaultFocusListenerAdded()) {
+            ((HasBlurHandlers)widget).addBlurHandler(getDefaultBlurHandler());
             defaultFocusListenerAdded = true;
         }
     }
@@ -200,7 +205,7 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
      */
     protected Label getLabel () {
         if (label == null)
-            label = new Label();
+            setLabel(new Label());
         
         return label;
     }
@@ -215,12 +220,12 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
     }
 
     /**
-     * Getter for property 'defaultFocusListener'.
+     * Getter for property 'defaultBlurHandler'.
      *
-     * @return Value for property 'defaultFocusListener'.
+     * @return Value for property 'defaultBlurHandler'.
      */
-    protected FocusListener getDefaultFocusListener() {
-        return defaultFocusListener;
+    protected BlurHandler getDefaultBlurHandler() {
+        return defaultBlurHandler;
     }
 
     /**

@@ -35,7 +35,7 @@ public class GWTUtil {
      * @return <code>true</code> if the browser is IE.
      */
     public static boolean isIE() {
-        return GWT.getTypeName(GWT.create(DOMImpl.class)).equals(
+        return GWT.create(DOMImpl.class).getClass().getName().equals(
             "com.google.gwt.user.client.impl.DOMImplIE6"
         );
     }

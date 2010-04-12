@@ -43,7 +43,7 @@ public class LazyHierarchicalGridDataModel extends HierarchicalGridDataModel imp
      *
      * @param handler is a callback handler to be invoked on changes.
      */
-    public LazyHierarchicalGridDataModel (DataModelCallbackHandler handler) {
+    public LazyHierarchicalGridDataModel (DataModelCallbackHandler<Editable> handler) {
         super((Object[][])null);
         final LazyHierarchicalGridDataModel source = this;
         setDelegate(new LazyGridDataModel(handler) {

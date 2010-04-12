@@ -40,11 +40,9 @@ public class ComboBoxCell extends AbstractCell {
             ComboBoxDataModel model = new ComboBoxDataModel();
             model.add("---", "---");
             ((ComboBox)value).setModel(model);
-            ((ComboBox)value).display();
         } else if (value instanceof ComboBoxDataModel) {
             ComboBox box = new ComboBox();
             box.setModel((ComboBoxDataModel) value);
-            box.display();
             value = box;
         }
         super.setValue(value);

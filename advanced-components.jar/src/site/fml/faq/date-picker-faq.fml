@@ -40,8 +40,7 @@
 <pre style="line-height: 110%;font-family:monospace;background-color:#ffffff"><span style="background-color:#ffffff;">DatePicker picker =</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;"> new</span><span style="background-color:#ffffff;"> DatePicker(</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> Date());
 </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">// swicth off time entering
 </span><span style="background-color:#ffffff;">picker.setTimeVisible(</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">false</span><span style="background-color:#ffffff;">);
-</span><span style="color:#808080;background-color:#ffffff;font-style:italic;">// display the widget
-</span><span style="background-color:#ffffff;">picker.display();</span></pre>
+</span></pre>
                 </p>
                 <div class="googleAds"><google-ads-horizontal-banner/></div>
             </answer>

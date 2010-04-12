@@ -16,9 +16,10 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
 import org.gwt.advanced.client.ui.widget.GridPanel;
@@ -29,21 +30,14 @@ import org.gwt.advanced.client.ui.widget.GridPanel;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class CellFocusListener implements FocusListener {
-    /**
-     * Does nothing.
-     *
-     * @param sender is a sender cell.
-     */
-    public void onFocus (Widget sender) {
-    }
-
+public class CellBlurHandler implements BlurHandler {
     /**
      * This method validates entered value and passivate the cell or keep it activated if check fails.
      *
-     * @param sender is a sender cell.
+     * @param blurEvent is a blur event instance.
      */
-    public void onLostFocus (Widget sender) {
+    public void onBlur(BlurEvent blurEvent) {
+        Widget sender = (Widget) blurEvent.getSource();
         GridCell cell = (GridCell) sender.getParent();
         if (cell == null)
             return;
@@ -51,7 +45,8 @@ public class CellFocusListener implements FocusListener {
         FlexTable grid = cell.getGrid();
         if (grid instanceof EditableGrid) {
             GridPanel gridPanel = ((EditableGrid) grid).getGridPanel();
-            gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyboardListener.KEY_ENTER, 0);
+            if(!cell.isActive())
+                gridPanel.getGridEventManager().dispatch(gridPanel, (char) KeyCodes.KEY_ENTER, 0);
         }
     }
 }

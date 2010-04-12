@@ -17,10 +17,10 @@
 package org.gwt.advanced.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.ui.ChangeListener;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.showcase.*;
 import org.gwt.advanced.client.ui.widget.AdvancedTabPanel;
 import org.gwt.advanced.client.ui.widget.tab.TabPosition;
@@ -63,9 +63,10 @@ public class Demo implements EntryPoint {
         themes.addItem("default", "default");
         themes.addItem("gray", "gray");
         themes.addItem("ascetic", "ascetic");
-        themes.addChangeListener(new ChangeListener() {
-            public void onChange (Widget sender) {
-                ListBox box = (ListBox) sender;
+        themes.addChangeHandler(new ChangeHandler() {
+            @Override
+            public void onChange(ChangeEvent event) {
+                ListBox box = (ListBox) event.getSource();
                 ThemeHelper themeHelper = ThemeHelper.getInstance();
                 themeHelper.setThemeName(box.getValue(box.getSelectedIndex()));
             }

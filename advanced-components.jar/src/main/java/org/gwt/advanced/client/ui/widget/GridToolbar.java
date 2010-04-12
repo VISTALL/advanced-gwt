@@ -17,10 +17,10 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.resources.GridToolbarConstants;
 import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
@@ -69,10 +69,10 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
         if (isAddButtonVisible()) {
             addButton(
                 "new.gif", RESOURCE.getAddNew(),
-                new ClickListener(){
-                    public void onClick (Widget sender) {
+                new ClickHandler(){
+                    public void onClick(ClickEvent clickEvent) {
                         getGridPanel().getMediator().fireAddRowEvent();
-                        ((ToggleButton)sender).setDown(false);
+                        ((ToggleButton)clickEvent.getSource()).setDown(false);
                     }
                 }
             );
@@ -81,10 +81,10 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
         if (isSaveButtonVisible()) {
             addButton(
                 "save.gif", RESOURCE.getSaveChanges(),
-                new ClickListener(){
-                    public void onClick (Widget sender) {
+                new ClickHandler(){
+                    public void onClick(ClickEvent clickEvent) {
                         getGridPanel().getMediator().fireSaveEvent();
-                        ((ToggleButton)sender).setDown(false);
+                        ((ToggleButton)clickEvent.getSource()).setDown(false);
                     }
                 }
             );
@@ -93,22 +93,22 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
         if (isRemoveButtonVisible()) {
             addButton(
                 "delete.gif", RESOURCE.getRemoveRow(),
-                new ClickListener(){
-                    public void onClick (Widget sender) {
+                new ClickHandler(){
+                    public void onClick(ClickEvent clickEvent) {
                         getGridPanel().getMediator().fireRemoveRowEvent();
-                        ((ToggleButton)sender).setDown(false);
+                        ((ToggleButton)clickEvent.getSource()).setDown(false);
                     }
-              }
+                }
             );
         }
         
         if (isClearButtonVisible()) {
             addButton(
                 "delete-all.gif", RESOURCE.getRemoveAll(),
-                new ClickListener(){
-                    public void onClick (Widget sender) {
+                new ClickHandler(){
+                    public void onClick(ClickEvent clickEvent) {
                         getGridPanel().getMediator().fireClearEvent();
-                        ((ToggleButton)sender).setDown(false);
+                        ((ToggleButton)clickEvent.getSource()).setDown(false);
                     }
                 }
             );
@@ -117,10 +117,10 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
         if (isMoveLeftButtonVisible()) {
             addButton(
               "level-up.gif", RESOURCE.getLevelUp(),
-                new ClickListener(){
-                    public void onClick (Widget sender) {
+                new ClickHandler(){
+                    public void onClick(ClickEvent clickEvent) {
                         getGridPanel().getMediator().fireMoveLeftEvent();
-                        ((ToggleButton)sender).setDown(false);
+                        ((ToggleButton)clickEvent.getSource()).setDown(false);
                     }
                 }
             );
@@ -129,8 +129,8 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
         if (isMoveRightButtonVisible()) {
             addButton(
                 "level-down.gif", RESOURCE.getLevelDown(), 
-                new ClickListener(){
-                    public void onClick (Widget sender) {
+                new ClickHandler(){
+                    public void onClick(ClickEvent clickEvent) {
                         getGridPanel().getMediator().fireMoveRightEvent();
                     }
                 }
@@ -250,10 +250,10 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
      * This method adds an image button into the toolbar and doesn't specify hint text.
      *
      * @param image is an image of the button.
-     * @param listener is a listener to be invoked on button click.
+     * @param handler is a handler to be invoked on button click.
      */
-    protected void addButton(String image, ClickListener listener) {
-      addButton(image, null, listener);
+    protected void addButton(String image, ClickHandler handler) {
+      addButton(image, null, handler);
     }
 
     /**
@@ -261,12 +261,12 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
      *
      * @param image is an image of the button.
      * @param hint is a popup hint of the button.
-     * @param listener is a listener to be invoked on button click.
+     * @param handler is a handler to be invoked on button click.
      */
-    protected void addButton(String image, String hint, ClickListener listener) {
+    protected void addButton(String image, String hint, ClickHandler handler) {
         ToggleButton button = new ToggleButton(new ThemeImage(image));
         button.setStyleName("advanced-GridToolbar-button");
-        button.addClickListener(listener);
+        button.addClickHandler(handler);
         button.setTitle(hint);
         add(button);
     }

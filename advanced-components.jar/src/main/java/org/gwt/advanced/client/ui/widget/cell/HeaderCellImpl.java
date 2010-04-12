@@ -16,6 +16,8 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.widget.EditableGrid;
@@ -94,9 +96,9 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
     /** {@inheritDoc} */
     protected void addListeners(Widget widget) {
         if (isSortable()) {
-            SortListener listener = new SortListener();
-            getLabel().addClickListener(listener);
-            getImage().addClickListener(listener);
+            SortHandler handler = new SortHandler();
+            getLabel().addClickHandler(handler);
+            getImage().addClickHandler(handler);
         }
     }
 
@@ -212,17 +214,18 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
     }
 
     /**
-     * This listener is invoked on sort event.
+     * This handler is invoked on sort event.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
-    protected class SortListener implements ClickListener {
+    protected class SortHandler implements ClickHandler {
         /**
          * Starts column sorting.
          *
-         * @param sender is a event source widget.
+         * @param event is a source event.
          */
-        public void onClick(Widget sender) {
+        @Override
+        public void onClick(ClickEvent event) {
             sort();
         }
     }

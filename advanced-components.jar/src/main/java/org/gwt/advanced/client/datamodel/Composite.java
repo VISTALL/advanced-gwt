@@ -223,7 +223,7 @@ public interface Composite extends Editable {
      * @param column is a column number.
      * @param comparator is a comparator instance.
      */
-    void setSortColumn(TreeGridRow parent, int column, Comparator comparator);
+    void setSortColumn(TreeGridRow parent, int column, Comparator<Object> comparator);
 
     /**
      * Links the child row to the parent.<p/>

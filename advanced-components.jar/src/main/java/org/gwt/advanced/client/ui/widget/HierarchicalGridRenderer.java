@@ -16,8 +16,12 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.FocusListener;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.FocusPanel;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.GridDataModel;
 import org.gwt.advanced.client.datamodel.Hierarchical;
@@ -26,7 +30,8 @@ import org.gwt.advanced.client.ui.widget.cell.ExpandableCell;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
 import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
 
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is an extension for hierarchical grid rendering.<p/>
@@ -37,8 +42,18 @@ import java.util.Iterator;
  * @since 1.3.0
  */
 public class HierarchicalGridRenderer extends DefaultGridRenderer {
-    /** disabling focus listener */
-    private FocusListener disablingFocusListener;
+    /**
+     * disabling focus / blur handler
+     */
+    private DisablingEventManager disablingFocusManager;
+    /**
+     * map of focus handler registrations related to the specified focus panels (subgrids)
+     */
+    private Map<FocusPanel, HandlerRegistration> focusHandlerRegistrations = new HashMap<FocusPanel, HandlerRegistration>();
+    /**
+     * map of blur handler registrations related to the specified focus panels (subgrids)
+     */
+    private Map<FocusPanel, HandlerRegistration> blurHandlerRegistrations = new HashMap<FocusPanel, HandlerRegistration>();
 
     /**
      * Creates an instance of this class and initializes the grid cell factory.
@@ -49,7 +64,9 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
         super(grid);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void drawContent(GridDataModel model) {
         int count = 0;
         EditableGrid grid = getGrid();
@@ -70,7 +87,7 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
                 int modelRow = super.getModelRow(i);
                 int expandedBefore = expandedCells;
                 for (int j = grid.getCellCount(i + expandedBefore) - 1; j >= 0; j--) {
-                    if (((Hierarchical)dataModel).isExpanded(modelRow, j)) {
+                    if (((Hierarchical) dataModel).isExpanded(modelRow, j)) {
                         ((HierarchicalGrid) grid).expandCell(i + expandedBefore, j);
                         expandedCells++;
                     }
@@ -79,10 +96,12 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void drawCell(Object data, int row, int column, boolean active) {
         Editable dataModel = getGrid().getModel();
-        if (dataModel instanceof Hierarchical && ((HierarchicalGrid)getGrid()).isExpandable(column)) {
+        if (dataModel instanceof Hierarchical && ((HierarchicalGrid) getGrid()).isExpandable(column)) {
             Hierarchical model = (Hierarchical) dataModel;
             int modelRow = getModelRow(row);
 
@@ -97,12 +116,16 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
             super.drawCell(data, row, column, active);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getModelRow(int row) {
         return super.getModelRow(row) - getSubgridRowsBefore(row);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public int getRowByModelRow(int modelRow) {
         for (int i = 0; i < getGrid().getRowCount(); i++) {
             if (!HierarchicalGrid.SUBGRID_ROW_STYLE.equals(getGrid().getRowFormatter().getStyleName(i))
@@ -112,7 +135,9 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
         return -1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void drawColumn(Object[] data, int column, boolean overwrite) {
         if (!overwrite && column < getGrid().getHeaderWidgets().size())
             getGrid().insertHeaderCell(getGrid().getColumnByModelColumn(column));
@@ -140,14 +165,14 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
         }
         return result;
     }
-    
+
     /**
      * This method expands the cell and adds a subgrid row below the current row.
      *
-     * @param parentRow is a row number.
+     * @param parentRow    is a row number.
      * @param parentColumn is a column number.
      */
-    protected void renderSubgrid (int parentRow, int parentColumn) {
+    protected void renderSubgrid(int parentRow, int parentColumn) {
         GridDataModel submodel = null;
         GridPanelFactory factory = null;
         HierarchicalGrid grid = (HierarchicalGrid) getGrid();
@@ -155,12 +180,12 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
 
         int modelRow = getModelRow(parentRow);
         if (model instanceof Hierarchical) {
-            submodel = ((Hierarchical)model).getSubgridModel(modelRow, parentColumn);
-            factory = (GridPanelFactory) grid.getGridPanelFactories().get(new Integer(parentColumn));
+            submodel = ((Hierarchical) model).getSubgridModel(modelRow, parentColumn);
+            factory = grid.getGridPanelFactories().get(parentColumn);
 
             if (submodel == null && factory != null) {
                 submodel = factory.create(modelRow, model);
-                ((Hierarchical)model).addSubgridModel(modelRow, parentColumn, submodel);
+                ((Hierarchical) model).addSubgridModel(modelRow, parentColumn, submodel);
             }
         }
 
@@ -173,20 +198,27 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
 
             for (int i = 0; i < parentColumn; i++)
                 grid.setText(thisRow, i, "");
-            GridPanel gridPanel = (GridPanel) grid.getGridPanelCache().get(submodel);
+            GridPanel gridPanel = grid.getGridPanelCache().get(submodel);
             if (gridPanel == null) {
                 gridPanel = factory.create(submodel);
                 gridPanel.getTopToolbar().setSaveButtonVisible(false);
                 gridPanel.getBottomToolbar().setSaveButtonVisible(false);
-                gridPanel.getFocusPanel().addFocusListener(getDisablingFocusListener());
+                focusHandlerRegistrations.put(
+                        gridPanel.getFocusPanel(),
+                        gridPanel.getFocusPanel().addFocusHandler(getDisablingFocusManager())
+                );
+                blurHandlerRegistrations.put(
+                        gridPanel.getFocusPanel(),
+                        gridPanel.getFocusPanel().addBlurHandler(getDisablingFocusManager())
+                );
                 gridPanel.display();
 
                 grid.getGridPanelCache().put(submodel, gridPanel);
             }
 
             int invisibleColumns = 0;
-            for (Iterator iterator = grid.getInvisibleColumns().iterator(); iterator.hasNext();) {
-                if (((Integer)iterator.next()).intValue() > parentColumn)
+            for (Object o : grid.getInvisibleColumns()) {
+                if ((Integer) o > parentColumn)
                     invisibleColumns++;
             }
             grid.getFlexCellFormatter().setColSpan(thisRow, parentColumn, grid.getCellCount(parentRow) - parentColumn - invisibleColumns);
@@ -199,16 +231,26 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
     /**
      * This method collapses the cell and removes an appropriate subgrid row.
      *
-     * @param parentRow is a row number..
+     * @param parentRow    is a row number..
      * @param parentColumn is a column number.
      */
-    protected void removeSubgrid (int parentRow, int parentColumn) {
+    protected void removeSubgrid(int parentRow, int parentColumn) {
         HierarchicalGrid grid = (HierarchicalGrid) getGrid();
         GridDataModel dataModel = grid.getModel();
         if (dataModel instanceof Hierarchical) {
             int thisRow = grid.getGridRowNumber(parentRow, parentColumn);
             grid.increaseRowNumbers(thisRow, -1);
-            grid.getGridPanel(parentRow, parentColumn).getFocusPanel().removeFocusListener(getDisablingFocusListener());
+            FocusPanel panel = grid.getGridPanel(parentRow, parentColumn).getFocusPanel();
+            HandlerRegistration registration = focusHandlerRegistrations.get(panel);
+            if (registration != null) {
+                registration.removeHandler();
+                focusHandlerRegistrations.remove(panel);
+            }
+            registration = blurHandlerRegistrations.get(panel);
+            if (registration != null) {
+                registration.removeHandler();
+                blurHandlerRegistrations.remove(panel);
+            }
             grid.removeRow(thisRow);
 
             dropWrongSelection(parentRow, -1);
@@ -220,13 +262,12 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
      * Then it sets a new row to be a current.
      *
      * @param parentRow is a row number to check.
-     * @param step is a difference between the selected row and newly selected row. May be negative.
+     * @param step      is a difference between the selected row and newly selected row. May be negative.
      */
     protected void dropWrongSelection(int parentRow, int step) {
         int[] indexes = getGrid().getCurrentRows();
         int selection = -1;
-        for (int i = 0; i < indexes.length; i++) {
-            int row = indexes[i];
+        for (int row : indexes) {
             if (row > parentRow) {
                 selection = row;
                 break;
@@ -238,31 +279,31 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
     }
 
     /**
-     * Getter for property 'disablingFocusListener'.
+     * Getter for property 'disablingFocusManager'.
      *
-     * @return Value for property 'disablingFocusListener'.
+     * @return Value for property 'disablingFocusManager'.
      */
-    public FocusListener getDisablingFocusListener() {
-        if (disablingFocusListener == null)
-            disablingFocusListener = new DisablingEventManager();
-        return disablingFocusListener;
+    public DisablingEventManager getDisablingFocusManager() {
+        if (disablingFocusManager == null)
+            disablingFocusManager = new DisablingEventManager();
+        return disablingFocusManager;
     }
 
     /**
-     * This listener enables / disables the event manager of this grid on subgrids activation.
+     * This handler enables / disables the event manager of this grid on subgrids activation.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      * @since 1.3.0
      */
-    protected class DisablingEventManager implements FocusListener {
-        /** See class docs */
-        public void onFocus(Widget sender) {
-            ((HierarchicalGrid)getGrid()).enableEvents(false);
+    protected class DisablingEventManager implements FocusHandler, BlurHandler {
+        @Override
+        public void onBlur(BlurEvent event) {
+            ((HierarchicalGrid) getGrid()).enableEvents(true);
         }
 
-        /** See class docs */
-        public void onLostFocus(Widget sender) {
-            ((HierarchicalGrid)getGrid()).enableEvents(true);
+        @Override
+        public void onFocus(FocusEvent event) {
+            ((HierarchicalGrid) getGrid()).enableEvents(false);
         }
     }
 }

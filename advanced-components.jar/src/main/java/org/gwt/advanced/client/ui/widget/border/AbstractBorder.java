@@ -20,7 +20,6 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -32,7 +31,7 @@ import java.util.Map;
  */
 public abstract class AbstractBorder extends SimplePanel implements Border {
     /** this map contains lines visibility settings */
-    protected Map linesVisibility = new HashMap();
+    protected Map<BorderLine, Boolean> linesVisibility = new HashMap<BorderLine, Boolean>();
     /** shadow visibility flag */
     private boolean shadowVisibile;
 
@@ -54,7 +53,7 @@ public abstract class AbstractBorder extends SimplePanel implements Border {
      */
     public void setVisible(boolean visible, BorderLine line) {
         if (line != null) {
-          linesVisibility.put(line, Boolean.valueOf(visible));
+          linesVisibility.put(line, visible);
           render();
         }
     }
@@ -66,7 +65,7 @@ public abstract class AbstractBorder extends SimplePanel implements Border {
      * @return <code>true</code> if the line is visible and <code>false</code> in other case.
      */
     public boolean isVisible(BorderLine line) {
-        return ((Boolean)linesVisibility.get(line)).booleanValue();
+        return linesVisibility.get(line);
     }
 
     /**
@@ -96,10 +95,9 @@ public abstract class AbstractBorder extends SimplePanel implements Border {
      */
     protected int encodeVisibility() {
         int mask = 0;
-        for (Iterator iterator = linesVisibility.entrySet().iterator(); iterator.hasNext();) {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            if (((Boolean)entry.getValue()).booleanValue())
-                mask |= ((BorderLine)entry.getKey()).getMask();
+        for (Map.Entry<BorderLine, Boolean> entry : linesVisibility.entrySet()) {
+            if (entry.getValue())
+                mask |= entry.getKey().getMask();
         }
         return mask;
     }

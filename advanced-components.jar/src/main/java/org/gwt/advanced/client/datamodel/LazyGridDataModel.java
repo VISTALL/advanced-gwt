@@ -43,7 +43,7 @@ public class LazyGridDataModel extends EditableGridDataModel implements LazyLoad
      *
      * @param handler is a data model change callback handler.
      */
-    public LazyGridDataModel (DataModelCallbackHandler handler) {
+    public LazyGridDataModel (DataModelCallbackHandler<Editable> handler) {
         super(handler);
     }
     
@@ -129,7 +129,7 @@ public class LazyGridDataModel extends EditableGridDataModel implements LazyLoad
         checkRowNumber(row, getDataList().size() + getPageSize() * getCurrentPageNumber());
         checkColumnNumber(column, getTotalColumnCount());
 
-        ((GridRow)getDataList().get(row - getPageSize() * getCurrentPageNumber())).set(column, data);
+        (getDataList().get(row - getPageSize() * getCurrentPageNumber())).set(column, data);
     }
 
     /** {@inheritDoc} */

@@ -86,7 +86,7 @@
                         <td><i>Composite</i></td>
                         <td>
                             This data model stores a hierarchy of the same type objects. In comparison with the
-                            previos model it doesn't allow adding objects into subtrees if they have different
+                            previous model it doesn't allow adding objects into subtrees if they have different
                             structure in comparison to the parent node.
                         </td>
                         <td>
@@ -96,8 +96,8 @@
                     <tr>
                         <td><i>LazyLoadable</i></td>
                         <td>
-                            Data models implemnting this interface allow lazy data loading. It doesn't matter
-                            where data is stored at the momen when a widget apply the model. Anyway it will be
+                            Data models implementing this interface allow lazy data loading. It doesn't matter
+                            where data is stored at the moment when a widget apply the model. Anyway it will be
                             loaded dynamically when it's requested. Each non-lazy model has a least one lazy
                             prototype. Widgets which can support the first type can also support its lazy
                             &quot;brother&quot;
@@ -111,7 +111,7 @@
                     <tr>
                         <td><i>Pageable</i></td>
                         <td>
-                            Pageable data models often required if large volume of data must be splitted to
+                            Pageable data models often required if the large volume of data must be splitted to
                             separate pages. <i>GridDataModel</i> extends this interface and therefore all library
                             grids support paging. Lazily loadable models use paging to load data on page-by-page
                             basis.

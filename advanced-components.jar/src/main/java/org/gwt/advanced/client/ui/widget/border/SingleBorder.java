@@ -32,10 +32,10 @@ public class SingleBorder extends AbstractBorder {
         this.container = DOM.createTD();
         setStyleName("advanced-SingleBorder");
 
-        linesVisibility.put(BorderLine.TOP, Boolean.valueOf(top));
-        linesVisibility.put(BorderLine.LEFT, Boolean.valueOf(left));
-        linesVisibility.put(BorderLine.RIGHT, Boolean.valueOf(right));
-        linesVisibility.put(BorderLine.BOTTOM, Boolean.valueOf(bottom));
+        linesVisibility.put(BorderLine.TOP, top);
+        linesVisibility.put(BorderLine.LEFT, left);
+        linesVisibility.put(BorderLine.RIGHT, right);
+        linesVisibility.put(BorderLine.BOTTOM, bottom);
 
         render();
     }

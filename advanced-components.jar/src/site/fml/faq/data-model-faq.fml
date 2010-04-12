@@ -16,7 +16,7 @@
                     </ul>
                 </p>
                 <p>
-                    In fact most of data model implementations implement several types. Tipycal samples are
+                    In fact most of data model implementations implement several types. Typical samples are
 
                     <ul>
                         <li><i>EditableGridDataModel</i>. This class implements Editable and LazyLoadable interfaces.</li>

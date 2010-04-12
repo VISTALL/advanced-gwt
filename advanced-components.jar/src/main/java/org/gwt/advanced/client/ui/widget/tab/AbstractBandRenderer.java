@@ -41,7 +41,7 @@ public abstract class AbstractBandRenderer implements TabBandRenderer {
         result.setCellSpacing(0);
         result.setCellPadding(0);
         result.setStyleName("tabs-" + panel.getPosition().getName());
-        result.addTableListener(new TabEventListener(panel));
+        result.addClickHandler(new TabEventHandler(panel));
 
         int count = 0;
         for (int i = 0; i < panel.count(); i++) {

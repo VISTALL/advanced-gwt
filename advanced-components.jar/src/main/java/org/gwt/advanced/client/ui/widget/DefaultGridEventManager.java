@@ -16,9 +16,13 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.KeyboardListener;
-import com.google.gwt.user.client.ui.SourcesTableEvents;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.HTMLTable;
 import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
 
@@ -29,13 +33,21 @@ import org.gwt.advanced.client.ui.widget.cell.GridCell;
  * @since 1.3.0
  */
 public class DefaultGridEventManager implements GridEventManager {
-    /** a grid panel */
+    /**
+     * a grid panel
+     */
     private GridPanel panel;
-    /** selection modifier key code (Shift or Ctrl) */
+    /**
+     * selection modifier key code (Shift or Ctrl)
+     */
     private int selectionModifier;
+    /**
+     * registration of the handler responsible for keyboard events
+     */
+    private HandlerRegistration keyHandlerRegistration;
 
     /**
-     * Creates an instanec of the class and adds itself to the listeners list of the grid.
+     * Creates an instance of the class and adds itself to the listeners list of the grid.
      *
      * @param panel is a grid panel.
      */
@@ -43,87 +55,137 @@ public class DefaultGridEventManager implements GridEventManager {
         this.panel = panel;
     }
 
-    /** {@inheritDoc} */
-    public void dispatch(GridPanel panel, char keyCode, int modifiers) {
-        int mainModifier = KeyboardListener.MODIFIER_ALT | KeyboardListener.MODIFIER_CTRL;
+    /**
+     * {@inheritDoc}
+     */
+    public boolean dispatch(GridPanel panel, char keyCode, int modifiers) {
+        int mainModifier = MODIFIER_ALT | MODIFIER_CTRL;
 
-        if (modifiers == KeyboardListener.MODIFIER_CTRL || modifiers == KeyboardListener.MODIFIER_SHIFT)
+        if (modifiers == MODIFIER_CTRL || modifiers == MODIFIER_SHIFT)
             selectionModifier = modifiers;
         else
             selectionModifier = 0;
 
-        if (KeyboardListener.KEY_DOWN == keyCode && modifiers == mainModifier)
+        if (KeyCodes.KEY_DOWN == keyCode) {
             moveCursorDown();
-        else if (KeyboardListener.KEY_RIGHT == keyCode && modifiers == mainModifier)
+            return true;
+        } else if (KeyCodes.KEY_RIGHT == keyCode) {
             moveCursorRight();
-        else if (KeyboardListener.KEY_UP == keyCode && modifiers == mainModifier)
+            return true;
+        } else if (KeyCodes.KEY_UP == keyCode) {
             moveCursorUp();
-        else if (KeyboardListener.KEY_LEFT == keyCode && modifiers == mainModifier)
+            return true;
+        } else if (KeyCodes.KEY_LEFT == keyCode) {
             moveCursorLeft();
-        else if (KeyboardListener.KEY_HOME == keyCode && modifiers == KeyboardListener.MODIFIER_SHIFT)
+            return true;
+        } else if (KeyCodes.KEY_HOME == keyCode && modifiers == MODIFIER_SHIFT) {
             moveToFirstCell();
-        else if (KeyboardListener.KEY_END == keyCode && modifiers == KeyboardListener.MODIFIER_SHIFT)
+            return true;
+        } else if (KeyCodes.KEY_END == keyCode && modifiers == MODIFIER_SHIFT) {
             moveToLastCell();
-        else if (KeyboardListener.KEY_HOME == keyCode && modifiers == mainModifier)
+            return true;
+        } else if (KeyCodes.KEY_HOME == keyCode) {
             moveToStartPage();
-        else if (KeyboardListener.KEY_END == keyCode && modifiers == mainModifier)
+            return true;
+        } else if (KeyCodes.KEY_END == keyCode) {
             moveToEndPage();
-        else if (KeyboardListener.KEY_PAGEUP == keyCode && modifiers == mainModifier)
+            return true;
+        } else if (KeyCodes.KEY_PAGEUP == keyCode) {
             moveToPrevPage();
-        else if (KeyboardListener.KEY_PAGEDOWN == keyCode && modifiers == mainModifier)
+            return true;
+        } else if (KeyCodes.KEY_PAGEDOWN == keyCode) {
             moveToNextPage();
-        else if (keyCode == ' ' && modifiers == (KeyboardListener.MODIFIER_SHIFT | mainModifier))
+            return true;
+        } else if (keyCode == ' ' && modifiers == (MODIFIER_SHIFT | mainModifier)) {
             moveToPreviousCell();
-        else if (keyCode == ' ' && modifiers == mainModifier)
+            return true;
+        } else if (keyCode == ' ' && modifiers == mainModifier) {
             moveToNextCell();
-        else if (KeyboardListener.KEY_ENTER == keyCode && !isReadOnly())
+            return true;
+        } else if (KeyCodes.KEY_ENTER == keyCode && !isReadOnly()) {
             activateCell();
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * Sets a position of the cursor
      */
-    public void onFocus(Widget sender) {
+    public void onFocus(FocusEvent focusEvent) {
         EditableGrid grid = getPanel().getGrid();
         int row = grid.getCurrentRow();
         int column = grid.getCurrentColumn();
 
         if (row != -1 && column != -1 && (!grid.isMultiRowModeEnabled() || getSelectionModifier() == 0))
             setCursor(row, column);
+
+        if (keyHandlerRegistration == null)
+            keyHandlerRegistration = Event.addNativePreviewHandler(this);
     }
 
     /**
-     * Drops the current position of the cursor.
+     * Registers this class instance as a handler for native preview events.
+     *
+     * @param event is an original event that is never used.
      */
-    public void onLostFocus(Widget sender) {
+    @Override
+    public void onBlur(BlurEvent event) {
+        if (keyHandlerRegistration != null) {
+            keyHandlerRegistration.removeHandler();
+            keyHandlerRegistration = null;
+        }
     }
 
     /**
      * Sets the current position of the cursor or activates the selected cell.
      */
-    public void onCellClicked (SourcesTableEvents sender, int row, int cell) {
+    public void onClick(ClickEvent event) {
         EditableGrid grid = getPanel().getGrid();
-        if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn() && !grid.hasActiveCell() && getSelectionModifier() == 0)
+        HTMLTable.Cell cellForEvent = grid.getCellForEvent(event);
+        int row = cellForEvent.getRowIndex();
+        int cell = cellForEvent.getCellIndex();
+        if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn()
+                && !grid.hasActiveCell() && getSelectionModifier() == 0)
             activateCell();
         else if (!grid.hasActiveCell())
             grid.setFocus(true);
+        else if ((row != grid.getCurrentRow() || cell != grid.getCurrentColumn())
+                && grid.hasActiveCell() && getSelectionModifier() == 0)
+            activateCell();
+
         setCursor(row, cell);
     }
 
     /**
-     * Invokes {@link #dispatch(GridPanel, char, int)}.
+     * Handles key down and key up events to dispatch key combination.
+     *
+     * @param event is an event that occured somewhere in the grid.
      */
-    public void onKeyDown(Widget sender, char keyCode, int modifiers) {
-        dispatch(panel, keyCode, modifiers);
-    }
+    @Override
+    public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        if (event.getTypeInt() == Event.ONKEYDOWN) {
+            int modifiers = 0;
+            if (event.getNativeEvent().getAltKey())
+                modifiers |= MODIFIER_ALT;
+            if (event.getNativeEvent().getShiftKey())
+                modifiers |= MODIFIER_SHIFT;
+            if (event.getNativeEvent().getCtrlKey())
+                modifiers |= MODIFIER_CTRL;
+            if (event.getNativeEvent().getMetaKey())
+                modifiers |= MODIFIER_META;
 
-    /** Does nothing */
-    public void onKeyPress(Widget sender, char keyCode, int modifiers) {
-    }
+            if (dispatch(panel, (char) event.getNativeEvent().getKeyCode(), modifiers)) {
+                event.getNativeEvent().preventDefault();
+                event.cancel();
+            }
+        } else if (event.getTypeInt() == Event.ONKEYUP) {
+            selectionModifier = 0;
+        }
 
-    /** Does nothing */
-    public void onKeyUp(Widget sender, char keyCode, int modifiers) {
-        selectionModifier = 0;
+        if (!event.isCanceled())
+            event.consume();
     }
 
     /**
@@ -317,19 +379,19 @@ public class DefaultGridEventManager implements GridEventManager {
      * This method sets the current cell value.<p/>
      * It takes into account whether the Shift or Ctrl modifier keys are pressed.
      *
-     * @param row is a row number.
+     * @param row  is a row number.
      * @param cell is a column number.
      */
     protected void setCursor(int row, int cell) {
         EditableGrid grid = getPanel().getGrid();
         if (getSelectionModifier() == 0 || !grid.isMultiRowModeEnabled())
             grid.setCurrentCell(row, cell);
-        else if (getSelectionModifier() == KeyboardListener.MODIFIER_CTRL) {
+        else if (getSelectionModifier() == MODIFIER_CTRL) {
             if (!grid.isSelected(row))
                 grid.selectRow(row);
             else
                 grid.deselectCell(row, cell);
-        } else if (getSelectionModifier() == KeyboardListener.MODIFIER_SHIFT) {
+        } else if (getSelectionModifier() == MODIFIER_SHIFT) {
             grid.selectRows(row);
         }
     }

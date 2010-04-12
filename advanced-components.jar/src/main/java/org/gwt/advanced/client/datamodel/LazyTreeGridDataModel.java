@@ -38,7 +38,8 @@ public class LazyTreeGridDataModel extends TreeGridDataModel implements LazyLoad
      *
      * @param handler is a handler to be used for synchronization.
      */
-    public LazyTreeGridDataModel(TreeDataModelCallbackHandler handler) {
+    @SuppressWarnings({"unchecked"})
+    public LazyTreeGridDataModel(TreeDataModelCallbackHandler<? extends Composite, ? extends LazyTreeGridRow> handler) {
         super(handler);
         setDelegate(new DelegateLazyGridDataModel(handler));
     }
@@ -128,7 +129,7 @@ public class LazyTreeGridDataModel extends TreeGridDataModel implements LazyLoad
          *
          * @param handler is a handler required for synchronization.
          */
-        protected DelegateLazyGridDataModel(DataModelCallbackHandler handler) {
+        protected DelegateLazyGridDataModel(DataModelCallbackHandler<Editable> handler) {
             super(handler);
         }
 

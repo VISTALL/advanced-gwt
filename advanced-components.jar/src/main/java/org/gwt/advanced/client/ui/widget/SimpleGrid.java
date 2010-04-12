@@ -16,6 +16,9 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.*;
 import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.ui.Resizable;
@@ -249,7 +252,7 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     }
 
     /** {@inheritDoc} */
-    protected List getHeaderWidgets() {
+    protected List<Widget> getHeaderWidgets() {
         return getHeaderTable().getHeaderWidgets();
     }
 
@@ -353,11 +356,35 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     }
 
     /** {@inheritDoc} */
-    public void addTableListener(TableListener listener) {
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
         if (initialized)
-            getBodyTable().addTableListener(listener);
+            return getBodyTable().addClickHandler(handler);
         else
-            super.addTableListener(listener);
+            return super.addClickHandler(handler);
+    }
+
+    /** {@inheritDoc} */
+    public void removeAllRows() {
+        if (initialized)
+            getBodyTable().removeAllRows();
+        else
+            super.removeAllRows();
+    }
+
+    /** {@inheritDoc} */
+    public void clear(boolean clearInnerHTML) {
+        if (initialized)
+            getBodyTable().clear();
+        else
+            super.clear(clearInnerHTML);
+    }
+
+    /** {@inheritDoc} */
+    public Cell getCellForEvent(ClickEvent event) {
+        if (initialized)
+            return getBodyTable().getCellForEvent(event);
+        else
+            return super.getCellForEvent(event);
     }
 
     /** {@inheritDoc} */
@@ -463,14 +490,6 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
             getBodyTable().onBrowserEvent(event);
         else
             super.onBrowserEvent(event);
-    }
-
-    /** {@inheritDoc} */
-    public void removeTableListener(TableListener listener) {
-        if (initialized)
-            getBodyTable().removeTableListener(listener);
-        else
-            super.removeTableListener(listener);
     }
 
     /** {@inheritDoc} */

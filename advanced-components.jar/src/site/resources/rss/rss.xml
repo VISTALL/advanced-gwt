@@ -6,7 +6,14 @@
 <description>This RSS feed contains information about latest project changes and released versions.</description>
 <link>http://advanced-gwt.sourceforge.net</link>
 <language>en</language>
-<pubDate>Tue, 05 Jan 2010 15:24:55 GMT</pubDate>
+<pubDate>Sun, 11 Apr 2010 20:43:31 GMT</pubDate>
+
+<item>
+<title>Advanced GWT Components 2.0.0 Released</title>
+<description><![CDATA[<P>This new version was totally refactored and doesn't use deprecated GWT API: listeners were replaced with handlers, methods addXXXListener() and removeXXXListener() were droped. All the models and components use generics.</P><P>Unfortunately the changes listed above affect backward compatibility of the library and make impossible to use it with older versions of GWT. For those individuals who have to have a deal with old API and doesn't plan to upgrade to newer ones we provide old supported version 1.5.0. But note that only critical bugs will be fixed in this branch. If you need extended and more quick support please consider replacement of an old version of the library.</P>]]></description>
+<author>Sergey Skladchikov</author>
+<pubDate>Sun, 11 Apr 2010 20:43:27 GMT</pubDate>
+</item>
 
 <item>
 <title>Advanced GWT Components 1.5.0 Released</title>

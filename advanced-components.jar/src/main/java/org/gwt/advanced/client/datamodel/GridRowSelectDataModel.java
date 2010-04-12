@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class GridRowSelectDataModel {
     /** a list of selected rows */
-    private List selectedRows = new ArrayList();
+    private List<SelectedRow> selectedRows = new ArrayList<SelectedRow>();
 
     /**
      * Adds a new selected row in the model.
@@ -54,7 +54,7 @@ public class GridRowSelectDataModel {
             return -1;
         }
 
-        return ((SelectedRow)selectedRows.get(0)).getIndex();
+        return selectedRows.get(0).getIndex();
     }
 
     /**
@@ -68,7 +68,7 @@ public class GridRowSelectDataModel {
             return null;
         }
 
-        return ((SelectedRow)selectedRows.get(0)).getRow();
+        return selectedRows.get(0).getRow();
     }
 
     /**
@@ -79,7 +79,7 @@ public class GridRowSelectDataModel {
     public int[] getIndexes() {
         int[] indexes = new int[selectedRows.size()];
         for (int i = 0; i < indexes.length; i++) {
-            indexes[i] = ((SelectedRow)selectedRows.get(i)).getIndex();
+            indexes[i] = selectedRows.get(i).getIndex();
         }
         return indexes;
     }
@@ -92,7 +92,7 @@ public class GridRowSelectDataModel {
     public GridRow[] getGridRows() {
         GridRow[] rows = new GridRow[selectedRows.size()];
         for (int i = 0; i < rows.length; i++) {
-            rows[i] = ((SelectedRow)selectedRows.get(i)).getRow();
+            rows[i] = selectedRows.get(i).getRow();
         }
         return rows;
     }
@@ -143,8 +143,7 @@ public class GridRowSelectDataModel {
      */
     public void replace(int oldIndex, int newIndex, GridRow newRow) {
         int count = 0;
-        for (Iterator iterator = selectedRows.iterator(); iterator.hasNext();) {
-            SelectedRow selectedRow = (SelectedRow) iterator.next();
+        for (SelectedRow selectedRow : selectedRows) {
             if (selectedRow.getIndex() == oldIndex)
                 break;
             count++;

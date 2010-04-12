@@ -16,11 +16,18 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerManager;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.SourcesTableDoubleClickEvents;
 import org.gwt.advanced.client.ui.TableDoubleClickListener;
 import org.gwt.advanced.client.ui.TableDoubleClickListenerCollection;
@@ -51,7 +58,7 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
     /**
      * header widgets list
      */
-    private List headerWidgets;
+    private List<Widget> headerWidgets;
     /**
      * a scroll panel widget (supported by IE only)
      */
@@ -61,9 +68,9 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
      */
     private boolean scrollable;
     /**
-     * list of table listeners
+     * list of table click handlers
      */
-    private TableListenerCollection listeners = new TableListenerCollection();
+    private HandlerManager handlerManager = new HandlerManager(this);
     /**
      * list of double click listeners registered in this widget
      */
@@ -129,7 +136,7 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
             // Physical attach.
             DOM.appendChild(th, widget.getElement());
 
-            List headerWidgets = getHeaderWidgets();
+            List<Widget> headerWidgets = getHeaderWidgets();
             if (headerWidgets.size() > column && headerWidgets.get(column) != null)
                 headerWidgets.set(column, widget);
             else
@@ -170,10 +177,9 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
     /**
      * {@inheritDoc}
      */
-    public Iterator iterator() {
-        List notAttachedWidgets = new ArrayList();
-        for (Iterator iterator = getHeaderWidgets().iterator(); iterator.hasNext();) {
-            Widget widget = (Widget) iterator.next();
+    public Iterator<Widget> iterator() {
+        List<Widget> notAttachedWidgets = new ArrayList<Widget>();
+        for (Widget widget : getHeaderWidgets()) {
             if (!widget.isAttached())
                 notAttachedWidgets.add(widget);
         }
@@ -218,26 +224,17 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
     }
 
     /**
-     * Adds a table listener and sinks the ONCLICK event if it's not sank.
+     * Adds a table handler and sinks the ONCLICK event if it's not sank.
      *
-     * @param listener is a listener to add.
+     * @param handler is a handler to add.
      */
-    public void addTableListener(TableListener listener) {
-        removeTableListener(listener);
-        getListeners().add(listener);
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        HandlerRegistration registration = getHandlerManager().addHandler(ClickEvent.getType(), handler);
         if (!clickEnabled) {
             DOM.sinkEvents(getElement(), Event.ONCLICK);
             clickEnabled = true;
         }
-    }
-
-    /**
-     * Removes the table listener.
-     *
-     * @param listener is a listener to remove.
-     */
-    public void removeTableListener(TableListener listener) {
-        getListeners().remove(listener);
+        return registration;
     }
 
     /**
@@ -247,7 +244,7 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
      */
     public void addDoubleClickListener(TableDoubleClickListener listener) {
         removeDoubleClickListener(listener);
-        getDoubleClikcListeners().add(listener);
+        getDoubleClickListeners().add(listener);
         if (!clickEnabled) {
             DOM.sinkEvents(getElement(), Event.ONCLICK);
             clickEnabled = true;
@@ -261,8 +258,8 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
      * @param listener is a listener to remove.
      */
     public void removeDoubleClickListener(TableDoubleClickListener listener) {
-        getDoubleClikcListeners().remove(listener);
-        if (getDoubleClikcListeners().isEmpty()) {
+        getDoubleClickListeners().remove(listener);
+        if (getDoubleClickListeners().isEmpty()) {
             doubleClickEnabled = false;
         }
     }
@@ -271,15 +268,19 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
      * Fires click events.
      */
     protected void fireClickEvent() {
+        getHandlerManager().fireEvent(new ClickEvent(){});
+        setCellClicked(null);
+    }
+
+    @Override
+    public Cell getCellForEvent(ClickEvent event) {
         Element td = getCellElement(getCellClicked());
         if (td == null)
-            return;
+            return null;
 
         Element tr = DOM.getParent(td);
         Element tbody = DOM.getParent(tr);
-
-        getListeners().fireCellClicked(this, DOM.getChildIndex(tbody, tr), DOM.getChildIndex(tr, td));
-        setCellClicked(null);
+        return new Cell(DOM.getChildIndex(tbody, tr), DOM.getChildIndex(tr, td)){}; 
     }
 
     /**
@@ -293,7 +294,7 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
         Element tr = DOM.getParent(td);
         Element tbody = DOM.getParent(tr);
 
-        getDoubleClikcListeners().fireCellDoubleClicked(this, DOM.getChildIndex(tbody, tr), DOM.getChildIndex(tr, td));
+        getDoubleClickListeners().fireCellDoubleClicked(this, DOM.getChildIndex(tbody, tr), DOM.getChildIndex(tr, td));
         setCellClicked(null);
     }
 
@@ -321,15 +322,15 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
             return getCellElement(table);
     }
 
-    protected TableListenerCollection getListeners() {
-        return listeners;
+    protected HandlerManager getHandlerManager() {
+        return handlerManager;
     }
 
-    protected void setListeners(TableListenerCollection listeners) {
-        this.listeners = listeners;
+    protected void setHandlerManager(HandlerManager handlerManager) {
+        this.handlerManager = handlerManager;
     }
 
-    protected TableDoubleClickListenerCollection getDoubleClikcListeners() {
+    protected TableDoubleClickListenerCollection getDoubleClickListeners() {
         return doubleClikcListeners;
     }
 
@@ -462,7 +463,7 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
             DOM.insertChild(getTHeadElement(), tr, 0);
         }
 
-        List headerWidgets = getHeaderWidgets();
+        List<Widget> headerWidgets = getHeaderWidgets();
         if (headerWidgets.size() <= column || headerWidgets.get(column) == null) {
             int required = column + 1 - DOM.getChildCount(DOM.getChild(getTHeadElement(), 0));
             if (required > 0)
@@ -498,9 +499,9 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
      *
      * @return Value for property 'headerWidgets'.
      */
-    protected List getHeaderWidgets() {
+    protected List<Widget> getHeaderWidgets() {
         if (headerWidgets == null)
-            headerWidgets = new ArrayList();
+            headerWidgets = new ArrayList<Widget>();
         return headerWidgets;
     }
 
@@ -700,15 +701,15 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
-    protected class AdvancedWidgetIterator implements Iterator {
+    protected class AdvancedWidgetIterator implements Iterator<Widget> {
         /**
          * parent flex table iterator
          */
-        private Iterator parentIterator;
+        private Iterator<Widget> parentIterator;
         /**
          * header widget collection iterator
          */
-        private Iterator headersIterator;
+        private Iterator<Widget> headersIterator;
         /**
          * end of headers collection reached flag
          */
@@ -720,7 +721,7 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
          * @param parentIterator is a parent flex table iterator.
          * @param headerIterator is a header iterator.
          */
-        public AdvancedWidgetIterator(Iterator parentIterator, Iterator headerIterator) {
+        public AdvancedWidgetIterator(Iterator<Widget> parentIterator, Iterator<Widget> headerIterator) {
             this.parentIterator = parentIterator;
             this.headersIterator = headerIterator;
         }
@@ -740,7 +741,7 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
          *
          * @return a next widget link.
          */
-        public Object next() {
+        public Widget next() {
             if (!headersIterator.hasNext()) {
                 endOfHeadersReached = true;
                 return parentIterator.next();

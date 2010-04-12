@@ -33,7 +33,7 @@
     </span><span>model.add(String.</span><span style="font-style: italic; background-color: rgb(255, 255, 255);">valueOf(</span><span style="background-color: rgb(255, 255, 255);">i), </span><span style="font-weight: bold; color: rgb(0, 128, 0); background-color: rgb(255, 255, 255);">"Option "</span><span style="background-color: rgb(255, 255, 255);"> + i);
 ComboBox comboBox = </span><span style="font-weight: bold; color: rgb(0, 0, 128); background-color: rgb(255, 255, 255);">new</span><span style="background-color: rgb(255, 255, 255);"> ComboBox();</span><span style="color: rgb(128, 128, 128); font-style: italic; background-color: rgb(255, 255, 255);">//create
 </span><span style="background-color: rgb(255, 255, 255);">comboBox.setModel(model); </span><span style="color: rgb(128, 128, 128); font-style: italic; background-color: rgb(255, 255, 255);">//apply the model
-</span><span style="background-color: rgb(255, 255, 255);">comboBox.display(); </span><span style="color: rgb(128, 128, 128); font-style: italic; background-color: rgb(255, 255, 255);">//display the widget</span></pre>
+</span></pre>
                 </p>
                 <p>
                     Note that you should set the combo box data model before you display it. Otherwise it won't work
@@ -89,7 +89,7 @@ ComboBox comboBox = </span><span style="font-weight: bold; color: rgb(0, 0, 128)
                             <td>Moves focus to the next focusable element on the screen</td>
                         </tr>
                         <tr>
-                            <td>Alt-Tab</td>
+                            <td>Shift-Tab</td>
                             <td>Moves focus to the previous focusable element on the screen</td>
                         </tr>
                     </tbody>

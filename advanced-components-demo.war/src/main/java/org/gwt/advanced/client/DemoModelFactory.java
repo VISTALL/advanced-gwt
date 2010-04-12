@@ -32,21 +32,21 @@ import java.util.List;
 public class DemoModelFactory {
     /** employee list */
     private static Object[][] employees = new Object[][] {
-        new Object[]{"John Doe", createRandomDate(), createDepartmentListBox(0), new Long(0)},
-        new Object[]{"Peter Masters", createRandomDate(), createDepartmentListBox(0), new Long(1)},
-        new Object[]{"Bill Walles", createRandomDate(), createDepartmentListBox(1), new Long(2)},
-        new Object[]{"John Robinson", createRandomDate(), createDepartmentListBox(1), new Long(3)},
-        new Object[]{"Roger Hooker", createRandomDate(), createDepartmentListBox(2), new Long(4)},
-        new Object[]{"Tim Gilbert", createRandomDate(), createDepartmentListBox(2), new Long(5)},
-        new Object[]{"Martin Connery", createRandomDate(), createDepartmentListBox(3), new Long(6)},
-        new Object[]{"Robert Hendrikson", createRandomDate(), createDepartmentListBox(3), new Long(7)},
-        new Object[]{"Sean York", createRandomDate(), createDepartmentListBox(3), new Long(8)},
-        new Object[]{"John Gates", createRandomDate(), createDepartmentListBox(4), new Long(9)},
-        new Object[]{"Ringo Bates", createRandomDate(), createDepartmentListBox(5), new Long(10)},
-        new Object[]{"Tom Bakster", createRandomDate(), createDepartmentListBox(6), new Long(11)},
-        new Object[]{"Donald Simpson", createRandomDate(), createDepartmentListBox(7), new Long(12)},
-        new Object[]{"Harry McCormic", createRandomDate(), createDepartmentListBox(7), new Long(13)},
-        new Object[]{"Rupert Wheel", createRandomDate(), createDepartmentListBox(8), new Long(14)}
+        new Object[]{"John Doe", createRandomDate(), createDepartmentListBox(0), 0L},
+        new Object[]{"Peter Masters", createRandomDate(), createDepartmentListBox(0), 1L},
+        new Object[]{"Bill Walles", createRandomDate(), createDepartmentListBox(1), 2L},
+        new Object[]{"John Robinson", createRandomDate(), createDepartmentListBox(1), 3L},
+        new Object[]{"Roger Hooker", createRandomDate(), createDepartmentListBox(2), 4L},
+        new Object[]{"Tim Gilbert", createRandomDate(), createDepartmentListBox(2), 5L},
+        new Object[]{"Martin Connery", createRandomDate(), createDepartmentListBox(3), 6L},
+        new Object[]{"Robert Hendrikson", createRandomDate(), createDepartmentListBox(3), 7L},
+        new Object[]{"Sean York", createRandomDate(), createDepartmentListBox(3), 8L},
+        new Object[]{"John Gates", createRandomDate(), createDepartmentListBox(4), 9L},
+        new Object[]{"Ringo Bates", createRandomDate(), createDepartmentListBox(5), 10L},
+        new Object[]{"Tom Bakster", createRandomDate(), createDepartmentListBox(6), 11L},
+        new Object[]{"Donald Simpson", createRandomDate(), createDepartmentListBox(7), 12L},
+        new Object[]{"Harry McCormic", createRandomDate(), createDepartmentListBox(7), 13L},
+        new Object[]{"Rupert Wheel", createRandomDate(), createDepartmentListBox(8), 14L}
     };
 
     /**
@@ -95,12 +95,12 @@ public class DemoModelFactory {
 
     /** departments list */
     private static Object[][] departments = new Object[][] {
-        new Object[] {"HR", "Recruiters", "They hired everyone", new Long(0)},
-        new Object[] {"Bookkeeping", "Accountants", "They count salary", new Long(1)},
-        new Object[] {"Development", "Developers", "They make applications", new Long(2)},
-        new Object[] {"Management", "Managers", "They manage everyone", new Long(3)},
-        new Object[] {"Testing", "Testers", "They test applications", new Long(4)},
-        new Object[] {"President", "President", "Very important person", new Long(5)},
+        new Object[] {"HR", "Recruiters", "They hired everyone", 0L},
+        new Object[] {"Bookkeeping", "Accountants", "They count salary", 1L},
+        new Object[] {"Development", "Developers", "They make applications", 2L},
+        new Object[] {"Management", "Managers", "They manage everyone", 3L},
+        new Object[] {"Testing", "Testers", "They test applications", 4L},
+        new Object[] {"President", "President", "Very important person", 5L},
     };
 
     /**

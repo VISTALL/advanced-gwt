@@ -63,7 +63,7 @@ public class GridPanelFactoryImpl implements GridPanelFactory {
         Object[] data = model.getRowData(row);
         Object id = data[data.length - 1];
         if (id == null)
-            id = new Long(0);
+            id = 0L;
         return DemoModelFactory.createEployeesModel(Long.parseLong(String.valueOf(id)));
     }
 }

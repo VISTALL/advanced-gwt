@@ -16,6 +16,7 @@
 
 package org.gwt.advanced.client.misc;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
@@ -39,7 +40,7 @@ import java.util.Date;
 public class Sample {
     public static void sample1() {
         //create a new grid
-        EditableGrid grid = new EditableGrid(
+        EditableGrid<Editable> grid = new EditableGrid<Editable>(
             new String[]{"First Name", "Surname"},
             new Class[]{LabelCell.class, LabelCell.class}
         );
@@ -53,11 +54,8 @@ public class Sample {
             }
         );
 
-        //apply the model
+        //apply the model and render the grid
         grid.setModel(model);
-
-        //render the grid
-        grid.display();
 
         GridPanel panel = new GridPanel();
         // initialize the panel here
@@ -83,9 +81,9 @@ public class Sample {
         //create a new model containing departments
         HierarchicalGridDataModel hierarchicalModel = new HierarchicalGridDataModel(
             new Object[][] {
-                new Object[]{"Accountants", new Integer(3)},
-                new Object[]{"Management", new Integer(10)},
-                new Object[]{"Development", new Integer(100)}
+                new Object[]{"Accountants", 3},
+                new Object[]{"Management", 10},
+                new Object[]{"Development", 100}
             }
         );
 
@@ -93,10 +91,11 @@ public class Sample {
         hierarchicalModel.addSubgridModel(0, 0, model);
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void sample3() {
         LazyLoadable model = new LazyGridDataModel(
-            new DataModelCallbackHandler() {
-                public void synchronize(GridDataModel model) {
+            new DataModelCallbackHandler<Editable>() {
+                public void synchronize(Editable model) {
                     // get data here
 
                     // set a total row count
@@ -106,17 +105,18 @@ public class Sample {
         );
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void sample4() {
         LazyLoadable model = new LazyGridDataModel(
-            new DataModelCallbackHandler() {
-                public void synchronize(GridDataModel model) {
+            new DataModelCallbackHandler<Editable>() {
+                public void synchronize(Editable model) {
                     // get removed rows
-                    Object[][] removedRows = ((Editable) model).getRemovedRows();
+                    Object[][] removedRows = model.getRemovedRows();
 
                     // delete data from the storage
 
                     // clear old information 
-                    ((Editable) model).clearRemovedRows();
+                    model.clearRemovedRows();
                 }
             }
         );
@@ -133,6 +133,7 @@ public class Sample {
         table.enableVerticalScrolling(true);
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void sample6() {
         Editable model = new EditableGridDataModel(null);
 
@@ -150,6 +151,7 @@ public class Sample {
         panel.display();
     }
 
+    @SuppressWarnings({"UnnecessaryLocalVariable"})
     public static void sample7() {
         Editable hierarchicalModel = new HierarchicalGridDataModel(null);
 
@@ -160,8 +162,9 @@ public class Sample {
         HierarchicalGrid grid = (HierarchicalGrid) panel.createEditableGrid (
             new String[]{"Department", "Number of Employees"},
             new Class[]{LabelCell.class, IntegerCell.class},
-            hierarchicalModel
+            null
         );
+        grid.setModel(hierarchicalModel);
 
         // add a grid panel factory to the second column
         grid.addGridPanelFactory(
@@ -222,8 +225,6 @@ public class Sample {
         DatePicker picker = new DatePicker(new Date());
         // swicth off time entering
         picker.setTimeVisible(false);
-        // render the widget
-        picker.display();
     }
 
     public static void sample11() {
@@ -239,6 +240,7 @@ public class Sample {
         Window.alert("Current theme is " + helper.getThemeName());
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void sample12() {
         Editable model = new EditableGridDataModel(null);
 
@@ -258,6 +260,7 @@ public class Sample {
         RootPanel.get().add(panel);
     }
 
+    @SuppressWarnings({"UnusedDeclaration", "unchecked"})
     public static void sample13() {
         //create a new model and add one root item
         TreeGridDataModel model = new TreeGridDataModel(new Object[][]{new String[]{"President"}});
@@ -298,10 +301,9 @@ public class Sample {
         GridPanel panel = new GridPanel();
 
         //create and put the tree grid in the panel
-        panel.createEditableGrid(new String[]{"Posts"}, new Class[]{TextBoxCell.class}, model);
-
-        //prepare the grid for diplaying
-        panel.display();
+        panel.createEditableGrid(
+                new String[]{"Posts"}, new Class[]{TextBoxCell.class}, null
+        ).setModel(model);
 
         RootPanel.get().add(panel);
     }
@@ -347,9 +349,6 @@ public class Sample {
         SuggestionBox box = new SuggestionBox();
         box.setModel(model);
         box.setMaxLength(3);
-
-        //render the box
-        box.display();
     }
 
     public static void sample16() {
@@ -359,6 +358,7 @@ public class Sample {
         panel1.addTab(new Label("Nested Tabs"), panel2);
     }
 
+    @SuppressWarnings({"UnusedDeclaration"})
     public static void sample17() {
         BorderFactory contentbBorderFactory = new BorderFactory() {
             public Border create() {
@@ -375,6 +375,7 @@ public class Sample {
         AdvancedTabPanel panel = new AdvancedTabPanel(TabPosition.TOP, tabBorderFactory, contentbBorderFactory);
     }
 
+    @SuppressWarnings({"unchecked"})
     public static void quickstart() {
         //create a new model containing employees
         Editable model = new EditableGridDataModel(
@@ -390,14 +391,13 @@ public class Sample {
         panel.createEditableGrid(
             new String[]{"First Name", "Surname"},
             new Class[]{LabelCell.class, LabelCell.class},
-            model
-        );
+            null
+        ).setModel(model);
 
-        // render all
-        panel.display();
         RootPanel.get().add(panel);
     }
 
+    @SuppressWarnings({"EmptyTryBlock"})
     public class MyHandler implements DataModelCallbackHandler {
         private GridPanel panel;
 
@@ -481,11 +481,12 @@ public class Sample {
             super(panel);
         }
 
-        public void dispatch(GridPanel panel, char keyCode, int modifiers) {
-            if (keyCode == KEY_TAB) //move the cursor to the next cell on TAB pressing
+        public boolean dispatch(GridPanel panel, char keyCode, int modifiers) {
+            if (keyCode == KeyCodes.KEY_TAB) //move the cursor to the next cell on TAB pressing
                 moveToNextCell();
             else
-                super.dispatch(panel, keyCode, modifiers);
+                return super.dispatch(panel, keyCode, modifiers);
+            return false;
         }
     }
 
@@ -524,6 +525,7 @@ public class Sample {
         }
     }
 
+    @SuppressWarnings({"UnnecessaryLocalVariable"})
     public static class MyTabBandRenderer extends TopBandRenderer {
         public Widget render(AdvancedTabPanel panel) {
             Widget tab = super.render(panel);

@@ -48,7 +48,7 @@ new EditableGrid() {
                 how the library works.  
             </p>
             <p>
-                Another one question that is reasonable to talk about in this topic is the basic inteface
+                Another question that is reasonable to talk about in this topic is the basic inteface
                 <i>org.gwt.advanced.client.ui.AdvancedWidget</i>. It contains only one method <i>display()</i> and was
                 added to the library because of perfomance improvements.
             </p>
@@ -150,7 +150,7 @@ editableGrid.display();
             </p>
             <p>
                 Note that it doesn't matter how you render widgets. All advanced features like cells editing and
-                validation are supported for both approcahes. Everything you should always keep in mind is that the data
+                validation are supported by both approaches. Everything you should always keep in mind is that the data
                 model MUST be synchronized with the view. In case of client rendering it happens automatically. In
                 other cases you should do it manually as shown in the sample.
             </p>

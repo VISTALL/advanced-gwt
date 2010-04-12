@@ -78,11 +78,6 @@ public class TextAndButtonShowcase extends AbstractShowcase {
 
         panel.getColumnFormatter().setWidth(1, "50%");
 
-        comboBox.display();
-        picker.display();
-        suggestionBox.display();
-        complexSuggestionBox.display();
-
         return panel;
     }
 

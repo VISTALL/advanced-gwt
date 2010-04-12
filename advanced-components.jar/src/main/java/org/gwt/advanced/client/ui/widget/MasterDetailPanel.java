@@ -22,7 +22,6 @@ import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.MasterDetailLayout;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -34,7 +33,7 @@ import java.util.Set;
  */
 public class MasterDetailPanel extends FlexTable implements MasterDetailLayout, AdvancedWidget {
     /** list of attached grid panels */
-    private Set gridPanels = new HashSet();
+    private Set<GridPanel> gridPanels = new HashSet<GridPanel>();
     /** Constructs a new MasterDetailPanel with 2 rows and 1 column. */
     public MasterDetailPanel() {
         this(2, 1);
@@ -116,10 +115,8 @@ public class MasterDetailPanel extends FlexTable implements MasterDetailLayout, 
      * This method is loaded required to invoke similar methods in all nested grid panels.
      */
     public void resize() {
-        for (Iterator iterator = gridPanels.iterator(); iterator.hasNext();) {
-            GridPanel gridPanel = (GridPanel) iterator.next();
+        for (GridPanel gridPanel : gridPanels)
             gridPanel.resize();
-        }
     }
 
     /**
@@ -154,10 +151,8 @@ public class MasterDetailPanel extends FlexTable implements MasterDetailLayout, 
      */
     protected void removeGridPanelSubtree(GridPanel panel) {
         remove(panel.getParent());
-        for (Iterator iterator = panel.getChildGridPanels().iterator(); iterator.hasNext();) {
-            GridPanel gridPanel = (GridPanel) iterator.next();
+        for (GridPanel gridPanel : panel.getChildGridPanels())
             removeGridPanelSubtree(gridPanel);
-        }
         this.gridPanels.removeAll(panel.getChildGridPanels());
         panel.getChildGridPanels().clear();
     }

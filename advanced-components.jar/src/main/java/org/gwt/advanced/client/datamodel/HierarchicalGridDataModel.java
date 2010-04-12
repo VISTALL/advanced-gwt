@@ -28,9 +28,9 @@ import java.util.Map;
  */
 public class HierarchicalGridDataModel implements Hierarchical {
     /** associated subgrids */
-    private Map associatedSubgrids = new HashMap();
+    private Map<SubgridKey, GridDataModel> associatedSubgrids = new HashMap<SubgridKey, GridDataModel>();
     /** expanded cells map */
-    private Map expandedCells = new HashMap();
+    private Map<SubgridKey, Boolean> expandedCells = new HashMap<SubgridKey, Boolean>();
     /** a data model delegate */
     private EditableGridDataModel delegate;
 
@@ -53,7 +53,7 @@ public class HierarchicalGridDataModel implements Hierarchical {
      *
      * @param handler is a callback handler to be invoked on changes.
      */
-    protected HierarchicalGridDataModel (DataModelCallbackHandler handler) {
+    protected HierarchicalGridDataModel (DataModelCallbackHandler<Editable> handler) {
         final HierarchicalGridDataModel source = this;
         setDelegate(new EditableGridDataModel(handler) {
             protected void prepareEvent(EditableModelEvent event) {
@@ -99,14 +99,14 @@ public class HierarchicalGridDataModel implements Hierarchical {
         delegate.checkRowNumber(rowNumber, delegate.getTotalRowCount());
         delegate.checkColumnNumber(columnNumber, delegate.getTotalColumnCount());
 
-        return (GridDataModel) associatedSubgrids.get(
+        return associatedSubgrids.get(
             new SubgridKey(delegate.getInternalRowIdentifier(rowNumber), columnNumber)
         );
     }
 
     /** {@inheritDoc} */
     public void setExpanded(int row, int column, boolean expanded) {
-        expandedCells.put(new SubgridKey(delegate.getInternalRowIdentifier(row), column), Boolean.valueOf(expanded));
+        expandedCells.put(new SubgridKey(delegate.getInternalRowIdentifier(row), column), expanded);
         getDelegate().fireEvent(new HierarchicalModelEvent(
                 expanded ? HierarchicalModelEvent.CELL_EXPANDED : HierarchicalModelEvent.CELL_COLLAPSED, row, column
         ));
@@ -115,8 +115,8 @@ public class HierarchicalGridDataModel implements Hierarchical {
     /** {@inheritDoc} */
     public boolean isExpanded(int row, int column) {
         return Boolean.valueOf(String.valueOf(expandedCells.get(
-            new SubgridKey(delegate.getInternalRowIdentifier(row), column)))
-        ).booleanValue();
+                new SubgridKey(delegate.getInternalRowIdentifier(row), column))
+        ));
     }
 
     /**
@@ -124,7 +124,7 @@ public class HierarchicalGridDataModel implements Hierarchical {
      *
      * @param associatedSubgrids Value to set for property 'associatedSubgrids'.
      */
-    protected void setAssociatedSubgrids(Map associatedSubgrids) {
+    protected void setAssociatedSubgrids(Map<SubgridKey, GridDataModel> associatedSubgrids) {
         this.associatedSubgrids = associatedSubgrids;
     }
 
@@ -133,7 +133,7 @@ public class HierarchicalGridDataModel implements Hierarchical {
      *
      * @param expandedCells Value to set for property 'expandedCells'.
      */
-    protected void setExpandedCells(Map expandedCells) {
+    protected void setExpandedCells(Map<SubgridKey, Boolean> expandedCells) {
         this.expandedCells = expandedCells;
     }
 
@@ -200,12 +200,12 @@ public class HierarchicalGridDataModel implements Hierarchical {
     }
 
     /** {@inheritDoc} */
-    public void setSortColumn (int sortColumn, Comparator comparator) {
+    public void setSortColumn (int sortColumn, Comparator<Object> comparator) {
         delegate.setSortColumn(sortColumn , comparator);
     }
 
     /** {@inheritDoc} */
-    public DataModelCallbackHandler getHandler () {
+    public DataModelCallbackHandler<Editable> getHandler () {
         return delegate.getHandler();
     }
 
@@ -215,7 +215,7 @@ public class HierarchicalGridDataModel implements Hierarchical {
     }
 
     /** {@inheritDoc} */
-    public void setHandler (DataModelCallbackHandler handler) {
+    public void setHandler (DataModelCallbackHandler<Editable> handler) {
         delegate.setHandler(handler);
     }
 

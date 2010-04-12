@@ -87,12 +87,9 @@ model.addRow(marketingDirector, </span><span style="color:#000080;background-col
 </span><span style="background-color:#ffffff;">GridPanel panel = </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> GridPanel();
 
 </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//create and put the tree grid in the panel
-</span><span style="background-color:#ffffff;">panel.createEditableGrid(</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> String[]{</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Posts"</span><span style="background-color:#ffffff;">}, </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> Class[]{TextBoxCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">}, model);
+</span><span style="background-color:#ffffff;">panel.createEditableGrid(</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> String[]{</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Posts"</span><span style="background-color:#ffffff;">}, </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> Class[]{TextBoxCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">}, <span style="color:#000080;background-color:#ffffff;font-weight:bold;">null</span>).setModel(model);
 
-</span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//prepare the grid for diplaying
-</span><span style="background-color:#ffffff;">panel.display();
-
-RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(</span><span style="background-color:#ffffff;">).add(panel);</span></pre>
+</span><span style="background-color:#ffffff;">RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(</span><span style="background-color:#ffffff;">).add(panel);</span></pre>
 </source>
         </section>
         <div class="googleAds"><google-ads-horizontal-banner/></div>

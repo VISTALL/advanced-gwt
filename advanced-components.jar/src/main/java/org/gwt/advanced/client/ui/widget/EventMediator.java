@@ -24,7 +24,6 @@ import org.gwt.advanced.client.ui.SelectRowListener;
 import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -38,11 +37,11 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
     /** a grid panel */
     private GridPanel panel;
     /** pager listeners set */
-    private List pagerListeners;
+    private List<PagerListener> pagerListeners;
     /** grid listeners set */
-    private List gridListeners;
+    private List<GridListener> gridListeners;
     /** toolbar listeners set */
-    private List toolbarListeners;
+    private List<GridToolbarListener> toolbarListeners;
 
     /**
      * Creates an instance of the mediator and initializes the internal fields.
@@ -154,10 +153,8 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
 
     /** {@inheritDoc} */
     public void onSelect(EditableGrid grid, int row) {
-        for (Iterator iterator = getPanel().getChildGridPanels().iterator(); iterator.hasNext();) {
-            GridPanel gridPanel = (GridPanel) iterator.next();
+        for (GridPanel gridPanel : getPanel().getChildGridPanels())
             gridPanel.getGrid().synchronizeDataModel();
-        }
     }
 
     /**
@@ -167,10 +164,8 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      * @param page is a new page number.
      */
     public void firePageChangeEvent(Pager pager, int page) {
-        for (Iterator iterator = getPagerListeners().iterator(); iterator.hasNext();) {
-            PagerListener listener = (PagerListener) iterator.next();
+        for (PagerListener listener : getPagerListeners())
             listener.onPageChange(pager, page);
-        }
     }
 
     /**
@@ -179,10 +174,8 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      * @param model is a grid data model.
      */
     public void fireSaveEvent(GridDataModel model) {
-        for (Iterator iterator = getGridListeners().iterator(); iterator.hasNext();) {
-            GridListener listener = (GridListener) iterator.next();
+        for (GridListener listener : getGridListeners())
             listener.onSave(model);
-        }
     }
 
     /**
@@ -192,10 +185,8 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      * @param model is a grid data model.
      */
     public void fireSortEvent(HeaderCell cell, GridDataModel model) {
-        for (Iterator iterator = getGridListeners().iterator(); iterator.hasNext();) {
-            GridListener listener = (GridListener) iterator.next();
+        for (GridListener listener  : getGridListeners())
             listener.onSort(cell, model);
-        }
     }
 
     /**
@@ -204,70 +195,56 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      * @param model is a grid data model.
      */
     public void fireClearEvent(GridDataModel model) {
-        for (Iterator iterator = getGridListeners().iterator(); iterator.hasNext();) {
-            GridListener listener = (GridListener) iterator.next();
+        for (GridListener listener  : getGridListeners())
             listener.onClear(model);
-        }
     }
 
     /**
      * This method fires the add item event.
      */
     protected void fireAddRowEvent() {
-        for (Iterator iterator = getToolbarListeners().iterator(); iterator.hasNext();) {
-            GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
+        for (GridToolbarListener gridToolbarListener : getToolbarListeners())
             gridToolbarListener.onAddClick();
-        }
     }
 
     /**
      * This method fires the remove item event.
      */
     protected void fireRemoveRowEvent() {
-        for (Iterator iterator = getToolbarListeners().iterator(); iterator.hasNext();) {
-            GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
+        for (GridToolbarListener gridToolbarListener : getToolbarListeners())
             gridToolbarListener.onRemoveClick();
-        }
     }
 
     /**
      * This method fires the save event.
      */
     protected void fireSaveEvent () {
-        for (Iterator iterator = getToolbarListeners().iterator(); iterator.hasNext();) {
-            GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
+        for (GridToolbarListener gridToolbarListener : getToolbarListeners())
             gridToolbarListener.onSaveClick();
-        }
     }
 
     /**
      * This method fires the clear items event.
      */
     protected void fireClearEvent() {
-        for (Iterator iterator = getToolbarListeners().iterator(); iterator.hasNext();) {
-            GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
+        for (GridToolbarListener gridToolbarListener : getToolbarListeners())
             gridToolbarListener.onClearClick();
-        }
     }
 
     /**
      * Fires the move left click event.
      */
     protected void fireMoveLeftEvent() {
-        for (Iterator iterator = getToolbarListeners().iterator(); iterator.hasNext();) {
-            GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
+        for (GridToolbarListener gridToolbarListener  : getToolbarListeners())
             gridToolbarListener.onMoveLeftClick();
-        }
     }
 
     /**
      * Fires the move right click event.
      */
     protected void fireMoveRightEvent() {
-        for (Iterator iterator = getToolbarListeners().iterator(); iterator.hasNext();) {
-            GridToolbarListener gridToolbarListener = (GridToolbarListener) iterator.next();
+        for (GridToolbarListener gridToolbarListener : getToolbarListeners())
             gridToolbarListener.onMoveRightClick();
-        }
     }
 
     /** {@inheritDoc} */
@@ -288,7 +265,7 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      * @param listener is a pager listener.
      */
     public void addPagerListener(PagerListener listener) {
-        List list = getPagerListeners();
+        List<PagerListener> list = getPagerListeners();
         if (!list.contains(listener))
             list.add(listener);
     }
@@ -308,7 +285,7 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      * @param listener is a pager listener.
      */
     public void addGridListener(GridListener listener) {
-        List list = getGridListeners();
+        List<GridListener> list = getGridListeners();
         if (!list.contains(listener))
             list.add(listener);
     }
@@ -328,7 +305,7 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      * @param listener is a toolbar listener.
      */
     public void addToolbarListener(GridToolbarListener listener) {
-        List list = getToolbarListeners();
+        List<GridToolbarListener> list = getToolbarListeners();
         if (!list.contains(listener))
             list.add(listener);
     }
@@ -394,9 +371,9 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      *
      * @return Value for property 'pagerListeners'.
      */
-    protected List getPagerListeners () {
+    protected List<PagerListener> getPagerListeners () {
         if (pagerListeners == null)
-            pagerListeners = new ArrayList();
+            pagerListeners = new ArrayList<PagerListener>();
         return pagerListeners;
     }
 
@@ -405,9 +382,9 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      *
      * @return Value for property 'gridListeners'.
      */
-    protected List getGridListeners () {
+    protected List<GridListener> getGridListeners () {
         if (gridListeners == null)
-            gridListeners = new ArrayList();
+            gridListeners = new ArrayList<GridListener>();
         return gridListeners;
     }
 
@@ -416,9 +393,9 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
      *
      * @return Value for property 'toolbarListeners'.
      */
-    protected List getToolbarListeners () {
+    protected List<GridToolbarListener> getToolbarListeners () {
         if (toolbarListeners == null)
-            toolbarListeners = new ArrayList();
+            toolbarListeners = new ArrayList<GridToolbarListener>();
         return toolbarListeners;
     }
 

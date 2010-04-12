@@ -16,9 +16,13 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.event.logical.shared.*;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.Resizable;
 import org.gwt.advanced.client.ui.widget.border.Border;
 import org.gwt.advanced.client.ui.widget.border.BorderFactory;
@@ -27,7 +31,6 @@ import org.gwt.advanced.client.ui.widget.tab.TabBorderFactory;
 import org.gwt.advanced.client.ui.widget.tab.TabPosition;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -36,7 +39,7 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.6
  */
-public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, Resizable {
+public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandlers<Integer>, HasBeforeSelectionHandlers<Integer>, Resizable {
     /**
      * tabs position for displaying
      */
@@ -48,7 +51,7 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
     /**
      * tabs and contents list
      */
-    private List tabs = new ArrayList();
+    private List<TabHolder> tabs = new ArrayList<TabHolder>();
     /**
      * a factory for rendering tab borders
      */
@@ -62,10 +65,6 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
      */
     private DockPanel layout = new DockPanel();
     /**
-     * a list of tab selection listeners
-     */
-    private List tabListeners = new ArrayList();
-    /**
      * content border instance
      */
     private Border contentBorder;
@@ -76,7 +75,7 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
     /**
      * tab states list
      */
-    private List tabStates = new ArrayList();
+    private List<TabState> tabStates = new ArrayList<TabState>();
 
     /**
      * Creates an instance of this class and displays top tabs band.
@@ -110,18 +109,16 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         setStyleName("advanced-TabPanel");
         render();
 
-        addTabListener(new TabListener() {
-            public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-                for (Iterator iterator = tabStates.iterator(); iterator.hasNext();) {
-                    TabState tabState = (TabState) iterator.next();
-                    if (tabIndex == tabState.getIndex() && !tabState.isEnabled()) {
-                        return false;
+        addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            @Override
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                for (Object tabState1 : tabStates) {
+                    TabState tabState = (TabState) tabState1;
+                    if (event.getItem() == tabState.getIndex() && !tabState.isEnabled()) {
+                        event.cancel();
+                        return;
                     }
                 }
-                return true;
-            }
-
-            public void onTabSelected(SourcesTabEvents sender, int tabIndex) {
             }
         });
     }
@@ -165,7 +162,7 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         renderTabs();
 
         TabState tabState = new TabState();
-        tabState.setIndex(tabs.indexOf(tab));
+        tabState.setIndex(tabs.indexOf(holder));
         tabState.setTab(tab);
         tabState.setEnabled(true);
         tabStates.add(tabState);
@@ -189,8 +186,8 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         renderTabs();
 
         TabState selState = null;
-        for (Iterator iterator = tabStates.iterator(); iterator.hasNext();) {
-            TabState tabState = (TabState) iterator.next();
+        for (Object tabState1 : tabStates) {
+            TabState tabState = (TabState) tabState1;
             if (tabState.getTab().equals(tab))
                 selState = tabState;
         }
@@ -199,10 +196,10 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
             int selIndex = selState.getIndex();
             tabStates.remove(selState);
 
-            for (Iterator iterator = tabStates.iterator(); iterator.hasNext();) {
-                TabState tabState = (TabState) iterator.next();
+            for (Object tabState1 : tabStates) {
+                TabState tabState = (TabState) tabState1;
                 if (tabState.getIndex() > selIndex)
-                    tabState.setIndex(tabState.getIndex()-1);
+                    tabState.setIndex(tabState.getIndex() - 1);
             }
         }
     }
@@ -227,7 +224,7 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         renderTabs();
 
         TabState tabState = new TabState();
-        tabState.setIndex(tabs.indexOf(tab));
+        tabState.setIndex(tabs.indexOf(holder));
         tabState.setTab(tab);
         tabState.setEnabled(true);
         tabStates.add(tabState);
@@ -242,24 +239,14 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         if (index >= tabs.size())
             return;
 
-        boolean continueTabSelection = true;
-        for (Iterator iterator = tabListeners.iterator(); iterator.hasNext();) {
-            TabListener tabListener = (TabListener) iterator.next();
-            continueTabSelection = tabListener.onBeforeTabSelected(this, index);
-            if (!continueTabSelection)
-                break;
-        }
-
-        if (!continueTabSelection)
+        BeforeSelectionEvent<Integer> event = BeforeSelectionEvent.fire(this, index);
+        if (event.isCanceled())
             return;
 
         selected = index;
         renderTabs();
 
-        for (Iterator iterator = tabListeners.iterator(); iterator.hasNext();) {
-            TabListener tabListener = (TabListener) iterator.next();
-            tabListener.onTabSelected(this, index);
-        }
+        SelectionEvent.fire(this, index);
         resize();
     }
 
@@ -290,7 +277,7 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
     public Widget getTab(int index) {
         if (index < 0 || this.tabs.size() <= index)
             return null;
-        TabHolder tabHolder = (TabHolder) this.tabs.get(index);
+        TabHolder tabHolder = this.tabs.get(index);
         return tabHolder != null ? tabHolder.getTab() : null;
     }
 
@@ -304,7 +291,7 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         int index = indexOf(tab);
         if (index == -1)
             return null;
-        TabHolder tabHolder = (TabHolder) this.tabs.get(index);
+        TabHolder tabHolder = this.tabs.get(index);
         return tabHolder != null ? tabHolder.getContent() : null;
     }
 
@@ -341,30 +328,11 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         } else {
             w.addStyleName("disabled-tab");
         }
-        for (Iterator iterator = tabStates.iterator(); iterator.hasNext();) {
-            TabState tabState = (TabState) iterator.next();
+        for (Object tabState1 : tabStates) {
+            TabState tabState = (TabState) tabState1;
             if (tabState.getIndex() == tabIndex)
                 tabState.setEnabled(enable);
         }
-    }
-
-    /**
-     * Adds a tab listener to the panel.
-     *
-     * @param listener is a tab listener.
-     */
-    public void addTabListener(TabListener listener) {
-        removeTabListener(listener);
-        tabListeners.add(listener);
-    }
-
-    /**
-     * Removes a tab listener.
-     *
-     * @param listener a tab listener.
-     */
-    public void removeTabListener(TabListener listener) {
-        tabListeners.remove(listener);
     }
 
     /**
@@ -446,6 +414,16 @@ public class AdvancedTabPanel extends SimplePanel implements SourcesTabEvents, R
         Widget content = getContent(getTab(getSelected()));
         if (content != null && content instanceof Resizable)
             ((Resizable) content).resize();
+    }
+
+    @Override
+    public HandlerRegistration addSelectionHandler(SelectionHandler<Integer> selectionHandler) {
+        return addHandler(selectionHandler, SelectionEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addBeforeSelectionHandler(BeforeSelectionHandler<Integer> beforeSelectionHandler) {
+        return addHandler(beforeSelectionHandler, BeforeSelectionEvent.getType());
     }
 
     /**

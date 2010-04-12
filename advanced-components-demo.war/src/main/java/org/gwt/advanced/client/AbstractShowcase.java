@@ -87,7 +87,7 @@ public abstract class AbstractShowcase extends VerticalPanel implements Resizabl
 
         showCasePanel.addTab(new Label("Live Demo"), getWidget());
         HTML iframe = new HTML();
-        iframe.setHTML("<iframe class='demo-Source' src='xref/" + GWT.getTypeName(this).replaceAll("\\.", "/") + ".html'/>");
+        iframe.setHTML("<iframe class='demo-Source' src='xref/" + getClass().getName().replaceAll("\\.", "/") + ".html'/>");
         showCasePanel.addTab(new Label("Source Code"), iframe);
 
         panel.addTab(new Label(getName()), this);

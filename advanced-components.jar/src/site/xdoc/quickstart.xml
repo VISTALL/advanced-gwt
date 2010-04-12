@@ -48,12 +48,10 @@
     panel.createEditableGrid(
         </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> String[]{</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"First Name"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Surname"</span><span style="background-color:#ffffff;">},
         </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> Class[]{LabelCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">, LabelCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">},
-        model
-    );
+        <span style="color:#000080;background-color:#ffffff;font-weight:bold;">null</span>
+    ).setModel(model);
 
-</span><span style="color:#808080;background-color:#ffffff;font-style:italic;">// display all
-</span><span style="background-color:#ffffff;">panel.display();
-RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(</span><span style="background-color:#ffffff;">).add(panel);</span></pre>
+</span><span style="background-color:#ffffff;">RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(</span><span style="background-color:#ffffff;">).add(panel);</span></pre>
 </source>
                 This code creates one grid containing a list of employees. All columns are sortable and all cells are
                 editable. But this sample doesn't send data to an RPC service to persist it. So, it's just a simple
@@ -78,7 +76,7 @@ RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(<
 </span></pre>
 </source>
                 <ul>
-                    <li>IMPORTANT NOTE. If you do not use Maven to compile GWT projects, you maight also need to add the following line into .gwt.xml file.</li>
+                    <li>IMPORTANT NOTE. If you do not use Maven to compile GWT projects, you might also need to add the following line into .gwt.xml file.</li>
                 </ul>
 <source>
 &lt;stylesheet src="advanced/themes/default/theme.css"/&gt;    

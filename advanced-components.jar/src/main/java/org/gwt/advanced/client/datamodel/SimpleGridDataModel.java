@@ -151,10 +151,8 @@ public class SimpleGridDataModel implements GridDataModel {
     public String toString () {
         Object[][] data = getData();
         String result = "";
-        for (int i = 0; i < data.length; i++) {
-            Object[] row = data[i];
-            for (int j = 0; j < row.length; j++) {
-                Object cell = row[j];
+        for (Object[] row : data) {
+            for (Object cell : row) {
                 result += String.valueOf(cell) + " ";
             }
             result += "\n";

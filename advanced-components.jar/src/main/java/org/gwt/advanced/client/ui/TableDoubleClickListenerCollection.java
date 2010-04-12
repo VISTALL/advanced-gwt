@@ -17,7 +17,6 @@
 package org.gwt.advanced.client.ui;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * This collection assumes that it contains the {@link org.gwt.advanced.client.ui.TableDoubleClickListener}s
@@ -27,7 +26,7 @@ import java.util.Iterator;
  * @author Sergey Skladchikov
  * @since 1.4.9
  */
-public class TableDoubleClickListenerCollection extends ArrayList {
+public class TableDoubleClickListenerCollection extends ArrayList<TableDoubleClickListener> {
     /**
      * This method fires the double click event and invokes all the listeners
      * stored in this collection.
@@ -37,8 +36,7 @@ public class TableDoubleClickListenerCollection extends ArrayList {
      * @param cell is a cell number.
      */
     public void fireCellDoubleClicked(SourcesTableDoubleClickEvents sender, int row, int cell) {
-        for (Iterator iterator = this.iterator(); iterator.hasNext();) {
-            TableDoubleClickListener listener = (TableDoubleClickListener) iterator.next();
+        for (TableDoubleClickListener listener : this) {
             try {
                 listener.onCellDoubleClick(sender, row, cell);
             } catch (Throwable t) {

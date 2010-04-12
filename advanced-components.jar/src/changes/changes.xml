@@ -6,7 +6,14 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="1.5.0" date="2010-01-05" description="Latest version">
+        <release version="2.0.0" date="2010-04-11" description="Latest stable version">
+            <action type="add" issue="62" system="google">Remove deprecated API usage</action>
+            <action type="fix" issue="61" system="google">DatePicker fails to go to the next month in Chrome browser</action>
+            <action type="fix" issue="63" system="google">ComboBox remains active after selecting value</action>
+            <action type="fix" issue="64" system="google">Wrong 12am &lt;-&gt; 12pm switching</action>
+            <action type="fix" issue="65" system="google">ComboBox choice button doesn't close the drop down list</action>
+        </release>
+        <release version="1.5.0" date="2010-01-05" description="Old supported version">
             <action type="add" issue="60" system="google">Lazy rendering support fro ComboBox and SuggestionBox</action>
             <action type="fix" issue="57" system="google">TreeGrid instantiated with wrong GridRenderer</action>
             <action type="fix" issue="58" system="google">ComboBox doesn't select a value on model events</action>

@@ -32,7 +32,7 @@
 SuggestionBox suggestionBox =</span><span style="font-weight: bold; color: rgb(0, 0, 128); background-color: rgb(255, 255, 255);"> new</span><span style="background-color: rgb(255, 255, 255);"> SuggestionBox(</span><span style="color: rgb(0, 0, 255); background-color: rgb(255, 255, 255);">5</span><span style="background-color: rgb(255, 255, 255);">); </span>
 <span style="color: rgb(128, 128, 128); font-style: italic; background-color: rgb(255, 255, 255);">//minimal number of symbols required to invoke the handler</span>
 <span style="background-color: rgb(255, 255, 255);">suggestionBox.setModel(model); </span><span style="color: rgb(128, 128, 128); font-style: italic; background-color: rgb(255, 255, 255);">// apply the model (the hadler will be invoked automatically</span>
-<span style="background-color: rgb(255, 255, 255);">suggestionBox.display(); </span><span style="color: rgb(128, 128, 128); font-style: italic; background-color: rgb(255, 255, 255);">//display the widget</span></pre>
+</pre>
                 </p>
                 <p>
                     Note that you don't have to fill the model with values before you apply it.

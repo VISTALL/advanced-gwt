@@ -47,11 +47,10 @@ table.setHeaderWidget(</span><span style="color:#0000ff;background-color:#ffffff
 </span><span style="background-color:#ffffff;">EditableGrid grid = panel.createEditableGrid (
     </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> String[]{</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"First Name"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Surname"</span><span style="background-color:#ffffff;">},
     </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> Class[]{LabelCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">, LabelCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">},
-    model
+    <span style="color:#000080;background-color:#ffffff;font-weight:bold;">null</span>
 );
-
-</span><span style="color:#808080;background-color:#ffffff;font-style:italic;">// display all
-</span><span style="background-color:#ffffff;">panel.display();</span></pre>
+grid.setModel(model);
+</span></pre>
                 </p>
                 <p>
                     It's a good practise to create a new editable grid using the <a href="../grid-panel.html">Grid Panel</a>,
@@ -189,7 +188,7 @@ table.setHeaderWidget(</span><span style="color:#0000ff;background-color:#ffffff
 </span><span style="background-color:#ffffff;">HierarchicalGrid grid = (HierarchicalGrid) panel.createEditableGrid (
     </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> String[]{</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Department"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Number of Employees"</span><span style="background-color:#ffffff;">},
     </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> Class[]{LabelCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">, IntegerCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">},
-   hierarchicalModel
+   <span style="color:#000080;background-color:#ffffff;font-weight:bold;">null</span>
 );
 
 </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">// add a grid panel factory to the second column
@@ -206,7 +205,7 @@ table.setHeaderWidget(</span><span style="color:#0000ff;background-color:#ffffff
        }
    }
 );
-
+grid.setModel(hierarchicalModel);
 </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">// display all
 </span><span style="background-color:#ffffff;">panel.display();
 </span></pre>
@@ -545,8 +544,8 @@ panel.addGridPanel(detailPanel, masterPanel, </span><span style="color:#008000;b
         </span><span style="background-color:#ffffff;">panel.createEditableGrid (
             </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> String[]{</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"First Name"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Surname"</span><span style="background-color:#ffffff;">},
             </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> Class[]{LabelCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">, LabelCell.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">},
-           (Editable) model
-       );
+           <span style="color:#000080;background-color:#ffffff;font-weight:bold;">null</span>
+       ).setModel((Editable)model);
 
         </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">return</span><span style="background-color:#ffffff;"> panel;
    }
@@ -678,8 +677,7 @@ panel.addGridPanel(detailPanel, masterPanel, </span><span style="color:#008000;b
 <pre style="padding: 4px; line-height: 110%; font-family: monospace; background-color: rgb(255, 255, 255);">
 <span style="background-color: rgb(255, 255, 255);">ProgressBar bar =</span><span style="font-weight: bold; color: rgb(0, 0, 128); background-color: rgb(255, 255, 255);"> new</span><span style="background-color: rgb(255, 255, 255);"> ProgressBar(</span><span style="font-weight: bold; color: rgb(0, 128, 0); background-color: rgb(255, 255, 255);">"Please wait..."</span><span style="background-color: rgb(255, 255, 255);">);
 <br/>grid.setRowDrawHandler(bar);
-<br/>bar.show();
-<br/>grid.display();</span></pre>
+<br/>bar.show();</span></pre>
                 </p>
                 <p>
                     <i>ProgressBar</i> is a hypotetic progress bar widget that can be used in your application.
@@ -728,22 +726,22 @@ panel.addGridPanel(detailPanel, masterPanel, </span><span style="color:#008000;b
                     <tr>
                       <td>Move the cursor down</td>
                       <td>Key Down</td>
-                      <td>Alt-Ctrl</td>
+                      <td>-</td>
                     </tr>
                     <tr>
                       <td>Move the cursor right</td>
                       <td>Key Right</td>
-                      <td>Alt-Ctrl</td>
+                      <td>-</td>
                     </tr>
                     <tr>
                       <td>Move the cursor up</td>
                       <td>Key Up</td>
-                      <td>Alt-Ctrl</td>
+                      <td>-</td>
                     </tr>
                     <tr>
                       <td>Move the cursor left</td>
                       <td>Key Left</td>
-                      <td>Alt-Ctrl</td>
+                      <td>-</td>
                     </tr>
                     <tr>
                       <td>Move the cursor to the first cell of the page</td>
@@ -758,22 +756,22 @@ panel.addGridPanel(detailPanel, masterPanel, </span><span style="color:#008000;b
                     <tr>
                       <td>Move the cursor to the first page</td>
                       <td>Home</td>
-                      <td>Alt-Ctrl</td>
+                      <td>-</td>
                     </tr>
                     <tr>
                       <td>Move the cursor to the last page</td>
                       <td>End</td>
-                      <td>Alt-Ctrl</td>
+                      <td>-</td>
                     </tr>
                     <tr>
                       <td>Open the next page</td>
                       <td>PgDn</td>
-                      <td>Alt-Ctrl</td>
+                      <td>-</td>
                     </tr>
                     <tr>
                       <td>Open the previous page</td>
                       <td>PgUp</td>
-                      <td>Alt-Ctrl</td>
+                      <td>-</td>
                     </tr>
                     <tr>
                       <td>Move the cursor to the next cell (tabbing like in Excel)</td>

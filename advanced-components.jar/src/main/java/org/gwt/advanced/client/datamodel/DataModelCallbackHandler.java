@@ -23,7 +23,7 @@ package org.gwt.advanced.client.datamodel;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public interface DataModelCallbackHandler {
+public interface DataModelCallbackHandler<T extends GridDataModel> {
     /**
      * This method should synchronize the data saved in the model with the persistent storage
      * repository.<p>
@@ -36,5 +36,5 @@ public interface DataModelCallbackHandler {
      *
      * @param model is a model to be used for additional parameters.
      */
-    void synchronize(GridDataModel model);
+    void synchronize(T model);
 }

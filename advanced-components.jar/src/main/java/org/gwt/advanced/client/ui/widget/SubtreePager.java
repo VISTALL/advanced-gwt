@@ -16,7 +16,11 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.SimplePanel;
 import org.gwt.advanced.client.datamodel.TreeGridRow;
 import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
 import org.gwt.advanced.client.util.ThemeHelper;
@@ -41,8 +45,8 @@ public class SubtreePager extends SimplePanel {
     private Image left;
     /** right arrow image */
     private Image right;
-    /** arrow click listener */
-    private ClickListener arrowClickListener;
+    /** arrow click handler */
+    private ClickHandler arrowClickHandler;
 
     /**
      * This constructor draws a pager for the specified subtree.
@@ -128,7 +132,7 @@ public class SubtreePager extends SimplePanel {
         else {
             left = new ThemeImage("bullet-left.gif");
             left.setStyleName("arrow-left");
-            left.addClickListener(getArrowClickListener());
+            left.addClickHandler(getArrowClickHandler());
         }
 
         if (currentPage >= getRow().getEndPage())
@@ -136,19 +140,19 @@ public class SubtreePager extends SimplePanel {
         else {
             right = new ThemeImage("bullet-right.gif");
             right.setStyleName("arrow-right");
-            right.addClickListener(getArrowClickListener());
+            right.addClickHandler(getArrowClickHandler());
         }
     }
 
     /**
-     * Getter for property 'arrowClickListener'.
+     * Getter for property 'arrowClickHandler'.
      *
-     * @return Value for property 'arrowClickListener'.
+     * @return Value for property 'arrowClickHandler'.
      */
-    protected ClickListener getArrowClickListener() {
-        if (arrowClickListener == null)
-            arrowClickListener = new ArrowClickListener();
-        return arrowClickListener;
+    protected ClickHandler getArrowClickHandler() {
+        if (arrowClickHandler == null)
+            arrowClickHandler = new ArrowClickHandler();
+        return arrowClickHandler;
     }
 
     /**
@@ -161,15 +165,17 @@ public class SubtreePager extends SimplePanel {
     }
 
     /**
-     * This is an arrow click listener implementation that sets a current page number and redraws images.
+     * This is an arrow click handler implementation that sets a current page number and redraws images.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
      */
-    protected class ArrowClickListener implements ClickListener {
+    protected class ArrowClickHandler implements ClickHandler {
         /** {@inheritDoc} */
-        public void onClick(Widget sender) {
+        @Override
+        public void onClick(ClickEvent event) {
             TreeGridRow row = getRow();
             int currentPage = row.getCurrentPageNumber();
+            Object sender = event.getSource();
 
             if (sender == getLeft()) {
                 currentPage--;
