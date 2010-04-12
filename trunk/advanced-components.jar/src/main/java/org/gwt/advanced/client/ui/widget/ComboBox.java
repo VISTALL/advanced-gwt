@@ -121,6 +121,13 @@ public class ComboBox extends TextButtonPanel
         return addHandler(handler, KeyPressEvent.getType());
     }
 
+    /**
+     * Note that handlers added by this method will receive
+     * {@link org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent}s.
+     *
+     * @param handler the change handler
+     * @return a handler registration.
+     */
     @Override
     public HandlerRegistration addChangeHandler(ChangeHandler handler) {
         return addHandler(handler, ChangeEvent.getType());
