@@ -16,9 +16,6 @@
 
 package org.gwt.advanced.client.showcase;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -31,7 +28,6 @@ import org.gwt.advanced.client.datamodel.SuggestionBoxDataModel;
 import org.gwt.advanced.client.ui.widget.ComboBox;
 import org.gwt.advanced.client.ui.widget.DatePicker;
 import org.gwt.advanced.client.ui.widget.SuggestionBox;
-import org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent;
 
 import java.util.Date;
 
@@ -49,10 +45,11 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         panel.setWidget(1, 0, createHintLabel("Select a date:"));
         panel.setWidget(2, 0, createHintLabel("Type any European country name:"));
         panel.setWidget(3, 0, createHintLabel("Type any European country name to see the flag:"));
+        panel.setWidget(4, 0, createHintLabel("Type any symbol (very long list demo):"));
 
         panel.getColumnFormatter().setWidth(0, "50%");
 
-        ComboBox comboBox = new ComboBox();
+        ComboBox<ComboBoxDataModel> comboBox = new ComboBox<ComboBoxDataModel>();
         comboBox.setWidth("100%");
         ComboBoxDataModel model = DemoModelFactory.createsCountriesModel();
         model.setSelectedIndex(0);
@@ -65,7 +62,7 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         picker.setWidth("100%");
         picker.setTimeVisible(true);
 
-        final SuggestionBox suggestionBox = new SuggestionBox();
+        SuggestionBox suggestionBox = new SuggestionBox();
         suggestionBox.setExpressionLength(1);
         suggestionBox.setModel(new SuggestionBoxDataModel(new SuggestionBoxHandler()));
         suggestionBox.setWidth("100%");
@@ -79,6 +76,28 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         panel.setWidget(1, 1, picker);
         panel.setWidget(2, 1, suggestionBox);
         panel.setWidget(3, 1, complexSuggestionBox);
+
+        suggestionBox = new SuggestionBox();
+        suggestionBox.setRequestTimeout(100);
+        suggestionBox.setVisibleRows(10);
+        suggestionBox.setExpressionLength(1);
+        suggestionBox.setWidth("100%");
+
+        SuggestionBoxDataModel dataModel = suggestionBox.getModel();
+        dataModel.setHandler(new ListCallbackHandler() {
+            @Override
+            public void fill(ListDataModel model) {
+                String value = ((SuggestionBoxDataModel)model).getExpression();
+                String firstSymbol = value.substring(0, 1);
+
+                model.clear();
+                for (int i = (int)(Math.random() * 10); i < Math.random() * 100; i++) {
+                    model.add(String.valueOf(i), firstSymbol + i);
+                }
+            }
+        });
+
+        panel.setWidget(4, 1, suggestionBox);
 
         panel.getColumnFormatter().setWidth(1, "50%");
 

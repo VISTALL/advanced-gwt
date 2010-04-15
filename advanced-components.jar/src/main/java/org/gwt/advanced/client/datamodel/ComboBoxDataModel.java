@@ -143,6 +143,7 @@ public class ComboBoxDataModel implements ListDataModel {
      *
      * @param listener is a listener to be invoked on any event.
      */
+    @Override
     public void addListModelListener(ListModelListener listener) {
         removeListModelListener(listener);
         listeners.add(listener);
@@ -153,6 +154,7 @@ public class ComboBoxDataModel implements ListDataModel {
      *
      * @param listener is a listener to be unregistered.
      */
+    @Override
     public void removeListModelListener(ListModelListener listener) {
         listeners.remove(listener);
     }

@@ -131,4 +131,8 @@ public interface ListDataModel {
      * @return a number of items.
      */
     int getCount();
+
+    void addListModelListener(ListModelListener listener);
+
+    void removeListModelListener(ListModelListener listener);
 }

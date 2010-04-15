@@ -19,6 +19,7 @@ package org.gwt.advanced.client.ui.widget.cell;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
+import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.ui.widget.ComboBox;
 
 /**
@@ -34,14 +35,15 @@ public class ComboBoxCell extends AbstractCell {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings({"unchecked"})
     public void setValue(Object value) {
         if (value == null) {
-            value = new ComboBox();
+            value = new ComboBox<ComboBoxDataModel>();
             ComboBoxDataModel model = new ComboBoxDataModel();
             model.add("---", "---");
-            ((ComboBox)value).setModel(model);
+            ((ComboBox<ComboBoxDataModel>)value).setModel(model);
         } else if (value instanceof ComboBoxDataModel) {
-            ComboBox box = new ComboBox();
+            ComboBox<ComboBoxDataModel> box = new ComboBox<ComboBoxDataModel>();
             box.setModel((ComboBoxDataModel) value);
             value = box;
         }
@@ -91,7 +93,7 @@ public class ComboBoxCell extends AbstractCell {
         if (comboBox != null) {
             int index;
 
-            ComboBoxDataModel model = comboBox.getModel();
+            ListDataModel model = comboBox.getModel();
             index = model.getSelectedIndex();
 
             if (index != -1)
