@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
+import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.datamodel.ListModelEvent;
 import org.gwt.advanced.client.datamodel.ListModelListener;
 import org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent;
@@ -42,12 +43,12 @@ import java.util.Set;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
  */
-public class ComboBox extends TextButtonPanel
+public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         implements HasAllFocusHandlers, HasAllKeyHandlers, HasClickHandlers, ListModelListener, HasChangeHandlers {
     /**
      * a combo box data model
      */
-    private ComboBoxDataModel model;
+    private ListDataModel model;
     /**
      * a list item factory
      */
@@ -74,7 +75,7 @@ public class ComboBox extends TextButtonPanel
      *
      * @param model Value to set for property 'model'.
      */
-    public void setModel(ComboBoxDataModel model) {
+    public void setModel(T model) {
         if (model != null && this.model != model) {
             if (this.model != null)
                 this.model.removeListModelListener(this);
@@ -143,9 +144,11 @@ public class ComboBox extends TextButtonPanel
      *
      * @return Value for property 'model'.
      */
-    public ComboBoxDataModel getModel() {
-        if (model == null)
+    public ListDataModel getModel() {
+        if (model == null) {
             model = new ComboBoxDataModel();
+            model.addListModelListener(this);
+        }
         return model;
     }
 
@@ -165,7 +168,7 @@ public class ComboBox extends TextButtonPanel
      * But note that the combo box is not a focus event sourcer. It siply delegtes this functionality
      * to the text box.
      *
-     * @param focus is a falg of focus.
+     * @param focus is a flag of focus.
      */
     public void setFocus(boolean focus) {
         if (isCustomTextAllowed())

@@ -18,10 +18,7 @@ package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.user.client.Timer;
-import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
-import org.gwt.advanced.client.datamodel.ListModelEvent;
-import org.gwt.advanced.client.datamodel.SuggestionBoxDataModel;
-import org.gwt.advanced.client.datamodel.SuggestionModelEvent;
+import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.SuggestionBoxListener;
 
 import java.util.ArrayList;
@@ -37,7 +34,7 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
  */
-public class SuggestionBox extends ComboBox {
+public class SuggestionBox extends ComboBox<SuggestionBoxDataModel> {
     /**
      * default request timeout between last expression change and getting data
      */
@@ -66,6 +63,8 @@ public class SuggestionBox extends ComboBox {
      * request timeout value
      */
     private int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
+    /** flag that stores model initialization status */
+    private boolean modelInitialized;
 
     /**
      * Constructs a new SuggestionBox.</p>
@@ -115,7 +114,7 @@ public class SuggestionBox extends ComboBox {
 
     /**
      * Sets the request timeout value.<p/>
-     * Set it to control how offten the widget will request a server for data.
+     * Set it to control how often the widget will request a server for data.
      *
      * @param requestTimeout is a request timeout value in msc.
      */
@@ -130,9 +129,19 @@ public class SuggestionBox extends ComboBox {
      */
     public void setModel(SuggestionBoxDataModel model) {
         if (model != null) {
-            setModel((ComboBoxDataModel) model);
+            this.modelInitialized = true;
+            super.setModel(model);
             addSuggestionBoxListener(model);
         }
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public SuggestionBoxDataModel getModel() {
+        if (!modelInitialized) {
+            setModel(new SuggestionBoxDataModel(null));
+        }
+        return (SuggestionBoxDataModel) super.getModel();
     }
 
     /**
@@ -162,7 +171,7 @@ public class SuggestionBox extends ComboBox {
      * @return an expression value.
      */
     public String getExpression() {
-        ComboBoxDataModel comboBoxDataModel = getModel();
+        ListDataModel comboBoxDataModel = getModel();
         if (comboBoxDataModel instanceof SuggestionBoxDataModel)
             return ((SuggestionBoxDataModel) comboBoxDataModel).getExpression();
         else
@@ -175,7 +184,7 @@ public class SuggestionBox extends ComboBox {
      * @param expression is an expression to be applied.
      */
     public void setExpression(String expression) {
-        ComboBoxDataModel comboBoxDataModel = getModel();
+        ListDataModel comboBoxDataModel = getModel();
         if (comboBoxDataModel instanceof SuggestionBoxDataModel) {
             ((SuggestionBoxDataModel) comboBoxDataModel).setExpression(expression);
             getSelectedValue().setText(expression);
@@ -198,8 +207,7 @@ public class SuggestionBox extends ComboBox {
      */
     public void cleanSelection() {
         super.cleanSelection();
-        if (getModel() instanceof SuggestionBoxDataModel)
-            ((SuggestionBoxDataModel) getModel()).setExpression(null);
+        getModel().setExpression(null);
     }
 
     /**

@@ -79,7 +79,16 @@ public class SuggestionBoxDataModel extends ComboBoxDataModel implements Suggest
         setExpression(expression);
         fill();
     }
-    
+
+    /**
+     * Sets the callback handler that must fill the model with the values on demand.
+     *
+     * @param handler is a handler to set.
+     */
+    public void setHandler(ListCallbackHandler handler) {
+        this.handler = handler;
+    }
+
     /**
      * Getter for property 'handler'.
      *
@@ -94,6 +103,8 @@ public class SuggestionBoxDataModel extends ComboBoxDataModel implements Suggest
      */
     @SuppressWarnings({"unchecked"})
     protected void fill() {
-        getHandler().fill(this);
+        ListCallbackHandler handler = getHandler();
+        if (handler != null)
+            handler.fill(this);
     }
 }

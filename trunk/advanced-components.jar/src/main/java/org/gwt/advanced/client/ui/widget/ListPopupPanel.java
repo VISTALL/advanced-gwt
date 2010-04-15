@@ -25,7 +25,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
-import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
+import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
@@ -203,9 +203,6 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         setHidden(false);
         super.show();
 
-        setPopupPosition(getComboBox().getAbsoluteLeft(),
-                getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
-
         adjustSize();
 
         setHighlightRow(getComboBox().getModel().getSelectedIndex());
@@ -260,11 +257,8 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         int visibleRows = getVisibleRows();
 
         if (visibleRows <= 0) {
-            if (table.getOffsetHeight() > Window.getClientHeight() * 0.3)
-                table.setHeight((int) (Window.getClientHeight() * 0.3) + "px");
-            else
-                table.setHeight("auto");
-            setHighlightRow(0);
+            table.setHeight("");
+            DOM.setStyleAttribute(table.getElement(), "maxHeight", Window.getClientHeight() * 0.3 + "px");
         } else if (getComboBox().getModel().getCount() > visibleRows) {
             int index = getStartItemIndex();
             int count = getItemCount();
@@ -286,10 +280,23 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
             }
             table.setSize(table.getOffsetWidth() + "px", listHeight + "px");
             table.setScrollPosition(scrollPosition);
+            DOM.setStyleAttribute(table.getElement(), "maxHeight", Window.getClientHeight() * 0.3 + "px");
             setHighlightRow(index);
+        } else {
+            table.setHeight("");
+            DOM.setStyleAttribute(table.getElement(), "maxHeight", Window.getClientHeight() * 0.3 + "px");
         }
+
+        resetPosition();
+    }
+
+    /** Chooses and sets a mostly appropriate postion of the drop down list */
+    protected void resetPosition() {
         if (getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight() + getOffsetHeight() > Window.getClientHeight()) {
-            setPopupPosition(getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
+            setPopupPosition(getComboBox().getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
+        } else {
+            setPopupPosition(getComboBox().getAbsoluteLeft(),
+                    getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
         }
     }
 
@@ -338,7 +345,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
      */
     protected void fillList() {
         VerticalPanel panel = getList();
-        ComboBoxDataModel model = getComboBox().getModel();
+        ListDataModel model = getComboBox().getModel();
         ListItemFactory itemFactory = getComboBox().getListItemFactory();
 
         int count = getItemCount();
@@ -358,7 +365,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
      * @return a result of check.
      */
     protected boolean isRenderingLimitReached(int previouslyRenderedRows) {
-        ComboBoxDataModel model = getComboBox().getModel();
+        ListDataModel model = getComboBox().getModel();
         int previousHeight = 0;
 
         if (previouslyRenderedRows > 0) {
@@ -390,7 +397,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
      * @param newRow a row for selection.
      */
     protected void selectRow(int newRow) {
-        ComboBoxDataModel model = getComboBox().getModel();
+        ListDataModel model = getComboBox().getModel();
         model.setSelectedIndex(newRow);
     }
 
@@ -568,13 +575,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
             }
 
             getScrollPanel().setWidth(getComboBox().getOffsetWidth() + "px");
-
-            if (getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight() + getOffsetHeight() > Window.getClientHeight()) {
-                setPopupPosition(getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
-            } else {
-                setPopupPosition(getComboBox().getAbsoluteLeft(),
-                        getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
-            }
+            resetPosition();
         }
     }
 
