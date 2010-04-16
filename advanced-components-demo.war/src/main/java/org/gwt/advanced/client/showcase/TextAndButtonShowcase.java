@@ -42,10 +42,11 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         FlexTable panel = new FlexTable();
 
         panel.setWidget(0, 0, createHintLabel("Select a country or enter a new one:"));
-        panel.setWidget(1, 0, createHintLabel("Select a date:"));
-        panel.setWidget(2, 0, createHintLabel("Type any European country name:"));
-        panel.setWidget(3, 0, createHintLabel("Type any European country name to see the flag:"));
-        panel.setWidget(4, 0, createHintLabel("Type any symbol (very long list demo):"));
+        panel.setWidget(1, 0, createHintLabel("Long drop down list sample:"));
+        panel.setWidget(2, 0, createHintLabel("Select a date:"));
+        panel.setWidget(3, 0, createHintLabel("Type any European country name:"));
+        panel.setWidget(4, 0, createHintLabel("Type any European country name to see the flag:"));
+        panel.setWidget(5, 0, createHintLabel("Type any symbol (very long list demo):"));
 
         panel.getColumnFormatter().setWidth(0, "50%");
 
@@ -57,6 +58,16 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         comboBox.setCustomTextAllowed(true);
         comboBox.setLazyRenderingEnabled(true);
         comboBox.setVisibleRows(10);
+
+        ComboBox<ComboBoxDataModel> longComboBox = new ComboBox<ComboBoxDataModel>();
+        longComboBox.setWidth("100%");
+        ListDataModel longModel = longComboBox.getModel();
+        for (int i = 0; i < 100; i++) {
+            longModel.add(String.valueOf(i), "item" + i);
+        }
+        longComboBox.setCustomTextAllowed(false);
+        longComboBox.setLazyRenderingEnabled(true);
+        longModel.setSelectedIndex(50);
 
         DatePicker picker = new DatePicker(new Date());
         picker.setWidth("100%");
@@ -73,9 +84,10 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         complexSuggestionBox.setWidth("100%");
 
         panel.setWidget(0, 1, comboBox);
-        panel.setWidget(1, 1, picker);
-        panel.setWidget(2, 1, suggestionBox);
-        panel.setWidget(3, 1, complexSuggestionBox);
+        panel.setWidget(1, 1, longComboBox);
+        panel.setWidget(2, 1, picker);
+        panel.setWidget(3, 1, suggestionBox);
+        panel.setWidget(4, 1, complexSuggestionBox);
 
         suggestionBox = new SuggestionBox();
         suggestionBox.setRequestTimeout(100);
@@ -88,16 +100,11 @@ public class TextAndButtonShowcase extends AbstractShowcase {
             @Override
             public void fill(ListDataModel model) {
                 String value = ((SuggestionBoxDataModel)model).getExpression();
-                String firstSymbol = value.substring(0, 1);
-
-                model.clear();
-                for (int i = (int)(Math.random() * 10); i < Math.random() * 100; i++) {
-                    model.add(String.valueOf(i), firstSymbol + i);
-                }
+                model.add(value, value);
             }
         });
 
-        panel.setWidget(4, 1, suggestionBox);
+        panel.setWidget(5, 1, suggestionBox);
 
         panel.getColumnFormatter().setWidth(1, "50%");
 
