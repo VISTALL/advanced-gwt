@@ -521,7 +521,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      * @param event is an event that contains data about selected item.
      */
     protected void select(ListModelEvent event) {
-        if (event.getItemIndex() >= 0 && event.getItemIndex() < getListPanel().getList().getWidgetCount()) {
+        if (event.getItemIndex() >= 0) {
             if (isListPanelOpened()) {
                 getListPanel().setHighlightRow(event.getItemIndex());
             }
