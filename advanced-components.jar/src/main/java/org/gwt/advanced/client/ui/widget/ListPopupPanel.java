@@ -280,11 +280,10 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
             }
             table.setSize(table.getOffsetWidth() + "px", listHeight + "px");
             table.setScrollPosition(scrollPosition);
-            DOM.setStyleAttribute(table.getElement(), "maxHeight", Window.getClientHeight() * 0.3 + "px");
-            setHighlightRow(index);
+            DOM.setStyleAttribute(table.getElement(), "maxHeight", "");
         } else {
             table.setHeight("");
-            DOM.setStyleAttribute(table.getElement(), "maxHeight", Window.getClientHeight() * 0.3 + "px");
+            DOM.setStyleAttribute(table.getElement(), "maxHeight", "");
         }
 
         resetPosition();
@@ -331,12 +330,16 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
     /** This method prepares the list of items for displaying. */
     protected void prepareList() {
         VerticalPanel panel = getList();
-        panel.clear();
+
+        if (!isLazyRenderingEnabled() || getComboBox().getModel().getCount() != getItemCount())
+            panel.clear();
 
         fillList();
 
         selectRow(getComboBox().getModel().getSelectedIndex());
         getScrollPanel().setWidth(getComboBox().getOffsetWidth() + "px");
+
+        ensureVisible(getItem(getComboBox().getModel().getSelectedIndex()));
     }
 
     /**
@@ -377,10 +380,10 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
 
         return model.getCount() <= 0 // no data
                 // OR a selected value has already been displayed
-                || getItemCount() >= getComboBox().getSelectedIndex()
+                || getItemCount() > getComboBox().getSelectedIndex()
                 // AND one of the following conditions is true:
                 && (getItemCount() >= model.getCount() //no items any more
-                // OR no limit but there aren too many items
+                // OR no limit but there are too many items
                 || isLazyRenderingEnabled() && getVisibleRows() <= 0
                 && getList().getOffsetHeight() - previousHeight >= Window.getClientHeight() * 0.6
                 // OR visible rows number is limited and there was a new page rendered excepting the first page
@@ -549,7 +552,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         /** see class docs */
         @Override
         public void onScroll(ScrollEvent event) {
-            if (!autoScrollingEnabled
+            if (isLazyRenderingEnabled() && !autoScrollingEnabled
                     && getList().getOffsetHeight() - getScrollPanel().getScrollPosition() <= getScrollPanel().getOffsetHeight()) {
                 int firstItemOnNextPage = getItemCount() - 1;
                 fillList(); //next page of data

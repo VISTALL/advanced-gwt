@@ -56,7 +56,7 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         model.setSelectedIndex(0);
         comboBox.setModel(model);
         comboBox.setCustomTextAllowed(true);
-        comboBox.setLazyRenderingEnabled(true);
+        comboBox.setLazyRenderingEnabled(false);
         comboBox.setVisibleRows(10);
 
         ComboBox<ComboBoxDataModel> longComboBox = new ComboBox<ComboBoxDataModel>();
