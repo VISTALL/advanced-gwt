@@ -22,10 +22,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.datamodel.ListModelEvent;
@@ -304,7 +301,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      */
     public Widget getSelectedWidget() {
         if (isListPanelOpened() && getModel().getSelectedIndex() >= 0) {
-            VerticalPanel list = getListPanel().getList();
+            FlowPanel list = getListPanel().getList();
             if (list.getWidgetCount() > getModel().getSelectedIndex())
                 return list.getWidget(getModel().getSelectedIndex());
             return null;
