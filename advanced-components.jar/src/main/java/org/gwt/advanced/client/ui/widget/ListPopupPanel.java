@@ -39,7 +39,7 @@ import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
  */
 public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasChangeHandlers {
     /** a list of items */
-    private VerticalPanel list;
+    private FlowPanel list;
     /** items scrolling widget */
     private ScrollPanel scrollPanel;
     /** a flag meaning whether this widget is hidden */
@@ -76,7 +76,6 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
 
         setWidget(getScrollPanel());
 
-        getList().setWidth("100%");
         getList().setStyleName("list");
 
         Window.addResizeHandler(new ListWindowResizeHandler());
@@ -258,7 +257,9 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
 
         if (visibleRows <= 0) {
             table.setHeight("");
-            DOM.setStyleAttribute(table.getElement(), "maxHeight", Window.getClientHeight() * 0.3 + "px");
+            int spaceAbove = getComboBox().getAbsoluteTop();
+            int spaceUnder = Window.getClientHeight() - getComboBox().getAbsoluteTop() - getComboBox().getOffsetHeight();
+            DOM.setStyleAttribute(table.getElement(), "maxHeight", Math.max(spaceAbove, spaceUnder) + "px");
         } else if (getComboBox().getModel().getCount() > visibleRows) {
             int index = getStartItemIndex();
             int count = getItemCount();
@@ -289,9 +290,9 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         resetPosition();
     }
 
-    /** Chooses and sets a mostly appropriate postion of the drop down list */
+    /** Chooses and sets a mostly appropriate position of the drop down list */
     protected void resetPosition() {
-        if (getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight() + getOffsetHeight() > Window.getClientHeight()) {
+        if (Window.getClientHeight() - getComboBox().getAbsoluteTop() - getComboBox().getOffsetHeight() < getComboBox().getAbsoluteTop()) {
             setPopupPosition(getComboBox().getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
         } else {
             setPopupPosition(getComboBox().getAbsoluteLeft(),
@@ -329,7 +330,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
 
     /** This method prepares the list of items for displaying. */
     protected void prepareList() {
-        VerticalPanel panel = getList();
+        FlowPanel panel = getList();
 
         if (!isLazyRenderingEnabled() || getComboBox().getModel().getCount() != getItemCount())
             panel.clear();
@@ -337,7 +338,8 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         fillList();
 
         selectRow(getComboBox().getModel().getSelectedIndex());
-        getScrollPanel().setWidth(getComboBox().getOffsetWidth() + "px");
+        int delta = getElement().getOffsetWidth() - getElement().getClientWidth();
+        getScrollPanel().setWidth((getComboBox().getOffsetWidth() - delta) + "px");
 
         ensureVisible(getItem(getComboBox().getModel().getSelectedIndex()));
     }
@@ -347,7 +349,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
      * See {2link #isRenderingLimitReached()} for additional details since it's used in the body of this method.
      */
     protected void fillList() {
-        VerticalPanel panel = getList();
+        FlowPanel panel = getList();
         ListDataModel model = getComboBox().getModel();
         ListItemFactory itemFactory = getComboBox().getListItemFactory();
 
@@ -391,7 +393,6 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
                 || isLazyRenderingEnabled() && getVisibleRows() > 0 && getItemCount() - previouslyRenderedRows > 0
                 && (getItemCount() - previouslyRenderedRows) % getVisibleRows() == 0
                 && (getItemCount() - previouslyRenderedRows) / getVisibleRows() != 1);
-
     }
 
     /**
@@ -412,8 +413,6 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
      */
     protected FocusPanel adoptItemWidget(Widget widget) {
         FocusPanel panel = new FocusPanel(widget);
-        panel.setWidth("100%");
-        widget.setWidth("100%");
         panel.addClickHandler(getItemClickHandler());
         panel.addMouseOverHandler(getMouseEventsHandler());
         panel.addMouseOutHandler(getMouseEventsHandler());
@@ -444,9 +443,9 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
      *
      * @return Value for property 'list'.
      */
-    protected VerticalPanel getList() {
+    protected FlowPanel getList() {
         if (list == null)
-            list = new VerticalPanel();
+            list = new FlowPanel();
         return list;
     }
 
@@ -577,8 +576,9 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
                 return;
             }
 
-            getScrollPanel().setWidth(getComboBox().getOffsetWidth() + "px");
-            resetPosition();
+            int delta = getElement().getOffsetWidth() - getElement().getClientWidth();
+            getScrollPanel().setWidth((getComboBox().getOffsetWidth() - delta) + "px");
+            adjustSize();
         }
     }
 

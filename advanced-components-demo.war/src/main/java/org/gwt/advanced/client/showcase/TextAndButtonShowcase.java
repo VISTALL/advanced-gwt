@@ -42,7 +42,7 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         FlexTable panel = new FlexTable();
 
         panel.setWidget(0, 0, createHintLabel("Select a country or enter a new one:"));
-        panel.setWidget(1, 0, createHintLabel("Long drop down list sample:"));
+        panel.setWidget(1, 0, createHintLabel("Long drop down list sample (lazy rendering):"));
         panel.setWidget(2, 0, createHintLabel("Select a date:"));
         panel.setWidget(3, 0, createHintLabel("Type any European country name:"));
         panel.setWidget(4, 0, createHintLabel("Type any European country name to see the flag:"));
@@ -57,7 +57,6 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         comboBox.setModel(model);
         comboBox.setCustomTextAllowed(true);
         comboBox.setLazyRenderingEnabled(false);
-        comboBox.setVisibleRows(10);
 
         ComboBox<ComboBoxDataModel> longComboBox = new ComboBox<ComboBoxDataModel>();
         longComboBox.setWidth("100%");
@@ -67,7 +66,8 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         }
         longComboBox.setCustomTextAllowed(false);
         longComboBox.setLazyRenderingEnabled(true);
-        longModel.setSelectedIndex(50);
+        longModel.setSelectedIndex(9);
+        longComboBox.setVisibleRows(10);
 
         DatePicker picker = new DatePicker(new Date());
         picker.setWidth("100%");
