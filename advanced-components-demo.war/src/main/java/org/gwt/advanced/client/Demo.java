@@ -32,22 +32,20 @@ import org.gwt.advanced.client.util.ThemeHelper;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  */
 public class Demo implements EntryPoint {
-    /**
-     * Draws the sample screen.
-     */
+    /** Draws the sample screen. */
     public void onModuleLoad() {
         AdvancedTabPanel advancedTabPanel = new AdvancedTabPanel(TabPosition.LEFT);
         RootPanel.get("theme").add(createThemeSwitcher());
         RootPanel.get("container").add(advancedTabPanel);
 
-//        new EditableGridShowcase().initShowcase(advancedTabPanel);
-//        new HierarchicalGridShowcase().initShowcase(advancedTabPanel);
-//        new TreeGridShowcase().initShowcase(advancedTabPanel);
-//        new SimpleGridShowcase().initShowcase(advancedTabPanel);
-//        new MVPShowcase().initShowcase(advancedTabPanel);
-//        new MasterDetailPanelShowcase().initShowcase(advancedTabPanel);
+        new EditableGridShowcase().initShowcase(advancedTabPanel);
+        new HierarchicalGridShowcase().initShowcase(advancedTabPanel);
+        new TreeGridShowcase().initShowcase(advancedTabPanel);
+        new SimpleGridShowcase().initShowcase(advancedTabPanel);
+        new MVPShowcase().initShowcase(advancedTabPanel);
+        new MasterDetailPanelShowcase().initShowcase(advancedTabPanel);
         new TextAndButtonShowcase().initShowcase(advancedTabPanel);
-//        new BordersShowcase().initShowcase(advancedTabPanel);
+        new BordersShowcase().initShowcase(advancedTabPanel);
     }
 
     /**
@@ -57,7 +55,7 @@ public class Demo implements EntryPoint {
      */
     private ListBox createThemeSwitcher() {
         ThemeHelper.getInstance().setThemeName("classic");
-        
+
         ListBox themes = new ListBox();
         themes.addItem("classic", "classic");
         themes.addItem("default", "default");

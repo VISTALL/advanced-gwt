@@ -29,6 +29,7 @@ import org.gwt.advanced.client.datamodel.ListModelEvent;
 import org.gwt.advanced.client.datamodel.ListModelListener;
 import org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent;
 import org.gwt.advanced.client.ui.widget.combo.DefaultListItemFactory;
+import org.gwt.advanced.client.ui.widget.combo.DropDownPosition;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
 
 import java.util.HashSet;
@@ -42,29 +43,17 @@ import java.util.Set;
  */
 public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         implements HasAllFocusHandlers, HasAllKeyHandlers, HasClickHandlers, ListModelListener, HasChangeHandlers {
-    /**
-     * a combo box data model
-     */
+    /** a combo box data model */
     private ListDataModel model;
-    /**
-     * a list item factory
-     */
+    /** a list item factory */
     private ListItemFactory listItemFactory;
-    /**
-     * a list popup panel
-     */
+    /** a list popup panel */
     private ListPopupPanel listPanel;
-    /**
-     * a combo box delegate listener
-     */
+    /** a combo box delegate listener */
     private DelegateHandler delegateHandler;
-    /**
-     * a keyboard events listener that switches off default browser handling and replaces it with conponents'
-     */
+    /** a keyboard events listener that switches off default browser handling and replaces it with conponents' */
     private ComboBoxKeyboardManager keyboardManager;
-    /**
-     * a flag that is <code>true</code> if any control key is pressed
-     */
+    /** a flag that is <code>true</code> if any control key is pressed */
     private boolean keyPressed;
 
     /**
@@ -310,9 +299,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public void cleanSelection() {
         super.cleanSelection();
         getModel().clear();
@@ -393,7 +380,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         if (step == 0 || row + step < 0 || row + step >= getItemCount())
             return;
 
-        row+=step;
+        row += step;
 
         if (row != getListPanel().getHighlightRow()) {
             if (row >= getModel().getCount())
@@ -407,9 +394,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         }
     }
 
-    /**
-     * Hides the drop down list.
-     */
+    /** Hides the drop down list. */
     public void hideList() {
         getListPanel().hide();
         getChoiceButton().setDown(false);
@@ -427,9 +412,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         getChoiceButton().setDown(false);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public void onModelEvent(ListModelEvent event) {
         if (event.getType() == ListModelEvent.ADD_ITEM) {
             add(event);
@@ -459,12 +442,31 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      * Note that <i>lazy rendering</i> is not <i>lazy data loading</i>. The second one means that the data is loaded into
      * the model on request where as the first option assumes that all necessary data has already been loaded and put
      * into the model. If you need <i>lazy loading</i> please consider using {@link SuggestionBox} and
-     * {@link org.gwt.advanced.client.datamodel.SuggestionBoxDataModel}.  
+     * {@link org.gwt.advanced.client.datamodel.SuggestionBoxDataModel}.
      *
      * @param lazyRenderingEnabled is an option value.
      */
     public void setLazyRenderingEnabled(boolean lazyRenderingEnabled) {
         getListPanel().setLazyRenderingEnabled(lazyRenderingEnabled);
+    }
+
+    /**
+     * Gets applied position of the drop down list.
+     *
+     * @return a drop down list position value.
+     */
+    public DropDownPosition getDropDownPosition() {
+        return getListPanel().getDropDownPosition();
+    }
+
+    /**
+     * Sets applied position of the drop down list.<p/>
+     * Being set the drop down is immediately applied if the list is opened.
+     *
+     * @param dropDownPosition is a drop down list position value.
+     */
+    public void setDropDownPosition(DropDownPosition dropDownPosition) {
+        getListPanel().setDropDownPosition(dropDownPosition);
     }
 
     /**
@@ -474,14 +476,20 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      * @param event is an event containing data about the item.
      */
     protected void add(ListModelEvent event) {
-        if (isListPanelOpened() && event.getItemIndex() <= getItemCount()) {
-            Widget item = getListItemFactory().createWidget(event.getSource().get(event.getItemId()));
-            item = getListPanel().adoptItemWidget(item);
+        if (isListPanelOpened()) {
+            if (event.getItemIndex() <= getItemCount()) {
+                Widget item = getListItemFactory().createWidget(event.getSource().get(event.getItemId()));
+                item = getListPanel().adoptItemWidget(item);
 
-            if (event.getItemIndex() < getListPanel().getList().getWidgetCount()) {
-                getListPanel().getList().insert(item, event.getItemIndex());
+                if (event.getItemIndex() < getListPanel().getList().getWidgetCount()) {
+                    getListPanel().getList().insert(item, event.getItemIndex());
+                } else {
+                    getListPanel().getList().add(item);
+                }
             } else {
-                getListPanel().getList().add(item);
+                getListPanel().prepareList();
+                if (getItemCount() <= 0)
+                    getListPanel().hide();
             }
         }
     }
@@ -526,9 +534,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     protected String getDefaultImageName() {
         return "drop-down.gif";
     }
@@ -551,17 +557,13 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         this.keyPressed = keyPressed;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     protected void prepareSelectedValue() {
         super.prepareSelectedValue();
         getSelectedValue().setText(getListItemFactory().convert(getModel().getSelected()));
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     protected void addComponentListeners() {
         TextBox value = getSelectedValue();
         ToggleButton button = getChoiceButton();
@@ -614,14 +616,10 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         return keyboardManager;
     }
 
-    /**
-     * Universal handler that delegates all events handling to custom handlers.
-     */
+    /** Universal handler that delegates all events handling to custom handlers. */
     protected class DelegateHandler implements FocusHandler, BlurHandler, ClickHandler,
             ChangeHandler, KeyUpHandler, KeyDownHandler, KeyPressHandler {
-        /**
-         * a list of focused controls
-         */
+        /** a list of focused controls */
         private Set<Object> focuses;
         /** keyboard manager handler registration */
         private HandlerRegistration keyboardManagerRegistration;
@@ -695,7 +693,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
                         getListPanel().hide();
                     getChoiceButton().setDown(true);
                 } else {
-                    getListPanel().hide();              
+                    getListPanel().hide();
                     getChoiceButton().setDown(false);
                 }
             }
@@ -741,9 +739,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      * It also supports Shift+Tab combination but skips other modifiers.
      */
     protected class ComboBoxKeyboardManager implements Event.NativePreviewHandler {
-        /**
-         * See class docs
-         */
+        /** See class docs */
         @Override
         public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
             NativeEvent nativeEvent = event.getNativeEvent();
