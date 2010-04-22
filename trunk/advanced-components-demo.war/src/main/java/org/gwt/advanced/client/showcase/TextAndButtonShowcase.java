@@ -28,6 +28,7 @@ import org.gwt.advanced.client.datamodel.SuggestionBoxDataModel;
 import org.gwt.advanced.client.ui.widget.ComboBox;
 import org.gwt.advanced.client.ui.widget.DatePicker;
 import org.gwt.advanced.client.ui.widget.SuggestionBox;
+import org.gwt.advanced.client.ui.widget.combo.DropDownPosition;
 
 import java.util.Date;
 
@@ -46,7 +47,7 @@ public class TextAndButtonShowcase extends AbstractShowcase {
         panel.setWidget(2, 0, createHintLabel("Select a date:"));
         panel.setWidget(3, 0, createHintLabel("Type any European country name:"));
         panel.setWidget(4, 0, createHintLabel("Type any European country name to see the flag:"));
-        panel.setWidget(5, 0, createHintLabel("Type any symbol (very long list demo):"));
+        panel.setWidget(5, 0, createHintLabel("Type any symbol (increasing list demo):"));
 
         panel.getColumnFormatter().setWidth(0, "50%");
 
@@ -91,9 +92,9 @@ public class TextAndButtonShowcase extends AbstractShowcase {
 
         suggestionBox = new SuggestionBox();
         suggestionBox.setRequestTimeout(100);
-        suggestionBox.setVisibleRows(10);
         suggestionBox.setExpressionLength(1);
         suggestionBox.setWidth("100%");
+        suggestionBox.setDropDownPosition(DropDownPosition.UNDER);
 
         SuggestionBoxDataModel dataModel = suggestionBox.getModel();
         dataModel.setHandler(new ListCallbackHandler() {

@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.widget.combo.ComboBoxChangeEvent;
+import org.gwt.advanced.client.ui.widget.combo.DropDownPosition;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
 
 /**
@@ -62,6 +63,8 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
     private boolean lazyRenderingEnabled;
     /** registration of the {@link org.gwt.advanced.client.ui.widget.ListPopupPanel.ClickSpyHandler} */
     private HandlerRegistration clickSpyRegistration;
+    /** drop down list position */
+    private DropDownPosition dropDownPosition = DropDownPosition.AUTO;
 
     /**
      * Creates an instance of this class and sets the parent combo box value.
@@ -250,16 +253,40 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         return startItemIndex;
     }
 
+    /**
+     * Gets applied position of the drop down list.
+     *
+     * @return a drop down list position value.
+     */
+    public DropDownPosition getDropDownPosition() {
+        return dropDownPosition;
+    }
+
+    /**
+     * Sets applied position of the drop down list.<p/>
+     * Being set the drop down is immediately applied if the list is opened.
+     *
+     * @param dropDownPosition is a drop down list position value.
+     */
+    public void setDropDownPosition(DropDownPosition dropDownPosition) {
+        this.dropDownPosition = dropDownPosition;
+        if (isShowing())
+            adjustSize();
+    }
+
     /** Adjusts drop down list sizes to make it take optimal area on the screen. */
     protected void adjustSize() {
         ScrollPanel table = getScrollPanel();
         int visibleRows = getVisibleRows();
+        int delta = getElement().getOffsetWidth() - getElement().getClientWidth();
+        getScrollPanel().setWidth((getComboBox().getOffsetWidth() - delta) + "px");
 
         if (visibleRows <= 0) {
             table.setHeight("");
             int spaceAbove = getComboBox().getAbsoluteTop();
             int spaceUnder = Window.getClientHeight() - getComboBox().getAbsoluteTop() - getComboBox().getOffsetHeight();
-            DOM.setStyleAttribute(table.getElement(), "maxHeight", Math.max(spaceAbove, spaceUnder) + "px");
+            DOM.setStyleAttribute(table.getElement(), "maxHeight",
+                    Math.min(Window.getClientHeight() * 0.3, Math.max(spaceAbove, spaceUnder)) + "px");
         } else if (getComboBox().getModel().getCount() > visibleRows) {
             int index = getStartItemIndex();
             int count = getItemCount();
@@ -292,9 +319,13 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
 
     /** Chooses and sets a mostly appropriate position of the drop down list */
     protected void resetPosition() {
-        if (Window.getClientHeight() - getComboBox().getAbsoluteTop() - getComboBox().getOffsetHeight() < getComboBox().getAbsoluteTop()) {
+        if (getDropDownPosition() == DropDownPosition.ABOVE
+                || getDropDownPosition() == DropDownPosition.AUTO
+                && Window.getClientHeight() - getComboBox().getAbsoluteTop() - getComboBox().getOffsetHeight()
+                < getComboBox().getAbsoluteTop()
+        ) {
             setPopupPosition(getComboBox().getAbsoluteLeft(), getComboBox().getAbsoluteTop() - getOffsetHeight());
-        } else {
+        } else if (getDropDownPosition() == DropDownPosition.UNDER || getDropDownPosition() == DropDownPosition.AUTO) {
             setPopupPosition(getComboBox().getAbsoluteLeft(),
                     getComboBox().getAbsoluteTop() + getComboBox().getOffsetHeight());
         }
@@ -337,11 +368,10 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
 
         fillList();
 
-        selectRow(getComboBox().getModel().getSelectedIndex());
-        int delta = getElement().getOffsetWidth() - getElement().getClientWidth();
-        getScrollPanel().setWidth((getComboBox().getOffsetWidth() - delta) + "px");
-
-        ensureVisible(getItem(getComboBox().getModel().getSelectedIndex()));
+        int selected = getComboBox().getModel().getSelectedIndex();
+        selectRow(selected);
+        if (selected >= 0 && selected < getItemCount())
+            ensureVisible(getItem(selected));
     }
 
     /**
@@ -499,9 +529,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         return listScrollHandler;
     }
 
-    /**
-     * This is a click handler required to dispatch click events.
-     */
+    /** This is a click handler required to dispatch click events. */
     protected class ItemClickHandler implements ClickHandler {
         /** {@inheritDoc} */
         @Override
@@ -584,7 +612,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
 
     /**
      * This handler spies for click events if the list is opened and hides it if there is any element clicked excepting
-     * the combo box elements and list elements. 
+     * the combo box elements and list elements.
      */
     protected class ClickSpyHandler implements Event.NativePreviewHandler {
         /** See class docs */
