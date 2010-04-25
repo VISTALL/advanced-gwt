@@ -3,6 +3,14 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 2.0.2 includes:
+
+Bug fixes:
+1. ComboBox doesn't send ChangeHandler if a row is choosen on enter key press
+2. Drop down list resizing works improperly
+3. setKeyPressed() is not invoked if key up or key down is pressed
+
+====================================================================================================================
 Release 2.0.1 includes:
 
 Bug fixes:
