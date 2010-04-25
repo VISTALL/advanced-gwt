@@ -51,7 +51,7 @@ public class HierarchicalGridEventManager extends DefaultGridEventManager {
             else if (!grid.hasActiveCell())
                 grid.setFocus(true);
 
-            setCursor(row, cell);
+            setCursor(row, cell, false);
         }
     }
 
@@ -67,13 +67,13 @@ public class HierarchicalGridEventManager extends DefaultGridEventManager {
             while (isSubgridRow(row) && row > start)
                 row--;
             if (row != start)
-                setCursor(row, grid.getCurrentColumn());
+                setCursor(row, grid.getCurrentColumn(), false);
         } else
-            setCursor(row, grid.getCurrentColumn());
+            setCursor(row, grid.getCurrentColumn(), false);
     }
 
     /** {@inheritDoc} */
-    protected void setCursor(int row, int cell) {
+    protected void setCursor(int row, int cell, boolean skipSelection) {
         EditableGrid grid = getPanel().getGrid();
         int start = row;
         while(isSubgridRow(row) && row < grid.getRowCount())
@@ -83,9 +83,9 @@ public class HierarchicalGridEventManager extends DefaultGridEventManager {
             while(isSubgridRow(row) && row < start)
                 row++;
             if (row != start)
-                super.setCursor(row, cell);
+                super.setCursor(row, cell, skipSelection);
         } else 
-            super.setCursor(row, cell);
+            super.setCursor(row, cell, skipSelection);
     }
 
     protected boolean isSubgridRow(int row) {

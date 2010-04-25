@@ -18,6 +18,7 @@ package org.gwt.advanced.client.ui.widget.cell;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -36,8 +37,8 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
     private DockPanel panel;
     /** a node image */
     private Image image;
-    /** image click listener */
-    private ClickHandler imageClickHandler;
+    /** image click handler registration */
+    private HandlerRegistration imageClickHandlerRegistration;
     /** expanded flag */
     private boolean expanded;
     /** leaf flag */
@@ -89,24 +90,24 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
 
     /** {@inheritDoc} */
     protected void addListeners(Widget widget) {
-        if (imageClickHandler == null) {
-            final ExpandableCell cell = this;
-            imageClickHandler = new ClickHandler() {
-                public void onClick(ClickEvent clickEvent) {
-                    setExpanded(!isExpanded());
-
-                    DockPanel panel = getPanel();
-                    panel.remove(getImage());
-                    createImage();
-                    panel.add(getImage(), DockPanel.WEST);
-
-
-                    if (!isLeaf())
-                        ((ExpandCellEventProducer)getGrid()).fireExpandCell(cell);
-                }
-            };
-            getImage().addClickHandler(imageClickHandler);
+        if (imageClickHandlerRegistration != null) {
+            imageClickHandlerRegistration.removeHandler();
         }
+        final ExpandableCell cell = this;
+        imageClickHandlerRegistration = getImage().addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent clickEvent) {
+                setExpanded(!isExpanded());
+
+                DockPanel panel = getPanel();
+                panel.remove(getImage());
+                createImage();
+                panel.add(getImage(), DockPanel.WEST);
+
+
+                if (!isLeaf())
+                    ((ExpandCellEventProducer)getGrid()).fireExpandCell(cell);
+            }
+        });
     }
 
     /** {@inheritDoc} */
@@ -152,10 +153,6 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
      */
     protected void createImage() {
         if (isLeaf()) {
-//            Image image = new Image(ThemeHelper.getInstance().getFullResourceName("advanced/images/single.gif"));
-//            image.setWidth("9px");
-//            image.setHeight("9px");
-//            setImage(image);
             return;
         }
         if (isExpanded())
@@ -185,14 +182,5 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
             panel.setVerticalAlignment(DockPanel.ALIGN_MIDDLE);
         }
         return panel;
-    }
-
-    /**
-     * Getter for property 'imageClickHandler'.
-     *
-     * @return Value for property 'imageClickHandler'.
-     */
-    public ClickHandler getImageClickHandler() {
-        return imageClickHandler;
     }
 }

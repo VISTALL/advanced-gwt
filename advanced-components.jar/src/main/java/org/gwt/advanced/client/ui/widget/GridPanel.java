@@ -45,89 +45,47 @@ import java.util.List;
  * @since 1.0.0
  */
 public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
-    /**
-     * an editable grid
-     */
+    /** an editable grid */
     private EditableGrid grid;
-    /**
-     * a top pager
-     */
+    /** a top pager */
     private Pager topPager;
-    /**
-     * a bottom pager
-     */
+    /** a bottom pager */
     private Pager bottomPager;
-    /**
-     * a bottom toolbar
-     */
+    /** a bottom toolbar */
     private GridToolbar bottomToolbar;
-    /**
-     * a top toolbar
-     */
+    /** a top toolbar */
     private GridToolbar topToolbar;
-    /**
-     * a top panel
-     */
+    /** a top panel */
     private Panel topPanel;
-    /**
-     * a bottom panel
-     */
+    /** a bottom panel */
     private Panel bottomPanel;
-    /**
-     * top pager visibility flag
-     */
+    /** top pager visibility flag */
     private boolean topPagerVisible = true;
-    /**
-     * bottom pager visibility flag
-     */
+    /** bottom pager visibility flag */
     private boolean bottomPagerVisible = true;
-    /**
-     * top toolbar visibility flag
-     */
+    /** top toolbar visibility flag */
     private boolean topToolbarVisible = true;
-    /**
-     * bottom toolbar visibility flag
-     */
+    /** bottom toolbar visibility flag */
     private boolean bottomToolbarVisible = false;
-    /**
-     * pager arrows visibility flag
-     */
+    /** pager arrows visibility flag */
     private boolean arrowsVisible = true;
-    /**
-     * toolbar listeners
-     */
+    /** toolbar listeners */
     private List<GridToolbarListener> toolbarListeners = new ArrayList<GridToolbarListener>();
-    /**
-     * pager listeners
-     */
+    /** pager listeners */
     private List<PagerListener> pagerListeners = new ArrayList<PagerListener>();
-    /**
-     * locking panel widget
-     */
+    /** locking panel widget */
     private LockingPanel lockingPanel;
-    /**
-     * a mediator to handle all component events inside the panel
-     */
+    /** a mediator to handle all component events inside the panel */
     private EventMediator mediator;
-    /**
-     * a parent grid panel
-     */
+    /** a parent grid panel */
     private GridPanel parentGridPanel;
-    /**
-     * a list of child grid panels
-     */
+    /** a list of child grid panels */
     private List<GridPanel> children;
-    /**
-     * a panel that handles key events
-     */
+    /** a panel that handles key events */
     private FocusPanel focusPanel;
-    /**
-     * a grid key event manager instance
-     */
+    /** a grid key event manager instance */
     private GridEventManager gridEventManager;
-    /**
-     * a handler to be invoked on window resize
-     */
+    /** a handler to be invoked on window resize */
     private ResizeHandler resizeHandler;
     /** grid click handler registration */
     private HandlerRegistration gridClickRegistration;
@@ -138,9 +96,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
     /** window resize handler registration */
     private HandlerRegistration windowResizeRegistration;
 
-    /**
-     * Constructs a new GridPanel.
-     */
+    /** Constructs a new GridPanel. */
     public GridPanel() {
     }
 
@@ -264,9 +220,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
             getBottomPager().setTotalCountDisplayed(value);
     }
 
-    /**
-     * This method displays the panel and adds nexted widgets.
-     */
+    /** This method displays the panel and adds nexted widgets. */
     public void display() {
         if (getGrid() == null)
             throw new IllegalStateException("Grid hasn't been initialized");
@@ -307,23 +261,20 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
         gridFocusRegistration = getFocusPanel().addFocusHandler(getGridEventManager());
         gridBlurRegistration = getFocusPanel().addBlurHandler(getGridEventManager());
 
+
         if (windowResizeRegistration != null) {
             windowResizeRegistration.removeHandler();
         }
         windowResizeRegistration = Window.addResizeHandler(getResizeHandler());
     }
 
-    /**
-     * This method locks the widget and refuses any user activities.
-     */
+    /** This method locks the widget and refuses any user activities. */
     public void lock() {
         getGrid().setLocked(true);
         getLockingPanel().lock();
     }
 
-    /**
-     * This method unlocks the widget and repaints it.
-     */
+    /** This method unlocks the widget and repaints it. */
     public void unlock() {
         Editable model = getGrid().getModel();
         model.clearRemovedRows();
@@ -660,15 +611,14 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
         this.gridEventManager = gridEventManager;
 
         if (getGrid() != null && gridEventManager != null) {
-            gridClickRegistration = getGrid().addClickHandler(getGridEventManager());
+            gridClickRegistration = getGrid().addClickHandler(
+                    getGridEventManager());
             gridFocusRegistration = getFocusPanel().addFocusHandler(getGridEventManager());
             gridBlurRegistration = getFocusPanel().addBlurHandler(getGridEventManager());
         }
     }
 
-    /**
-     * This method resizes nested components to make them fix as much space as possible.
-     */
+    /** This method resizes nested components to make them fix as much space as possible. */
     public void resize() {
         boolean visible = isVisible();
         setVisible(false);
@@ -747,9 +697,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
         return resizeHandler;
     }
 
-    /**
-     * This method displays a top panel and adds top pager and toolbar into it.
-     */
+    /** This method displays a top panel and adds top pager and toolbar into it. */
     protected void packTopPanel() {
         if (isTopPagerVisible() || isTopToolbarVisible()) {
             Panel panel = getTopPanel();
@@ -762,9 +710,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
         }
     }
 
-    /**
-     * This method adds a grid into the panel.
-     */
+    /** This method adds a grid into the panel. */
     protected void packGrid() {
         EditableGrid grid = getGrid();
         FocusPanel focusPanel = getFocusPanel();
@@ -772,9 +718,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
         add(focusPanel, CENTER);
     }
 
-    /**
-     * This method displays a bottom panel and adds a bottom pager and toolbar into it.
-     */
+    /** This method displays a bottom panel and adds a bottom pager and toolbar into it. */
     protected void packBottomPanel() {
         if (isBottomPagerVisible() || isBottomToolbarVisible()) {
             Panel panel = getBottomPanel();
@@ -1001,6 +945,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
     protected class WindowResizeHandler implements ResizeHandler {
         /**
          * Resizes nested components.
+         *
          * @param resizeEvent is a window resize event instance.
          */
         public void onResize(ResizeEvent resizeEvent) {

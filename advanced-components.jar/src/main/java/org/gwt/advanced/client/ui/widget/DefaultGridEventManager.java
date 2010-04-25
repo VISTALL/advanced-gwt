@@ -16,15 +16,18 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLTable;
 import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
+import com.google.gwt.user.client.DOM;
 
 /**
  * This is a default implementation of the grid event manager.
@@ -33,17 +36,11 @@ import org.gwt.advanced.client.ui.widget.cell.GridCell;
  * @since 1.3.0
  */
 public class DefaultGridEventManager implements GridEventManager {
-    /**
-     * a grid panel
-     */
+    /** a grid panel */
     private GridPanel panel;
-    /**
-     * selection modifier key code (Shift or Ctrl)
-     */
+    /** selection modifier key code (Shift or Ctrl) */
     private int selectionModifier;
-    /**
-     * registration of the handler responsible for keyboard events
-     */
+    /** registration of the handler responsible for keyboard events */
     private HandlerRegistration keyHandlerRegistration;
 
     /**
@@ -55,9 +52,7 @@ public class DefaultGridEventManager implements GridEventManager {
         this.panel = panel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public boolean dispatch(GridPanel panel, char keyCode, int modifiers) {
         int mainModifier = MODIFIER_ALT | MODIFIER_CTRL;
 
@@ -105,21 +100,24 @@ public class DefaultGridEventManager implements GridEventManager {
         } else if (KeyCodes.KEY_ENTER == keyCode && !isReadOnly()) {
             activateCell();
             return true;
+        } else if (KeyCodes.KEY_TAB == keyCode && modifiers == MODIFIER_SHIFT) {
+            moveByShiftTab();
+            return true;
+        } else if (KeyCodes.KEY_TAB == keyCode) {
+            moveByTab();
+            return true;
         }
-
         return false;
     }
 
-    /**
-     * Sets a position of the cursor
-     */
+    /** Sets a position of the cursor */
     public void onFocus(FocusEvent focusEvent) {
         EditableGrid grid = getPanel().getGrid();
         int row = grid.getCurrentRow();
         int column = grid.getCurrentColumn();
 
         if (row != -1 && column != -1 && (!grid.isMultiRowModeEnabled() || getSelectionModifier() == 0))
-            setCursor(row, column);
+            setCursor(row, column, false);
 
         if (keyHandlerRegistration == null)
             keyHandlerRegistration = Event.addNativePreviewHandler(this);
@@ -132,15 +130,9 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     @Override
     public void onBlur(BlurEvent event) {
-        if (keyHandlerRegistration != null) {
-            keyHandlerRegistration.removeHandler();
-            keyHandlerRegistration = null;
-        }
     }
 
-    /**
-     * Sets the current position of the cursor or activates the selected cell.
-     */
+    /** Sets the current position of the cursor or activates the selected cell. */
     public void onClick(ClickEvent event) {
         EditableGrid grid = getPanel().getGrid();
         HTMLTable.Cell cellForEvent = grid.getCellForEvent(event);
@@ -155,16 +147,21 @@ public class DefaultGridEventManager implements GridEventManager {
                 && grid.hasActiveCell() && getSelectionModifier() == 0)
             activateCell();
 
-        setCursor(row, cell);
+        setCursor(row, cell, false);
     }
 
     /**
      * Handles key down and key up events to dispatch key combination.
      *
-     * @param event is an event that occured somewhere in the grid.
+     * @param event is an event that happens somewhere in the grid.
      */
     @Override
     public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        Element target = (Element) Element.as(event.getNativeEvent().getEventTarget());
+        GWT.log(DOM.toString(target) + " " + event.getTypeInt());
+        if (!DOM.isOrHasChild(getPanel().getElement(), target))
+            return;
+
         if (event.getTypeInt() == Event.ONKEYDOWN) {
             int modifiers = 0;
             if (event.getNativeEvent().getAltKey())
@@ -188,9 +185,7 @@ public class DefaultGridEventManager implements GridEventManager {
             event.consume();
     }
 
-    /**
-     * Moves the cursor to the next cell
-     */
+    /** Moves the cursor to the next cell */
     protected void moveToNextCell() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
@@ -199,12 +194,10 @@ public class DefaultGridEventManager implements GridEventManager {
         if (grid.getCurrentColumn() < grid.getCellCount(grid.getCurrentRow()) - 1)
             moveCursorRight();
         else
-            setCursor(grid.getCurrentRow() + 1, 0);
+            setCursor(grid.getCurrentRow() + 1, 0, false);
     }
 
-    /**
-     * Moves the cursor to the previous cell
-     */
+    /** Moves the cursor to the previous cell */
     protected void moveToPreviousCell() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
@@ -213,61 +206,49 @@ public class DefaultGridEventManager implements GridEventManager {
         if (grid.getCurrentColumn() > 0)
             moveCursorLeft();
         else
-            setCursor(grid.getCurrentRow() - 1, grid.getCellCount(grid.getCurrentRow()) - 1);
+            setCursor(grid.getCurrentRow() - 1, grid.getCellCount(grid.getCurrentRow()) - 1, false);
     }
 
-    /**
-     * Moves the cursor right
-     */
+    /** Moves the cursor right */
     protected void moveCursorRight() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
             return;
-        setCursor(grid.getCurrentRow(), grid.getCurrentColumn() + 1);
+        setCursor(grid.getCurrentRow(), grid.getCurrentColumn() + 1, false);
     }
 
-    /**
-     * Moves the cursor down
-     */
+    /** Moves the cursor down */
     protected void moveCursorDown() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
             return;
-        setCursor(grid.getCurrentRow() + 1, grid.getCurrentColumn());
+        setCursor(grid.getCurrentRow() + 1, grid.getCurrentColumn(), false);
     }
 
-    /**
-     * Moves the cursor left
-     */
+    /** Moves the cursor left */
     protected void moveCursorLeft() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
             return;
-        setCursor(grid.getCurrentRow(), grid.getCurrentColumn() - 1);
+        setCursor(grid.getCurrentRow(), grid.getCurrentColumn() - 1, false);
     }
 
-    /**
-     * Moves the cursor up
-     */
+    /** Moves the cursor up */
     protected void moveCursorUp() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
             return;
-        setCursor(grid.getCurrentRow() - 1, grid.getCurrentColumn());
+        setCursor(grid.getCurrentRow() - 1, grid.getCurrentColumn(), false);
     }
 
-    /**
-     * Opens the first page of the grid
-     */
+    /** Opens the first page of the grid */
     protected void moveToStartPage() {
         if (getPanel().getGrid().hasActiveCell())
             return;
         setPage(0);
     }
 
-    /**
-     * Opens the last page of the grid
-     */
+    /** Opens the last page of the grid */
     protected void moveToEndPage() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
@@ -276,18 +257,14 @@ public class DefaultGridEventManager implements GridEventManager {
         setPage(page);
     }
 
-    /**
-     * Moves the cursor to the first cell on this page
-     */
+    /** Moves the cursor to the first cell on this page */
     protected void moveToFirstCell() {
         if (getPanel().getGrid().hasActiveCell())
             return;
-        setCursor(0, 0);
+        setCursor(0, 0, false);
     }
 
-    /**
-     * Moves the cursor to the last cell on this page
-     */
+    /** Moves the cursor to the last cell on this page */
     protected void moveToLastCell() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
@@ -298,12 +275,10 @@ public class DefaultGridEventManager implements GridEventManager {
         int column = grid.getCellCount(row) - 1;
         if (column < 0)
             return;
-        setCursor(row, column);
+        setCursor(row, column, false);
     }
 
-    /**
-     * Open the next page
-     */
+    /** Open the next page */
     protected void moveToNextPage() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
@@ -312,9 +287,7 @@ public class DefaultGridEventManager implements GridEventManager {
         setPage(page + 1);
     }
 
-    /**
-     * Opens the previos page
-     */
+    /** Opens the previous page */
     protected void moveToPrevPage() {
         EditableGrid grid = getPanel().getGrid();
         if (grid.hasActiveCell())
@@ -324,8 +297,42 @@ public class DefaultGridEventManager implements GridEventManager {
     }
 
     /**
-     * Activates the currently selected cell
+     * Moves a cursor to the next right cell or to the next line if the current cell is last in the row.<p/>
+     * If there are no cells on this page switches to the next page.
      */
+    protected void moveByTab() {
+        EditableGrid grid = getPanel().getGrid();
+        if (grid.getCurrentColumn() < grid.getCellCount(grid.getCurrentRow()) - 1) {
+            setCursor(grid.getCurrentRow(), grid.getCurrentColumn() + 1, false);
+        } else if (grid.getCurrentRow() < grid.getRowCount() - 1) {
+            setCursor(grid.getCurrentRow() + 1, 0, false);
+        } else {
+            int pageNumber = grid.getModel().getCurrentPageNumber();
+            setPage(pageNumber + 1);
+            if (pageNumber != grid.getModel().getCurrentPageNumber())
+                setCursor(0, 0, false);
+        }
+    }
+
+    /**
+     * Moves a cursor to the next left cell or to the previous line if the current cell is the first in the row.<p/>
+     * If there are no cells on this page switches to the previous page.
+     */
+    protected void moveByShiftTab() {
+        EditableGrid grid = getPanel().getGrid();
+        if (grid.getCurrentColumn() > 0) {
+            setCursor(grid.getCurrentRow(), grid.getCurrentColumn() - 1, true);
+        } else if (grid.getCurrentRow() > 0) {
+            setCursor(grid.getCurrentRow() - 1, grid.getCellCount(grid.getCurrentRow() - 1) - 1, true);
+        } else {
+            int pageNumber = grid.getModel().getCurrentPageNumber();
+            setPage(pageNumber - 1);
+            if (pageNumber != grid.getModel().getCurrentPageNumber())
+                setCursor(grid.getRowCount() - 1, grid.getCellCount(grid.getRowCount() - 1) - 1, true);
+        }
+    }
+
+    /** Activates the currently selected cell */
     protected void activateCell() {
         EditableGrid grid = getPanel().getGrid();
         boolean active = !grid.hasActiveCell();
@@ -371,7 +378,7 @@ public class DefaultGridEventManager implements GridEventManager {
             Pager pager = getPanel().getTopPager();
             pager.setCurrentPageNumber(page);
             getPanel().getMediator().firePageChangeEvent(pager, page);
-            setCursor(row, column);
+            setCursor(row, column, false);
         }
     }
 
@@ -379,12 +386,14 @@ public class DefaultGridEventManager implements GridEventManager {
      * This method sets the current cell value.<p/>
      * It takes into account whether the Shift or Ctrl modifier keys are pressed.
      *
-     * @param row  is a row number.
-     * @param cell is a column number.
+     * @param row           is a row number.
+     * @param cell          is a column number.
+     * @param skipSelection is a flag value that forces selection skipping. Otherwise rows might be selected due to other
+     *                      conditions.
      */
-    protected void setCursor(int row, int cell) {
+    protected void setCursor(int row, int cell, boolean skipSelection) {
         EditableGrid grid = getPanel().getGrid();
-        if (getSelectionModifier() == 0 || !grid.isMultiRowModeEnabled())
+        if (getSelectionModifier() == 0 || !grid.isMultiRowModeEnabled() || skipSelection)
             grid.setCurrentCell(row, cell);
         else if (getSelectionModifier() == MODIFIER_CTRL) {
             if (!grid.isSelected(row))
