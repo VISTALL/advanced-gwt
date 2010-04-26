@@ -136,18 +136,20 @@ public class DefaultGridEventManager implements GridEventManager {
     public void onClick(ClickEvent event) {
         EditableGrid grid = getPanel().getGrid();
         HTMLTable.Cell cellForEvent = grid.getCellForEvent(event);
-        int row = cellForEvent.getRowIndex();
-        int cell = cellForEvent.getCellIndex();
-        if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn()
-                && !grid.hasActiveCell() && getSelectionModifier() == 0)
-            activateCell();
-        else if (!grid.hasActiveCell())
-            grid.setFocus(true);
-        else if ((row != grid.getCurrentRow() || cell != grid.getCurrentColumn())
-                && grid.hasActiveCell() && getSelectionModifier() == 0)
-            activateCell();
+        if (cellForEvent != null) {
+            int row = cellForEvent.getRowIndex();
+            int cell = cellForEvent.getCellIndex();
+            if (row == grid.getCurrentRow() && cell == grid.getCurrentColumn()
+                    && !grid.hasActiveCell() && getSelectionModifier() == 0)
+                activateCell();
+            else if (!grid.hasActiveCell())
+                grid.setFocus(true);
+            else if ((row != grid.getCurrentRow() || cell != grid.getCurrentColumn())
+                    && grid.hasActiveCell() && getSelectionModifier() == 0)
+                activateCell();
 
-        setCursor(row, cell, false);
+            setCursor(row, cell, false);
+        }
     }
 
     /**
@@ -158,7 +160,6 @@ public class DefaultGridEventManager implements GridEventManager {
     @Override
     public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
         Element target = (Element) Element.as(event.getNativeEvent().getEventTarget());
-        GWT.log(DOM.toString(target) + " " + event.getTypeInt());
         if (!DOM.isOrHasChild(getPanel().getElement(), target))
             return;
 

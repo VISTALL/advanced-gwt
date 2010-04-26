@@ -29,7 +29,7 @@ import com.google.gwt.user.client.ui.HTMLTable;
  */
 public class HierarchicalGridEventManager extends DefaultGridEventManager {
     /**
-     * Creates an instanec of the class and adds itself to the listeners list of the grid.
+     * Creates an instance of the class and adds itself to the listeners list of the grid.
      *
      * @param panel is a grid panel.
      */

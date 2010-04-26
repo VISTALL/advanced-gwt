@@ -173,7 +173,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
         getRowMapping().put(rowNumber < 0 ? 0 : rowNumber, row);
         drawRow(row.getData(), rowNumber);
         if (row.getParent() != null)
-            getGrid().getRowFormatter().addStyleName(rowNumber, "grid-subrow");
+            getGrid().getRowFormatter().addStyleName(rowNumber, "subgrid-row");
         drawPager(((TreeGrid) getGrid()).getTreeCell(rowNumber));
         rowNumber++;
 
@@ -198,7 +198,7 @@ public class TreeGridRenderer extends DefaultGridRenderer {
     }
 
     /**
-     * This method renders a pager assotiated with the parent row.
+     * This method renders a pager associated with the parent row.
      *
      * @param cell is a parent expandable cell.
      * @return <code>true</code> if the pager has been displayed.
