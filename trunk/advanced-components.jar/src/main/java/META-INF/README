@@ -6,9 +6,17 @@ Release Notes
 Release 2.0.2 includes:
 
 Bug fixes:
-1. ComboBox doesn't send ChangeHandler if a row is choosen on enter key press
-2. Drop down list resizing works improperly
-3. setKeyPressed() is not invoked if key up or key down is pressed
+1. (-) and (+) sign doesn't work properly in TreeGrid
+2. The content is blank on Chrome
+3. TreeGrid > TextBoxCell doesn't work properly
+4. NullPointerException in DefaultGridEventManager.onClick line 147
+5. [CSS] grid-subrow style is missing
+6. [TreeGrid] expand/collapse many times corrupts the TreeGrid
+
+New features:
+1. Add a model listener in the ComboBox.getModel() method
+2. Add ability to switch off lazy rendering in ComboBox
+3. Request features: keyboard navigation/manipulation support
 
 ====================================================================================================================
 Release 2.0.1 includes:

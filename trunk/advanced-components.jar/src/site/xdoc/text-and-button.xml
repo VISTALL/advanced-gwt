@@ -47,7 +47,8 @@
                         <li>Data model support (MVP pattern implementation)</li>
                         <li>Moving selection cursor with keyboard</li>
                         <li>Data model events</li>
-                        <li>Lazy rendering <span class="new">new</span></li>
+                        <li>Lazy rendering</li>
+                        <li>Manageable drop down list position<span class="new">new</span></li>
                     </ul>
                 </p>
             </div>
@@ -67,7 +68,7 @@
                     <ul>
                         <li>Ability to load drop down list items lazily</li>
                         <li>Customizable expression (text) change handler</li>
-                        <li>Lazy rendering <span class="new">new</span></li>
+                        <li>Lazy rendering</li>
                     </ul>
                 </p>
             </div>
