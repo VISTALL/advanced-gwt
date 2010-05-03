@@ -56,7 +56,7 @@ public class GWTUtil {
 
     /**
      * This method adjusts widget size to make it smaller then the parent element.<p/>
-     * Note that this element can be a value returne by <code>widget.getParent().getElement()</code> or
+     * Note that this element can be a value returned by <code>widget.getParent().getElement()</code> or
      * another container element like {@link org.gwt.advanced.client.ui.widget.AdvancedFlexTable#getBodyElement()}.
      * This method doesn't check whether it's really a parent.
      *
@@ -65,8 +65,8 @@ public class GWTUtil {
      * @param adjustHeight is a flag that specifies whether widget height must be adjusted.
      */
     public static void adjustElementSize(Element element, Element parent, boolean adjustHeight) {
-        int originalHeight = DOM.getElementPropertyInt(parent, "offsetHeight");
-        int originalWidth = DOM.getElementPropertyInt(parent, "offsetWidth");
+        int originalHeight = DOM.getElementPropertyInt(parent, "clientHeight");
+        int originalWidth = DOM.getElementPropertyInt(parent, "clientWidth");
 
         int height = originalHeight;
         int width = originalWidth;
@@ -74,14 +74,14 @@ public class GWTUtil {
         boolean completed;
         do {
             DOM.setStyleAttribute(element, "width", width + "px");
-            int widthNow = DOM.getElementPropertyInt(parent, "offsetWidth");
+            int widthNow = DOM.getElementPropertyInt(parent, "clientWidth");
             completed = widthNow <= originalWidth;
             if (!completed)
                 width = width + originalWidth - widthNow;
 
             if (adjustHeight) {
                 DOM.setStyleAttribute(element, "height", height + "px");
-                int heightNow = DOM.getElementPropertyInt(parent, "offsetHeight");
+                int heightNow = DOM.getElementPropertyInt(parent, "clientHeight");
                 completed = completed && heightNow <= originalHeight;
                 if (heightNow > originalHeight)
                     height = height + originalHeight - heightNow;
