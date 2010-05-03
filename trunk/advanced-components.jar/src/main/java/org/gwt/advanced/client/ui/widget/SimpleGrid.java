@@ -104,7 +104,7 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     }
 
     /**
-     * This method resizes the grid making it to fit as much space as possible.
+     * This method resizes the grid making it fit as much space as possible.
      */
     public void resize() {
         Element parent = DOM.getParent(getElement());
@@ -121,7 +121,7 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         GWTUtil.adjustWidgetSize(getBodyTable(), parent, false);
 
         if (getBodyTable().getRowCount() > 0) {
-            int parentWidth = DOM.getElementPropertyInt(parent, "offsetWidth");
+            int parentWidth = DOM.getElementPropertyInt(parent, "clientWidth");
             int count = getBodyTable().getCellCount(0);
             int size = parentWidth / count;
             for (int i = 0; i < count; i++)
@@ -133,7 +133,7 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
                 offsetWidth += DOM.getElementPropertyInt(th, "offsetWidth");
             }
 
-            setColumnWidth(count - 1, parentWidth - offsetWidth);
+            setColumnWidth(count - 1, parentWidth - offsetWidth - count);
         }
     }
 
