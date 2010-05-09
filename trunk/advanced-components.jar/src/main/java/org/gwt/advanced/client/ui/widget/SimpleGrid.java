@@ -124,16 +124,8 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
             int parentWidth = DOM.getElementPropertyInt(parent, "clientWidth");
             int count = getBodyTable().getCellCount(0);
             int size = parentWidth / count;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count - 1; i++)
                 setColumnWidth(i, size);
-
-            int offsetWidth = 0;
-            for (int i = 0; i < count - 1; i++) {
-                Element th = DOM.getChild(DOM.getChild(getTHeadElement(), 0), i);
-                offsetWidth += DOM.getElementPropertyInt(th, "offsetWidth");
-            }
-
-            setColumnWidth(count - 1, parentWidth - offsetWidth - count);
         }
     }
 
@@ -911,7 +903,8 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
             }
 
             if (siblingIndex > -1) {
-                grid.setColumnWidth(thIndex, thExpectedWidth);
+                if (tr.getChildCount() - 1 != thIndex)
+                    grid.setColumnWidth(thIndex, thExpectedWidth);
                 grid.setColumnWidth(siblingIndex, siblingExpectedWidth);
             }
 
