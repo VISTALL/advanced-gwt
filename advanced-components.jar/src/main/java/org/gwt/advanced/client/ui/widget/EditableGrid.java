@@ -237,14 +237,13 @@ public class EditableGrid<T extends Editable> extends SimpleGrid implements Adva
     /**
      * This method adds an invisible column in the internal list.
      *
-     * @param column is a column number.
+     * @param column is a data model column number.
      */
     public void addInvisibleColumn(int column) {
+        removeColumn(getColumnByModelColumn(column));
         List<Integer> columns = getInvisibleColumns();
         columns.remove(new Integer(column));
         columns.add(column);
-
-        removeColumn(column);
     }
 
     /**
@@ -891,7 +890,7 @@ public class EditableGrid<T extends Editable> extends SimpleGrid implements Adva
     /**
      * Gets a grid column number by a model column index.
      *
-     * @param modelColumn is amodel column index.
+     * @param modelColumn is a model column index.
      * @return a grid column number.
      */
     public int getColumnByModelColumn(int modelColumn) {
