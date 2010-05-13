@@ -64,7 +64,7 @@ public class ComboBoxCell extends AbstractCell {
     /** {@inheritDoc} */
     protected Widget createInactive() {
         ComboBox comboBox = (ComboBox) getValue();
-        if (comboBox.isListPanelOpened())
+        if (comboBox != null && comboBox.isListPanelOpened())
             comboBox.setListPopupOpened(false);
         return getComboBoxWidget(comboBox);
     }
@@ -72,8 +72,9 @@ public class ComboBoxCell extends AbstractCell {
     /** {@inheritDoc} */
     public void setFocus(boolean focus) {
         ComboBox box = (ComboBox) getValue();
-        if (box != null)
-            box.setFocus(focus);
+        if (focus && box != null && !box.isListPanelOpened()) {
+            box.showList(true);
+        }
     }
 
     /** {@inheritDoc} */

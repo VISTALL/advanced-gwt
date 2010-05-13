@@ -37,12 +37,12 @@ import java.util.Date;
  * @since 1.0.0
  */
 public class DateCell extends AbstractCell {
-    /** a calendart change listener */
+    /** a calendar change listener */
     private CalendarListener<Calendar> changeListener;
     /** a calendar widget */
     private Calendar calendar;
     /** a date picker popup */
-    private PopupPanel popup;
+    private static PopupPanel popup;
 
     /** {@inheritDoc} */
     protected Widget createActive() {
@@ -52,7 +52,7 @@ public class DateCell extends AbstractCell {
         calendar.display();
 
         if (panel.getWidget() != calendar)
-            panel.add(calendar);
+            panel.setWidget(calendar);
 
         panel.show();
         
@@ -80,6 +80,8 @@ public class DateCell extends AbstractCell {
         removeStyleName("active-cell");
         addStyleName("passive-cell");
         addStyleName("date-cell");
+
+        getPopup().hide();
         return dateText;
     }
 
