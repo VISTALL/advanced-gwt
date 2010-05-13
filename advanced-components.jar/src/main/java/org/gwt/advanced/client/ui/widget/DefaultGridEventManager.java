@@ -16,18 +16,17 @@
 
 package org.gwt.advanced.client.ui.widget;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLTable;
 import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
-import com.google.gwt.user.client.DOM;
 
 /**
  * This is a default implementation of the grid event manager.
@@ -303,6 +302,9 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveByTab() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            activateCell();
+
         if (grid.getCurrentColumn() < grid.getCellCount(grid.getCurrentRow()) - 1) {
             setCursor(grid.getCurrentRow(), grid.getCurrentColumn() + 1, false);
         } else if (grid.getCurrentRow() < grid.getRowCount() - 1) {
@@ -321,6 +323,9 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     protected void moveByShiftTab() {
         EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell())
+            activateCell();
+
         if (grid.getCurrentColumn() > 0) {
             setCursor(grid.getCurrentRow(), grid.getCurrentColumn() - 1, true);
         } else if (grid.getCurrentRow() > 0) {
