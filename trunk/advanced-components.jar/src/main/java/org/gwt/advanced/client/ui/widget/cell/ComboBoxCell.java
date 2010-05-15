@@ -16,11 +16,15 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.ui.widget.ComboBox;
+import org.gwt.advanced.client.util.GWTUtil;
 
 /**
  * This is a cell implementation that must contain a combo box.
@@ -29,6 +33,9 @@ import org.gwt.advanced.client.ui.widget.ComboBox;
  * @since 1.2.0
  */
 public class ComboBoxCell extends AbstractCell {
+    /** handler registration for combo box click (valid for FF only) */
+    private HandlerRegistration ffHandlerRegistration;
+
     /** {@inheritDoc} */
     public boolean valueEqual(Object value) {
         return false; // because it will be always the same widget
@@ -71,9 +78,27 @@ public class ComboBoxCell extends AbstractCell {
 
     /** {@inheritDoc} */
     public void setFocus(boolean focus) {
-        ComboBox box = (ComboBox) getValue();
+        final ComboBox box = (ComboBox) getValue();
         if (focus && box != null && !box.isListPanelOpened()) {
             box.showList(true);
+        }
+        if (box != null) {
+            // workaround for FF since this browser propagates click event every time
+            // the cell is activated on enter key press and as result the box closes the drop down list
+            // opened before
+            if (GWTUtil.isFF()) {
+                ffHandlerRegistration = box.addClickHandler(new ClickHandler(){
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        box.showList(true);
+                        if (ffHandlerRegistration != null) {
+                            ffHandlerRegistration.removeHandler();
+                            ffHandlerRegistration = null;
+                        }
+                    }
+                });
+            }
+            box.setFocus(focus);
         }
     }
 

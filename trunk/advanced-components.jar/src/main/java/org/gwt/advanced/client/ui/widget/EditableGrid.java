@@ -783,15 +783,15 @@ public class EditableGrid<T extends Editable> extends SimpleGrid implements Adva
     public Widget getWidget(int row, int column) {
         Widget widget = getOriginalWidget(row, column);
         if (widget == null) {
-            int modelRow = getModelRow(row);
-            Object data = null;
-            if (modelRow < getModel().getTotalRowCount())
-                data = getModel().getRowData(modelRow)[getModelColumn(column)];
+                GridRow gridRow = getGridRowByRowNumber(row);
+                Object data = null;
+                if (gridRow != null)
+                    data = gridRow.getData()[getModelColumn(column)];
 
-            widget = (Widget) getGridCellFactory().create(row, column, data);
-            super.setWidget(row, column, widget); //do it to avoid loops
-            ((GridCell) widget).displayActive(false);
-        }
+                widget = (Widget) getGridCellFactory().create(row, column, data);
+                super.setWidget(row, column, widget); //do it to avoid loops
+                ((GridCell) widget).displayActive(false);
+            }
         return widget;
     }
 
@@ -906,7 +906,7 @@ public class EditableGrid<T extends Editable> extends SimpleGrid implements Adva
     }
 
     /**
-     * Invokes the <code>getWidget()</code> moethod of the <code>FlexTable</code>.
+     * Invokes the <code>getWidget()</code> method of the <code>FlexTable</code>.
      *
      * @param row    is a row number.
      * @param column is a column number.
