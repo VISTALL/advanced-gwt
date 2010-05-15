@@ -16,6 +16,7 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
@@ -158,23 +159,27 @@ public class DefaultGridEventManager implements GridEventManager {
      */
     @Override
     public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
-        Element target = (Element) Element.as(event.getNativeEvent().getEventTarget());
+        NativeEvent nativeEvent = event.getNativeEvent();
+        if (nativeEvent.getEventTarget() == null)
+            return;
+        Element target = (Element) Element.as(nativeEvent.getEventTarget());
         if (!DOM.isOrHasChild(getPanel().getElement(), target))
             return;
 
         if (event.getTypeInt() == Event.ONKEYDOWN) {
             int modifiers = 0;
-            if (event.getNativeEvent().getAltKey())
+            if (nativeEvent.getAltKey())
                 modifiers |= MODIFIER_ALT;
-            if (event.getNativeEvent().getShiftKey())
+            if (nativeEvent.getShiftKey())
                 modifiers |= MODIFIER_SHIFT;
-            if (event.getNativeEvent().getCtrlKey())
+            if (nativeEvent.getCtrlKey())
                 modifiers |= MODIFIER_CTRL;
-            if (event.getNativeEvent().getMetaKey())
+            if (nativeEvent.getMetaKey())
                 modifiers |= MODIFIER_META;
 
-            if (dispatch(panel, (char) event.getNativeEvent().getKeyCode(), modifiers)) {
-                event.getNativeEvent().preventDefault();
+            if (dispatch(panel, (char) nativeEvent.getKeyCode(), modifiers)) {
+                nativeEvent.preventDefault();
+                nativeEvent.stopPropagation();
                 event.cancel();
             }
         } else if (event.getTypeInt() == Event.ONKEYUP) {

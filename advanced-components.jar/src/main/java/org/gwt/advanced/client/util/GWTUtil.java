@@ -41,6 +41,17 @@ public class GWTUtil {
     }
 
     /**
+     * This method checks whether the current browser is FF.
+     *
+     * @return <code>true</code> if the browser is FF.
+     */
+    public static boolean isFF() {
+        String name = GWT.create(DOMImpl.class).getClass().getName();
+        return name.equals("com.google.gwt.user.client.impl.DOMImplMozilla")
+                || name.equals("com.google.gwt.user.client.impl.DOMImplMozillaOld");
+    }
+
+    /**
      * This method adjusts widget size to make it smaller then the parent element.<p/>
      * Note that this element can be a value returne by <code>widget.getParent().getElement()</code> or
      * another container element like {@link org.gwt.advanced.client.ui.widget.AdvancedFlexTable#getBodyElement()}.
