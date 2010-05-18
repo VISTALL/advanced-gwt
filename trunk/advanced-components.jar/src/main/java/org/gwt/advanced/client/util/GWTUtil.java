@@ -19,6 +19,7 @@ package org.gwt.advanced.client.util;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.impl.DOMImpl;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -98,5 +99,15 @@ public class GWTUtil {
                     height = height + originalHeight - heightNow;
             }
         } while (!completed);
+    }
+
+    /**
+     * Prevents the event for all browsers.
+     *
+     * @param event is an event to prevent.
+     */
+    public static void preventEvent(Event event) {
+        event.preventDefault();
+        event.stopPropagation();
     }
 }

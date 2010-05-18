@@ -23,15 +23,15 @@ import org.gwt.advanced.client.ui.widget.border.Border;
 import org.gwt.advanced.client.ui.widget.border.BorderLine;
 
 /**
- * This is an anbstract tabs band renderer that implements the main cycle of rendering<p/>
- * However it doesn't "know" how to create tabs and separators betwenn them.
+ * This is an abstract tabs band renderer that implements the main cycle of rendering<p/>
+ * However it doesn't "know" how to create tabs and separators between them.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.6
  */
 public abstract class AbstractBandRenderer implements TabBandRenderer {
     /**
-     * This method build the band that is represneted as a <code>FlexTable</code>.
+     * This method build the band that is represented as a <code>FlexTable</code>.
      *
      * @param panel the tab panel that invokes this method.
      * @return a resulting table.

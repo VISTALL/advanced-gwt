@@ -236,18 +236,20 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
      * @param index is an index of the tab for selection.
      */
     public void setSelected(int index) {
-        if (index >= tabs.size())
-            return;
+        if (index != selected) {
+            if (index >= tabs.size())
+                return;
 
-        BeforeSelectionEvent<Integer> event = BeforeSelectionEvent.fire(this, index);
-        if (event.isCanceled())
-            return;
+            BeforeSelectionEvent<Integer> event = BeforeSelectionEvent.fire(this, index);
+            if (event.isCanceled())
+                return;
 
-        selected = index;
-        renderTabs();
+            selected = index;
+            renderTabs();
 
-        SelectionEvent.fire(this, index);
-        resize();
+            SelectionEvent.fire(this, index);
+            resize();
+        }
     }
 
     /**
@@ -384,12 +386,11 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
         ((Widget) getContentBorder()).addStyleName("content-" + getPosition().getName());
         this.layout.add((Widget) getContentBorder(), DockPanel.CENTER);
 
-        renderTabs();
         resize();
     }
 
     /**
-     * This method renders tabs band widget and puts it in the corrent position.
+     * This method renders tabs band widget and puts it in the current position.
      */
     protected void renderTabs() {
         if (this.tabsWidget != null)
