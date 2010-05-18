@@ -15,8 +15,11 @@
  */
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.DOM;
 import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
@@ -396,6 +399,15 @@ public class TreeGrid extends EditableGrid<Editable> implements ExpandCellEventP
             while (getRowCount() > 0)
                 removeRow(getRowCount() - 1);
             super.synchronizeView(event);
+
+            //adjust column widths since content has been re-rendered
+            if (getRowCount() > 0) {
+                Element tr = (Element) getTHeadElement().getFirstChildElement();
+                for (int i = 0; i < DOM.getChildCount(tr); i++) {
+                    int width = getThElementWidth(DOM.getChild(tr, i));
+                    getFlexCellFormatter().getElement(0, i).getStyle().setWidth(width, Style.Unit.PX);
+                }
+            }
         }
     }
 

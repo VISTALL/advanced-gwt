@@ -16,6 +16,7 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -122,10 +123,16 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
 
         if (getBodyTable().getRowCount() > 0) {
             int parentWidth = DOM.getElementPropertyInt(parent, "clientWidth");
-            int count = getBodyTable().getCellCount(0);
-            int size = parentWidth / count;
-            for (int i = 0; i < count - 1; i++)
-                setColumnWidth(i, size);
+
+            if (parentWidth > 0) {
+                int count = getBodyTable().getCellCount(0);
+                int size = parentWidth / count;
+                for (int i = 0; i < count - 1; i++)
+                    setColumnWidth(i, size);
+
+                Element th = getThElement(count - 1);
+                setColumnWidth(count - 1, th.getClientWidth());
+            }
         }
     }
 
@@ -543,10 +550,10 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
                 Element td = formatter.getElement(0, column);
                 DOM.setStyleAttribute(td, "width", size + "px");
 
-                for (int i = 1; !GWTUtil.isIE() && i < getRowCount(); i++) {
-                    td = formatter.getElement(i, column);
-                    DOM.setStyleAttribute(td, "width", size + "px");
-                }
+//                for (int i = 1; !GWTUtil.isIE() && i < getRowCount(); i++) {
+//                    td = formatter.getElement(i, column);
+//                    DOM.setStyleAttribute(td, "width", size + "px");
+//                }
             }
         }
     }
@@ -769,6 +776,27 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     }
 
     /**
+     * Gets element width.
+     *
+     * @param element is an element
+     * @return width in pixels
+     */
+    protected int getThElementWidth(Element element) {
+        if (element == null) {
+            return 0;
+        }
+
+        String widthStyle = element.getStyle().getWidth().toLowerCase();
+        String px = Style.Unit.PX.name().toLowerCase();
+
+        if (widthStyle != null && widthStyle.endsWith(px)) {
+            return Integer.parseInt(widthStyle.substring(0, widthStyle.indexOf(px)));
+        } else {
+            return DOM.getElementPropertyInt(element, "clientWidth");
+        }
+    }
+    
+    /**
      * This listener is invoked on different column resizing events.
      *
      * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
@@ -776,6 +804,9 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     protected class ResizeListener implements EventListener {
         /** currently selected TH element */
         private Element th;
+        private Element sibling;
+        private int sign = 0;
+        private Element tr;
         /** start mouse position */
         private int startX;
         /** current X position of the cursor */
@@ -786,7 +817,7 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         private SimpleGrid grid;
 
         /**
-         * Creates an instnace of this class and saves the grid into the internal field.
+         * Creates an instance of this class and saves the grid into the internal field.
          *
          * @param grid is a link to the owner.
          */
@@ -806,7 +837,7 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
                 if (DOM.eventGetType(event) == Event.ONMOUSEDOWN) {
                     startResizing(event);
                 } else if (DOM.eventGetType(event) == Event.ONMOUSEUP && th != null) {
-                    stopResizing();
+                    stopResizing(event);
                 } else if (DOM.eventGetType(event) == Event.ONMOUSEOUT && th != null) {
                     interruptResizing(event);
                 }
@@ -826,13 +857,13 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
             if (this.th != null || grid.isColumnResizingAllowed() && isOverBorder(event, th)) {
                 DOM.setStyleAttribute(DOM.eventGetTarget(event), "cursor", "e-resize");
                 this.currentX = getPositionX(event);
-                timer.schedule(20);
+                event.preventDefault();
             } else
                 DOM.setStyleAttribute(DOM.eventGetTarget(event), "cursor", "");
         }
 
         /**
-         * This method interrupts resiszing.
+         * This method interrupts resizing.
          *
          * @param event is an event.
          */
@@ -843,22 +874,34 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
             Element thead = grid.getTHeadElement();
             int left = DOM.getAbsoluteLeft(thead);
             int top = DOM.getAbsoluteTop(thead);
-            int width = getElementWidth(thead);
+            int width = thead.getOffsetWidth();
             int height = getElementHeight(thead);
 
             if (positionX < left || positionX > left + width || positionY < top || positionY > top + height) {
                 th = null;
+                sibling = null;
+                sign = 0;
+                tr = null;
                 timer.cancel();
             }
+
+            GWTUtil.preventEvent(event);
         }
 
         /**
-         * This method normally stops resisng and changes column width.
+         * This method normally stops resizing and changes column width.
+         *
+         * @param event is an event to prevent on stop.
          */
-        protected void stopResizing() {
+        protected void stopResizing(Event event) {
             resize();
             timer.cancel();
             th = null;
+            sibling = null;
+            sign = 0;
+            tr = null;
+
+            GWTUtil.preventEvent(event);
         }
 
         /**
@@ -867,60 +910,35 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         protected void resize() {
             int position = this.currentX;
             int delta = position - startX;
-            Element tr = DOM.getParent(th);
-            int left = DOM.getAbsoluteLeft(th);
-            int width = getElementWidth(th);
 
-            Element sibling = null;
-            int sign = 0;
-            int thIndex = DOM.getChildIndex(tr, th);
+            if (delta != 0) {
+                int thIndex = DOM.getChildIndex(tr, th);
 
-            if (startX <= left + 2) {
-                sign = 1;
-                sibling = DOM.getChild(tr, thIndex - 1);
-            } else if (startX >= left + width - 2) {
-                sign = -1;
-                sibling = DOM.getChild(tr, thIndex + 1);
-            }
+                SimpleGrid grid = getGrid();
+                int thExpectedWidth = getThElementWidth(th) - sign * delta;
 
-            SimpleGrid grid = getGrid();
-            int thExpectedWidth = width - sign * delta;
+                int siblingExpectedWidth;
+                int siblingIndex;
+                if (sibling != null) {
+                    siblingExpectedWidth = getThElementWidth(sibling) + sign * delta;
+                    siblingIndex = DOM.getChildIndex(tr, sibling);
+                } else {
+                    siblingExpectedWidth = 0;
+                    siblingIndex = -1;
+                }
 
-            int siblingExpectedWidth;
-            int siblingIndex;
-            if (sibling != null) {
-                siblingExpectedWidth = getElementWidth(sibling) + sign * delta;
-                siblingIndex = DOM.getChildIndex(tr, sibling);
-            } else {
-                siblingExpectedWidth = 0;
-                siblingIndex = -1;
-            }
+                //interrupt immediately
+                if (thExpectedWidth < 3 || siblingExpectedWidth < 3 && siblingIndex > -1) {
+                    th = null;
+                    return;
+                }
 
-            //interrupt immediately
-            if (thExpectedWidth < 3 || siblingExpectedWidth < 3 && siblingIndex > -1) {
-                th = null;
-                return;
-            }
-
-            if (siblingIndex > -1) {
-                if (tr.getChildCount() - 1 != thIndex)
+                if (siblingIndex > -1) {
                     grid.setColumnWidth(thIndex, thExpectedWidth);
-                grid.setColumnWidth(siblingIndex, siblingExpectedWidth);
+                    grid.setColumnWidth(siblingIndex, siblingExpectedWidth);
+                }
+                this.startX = position;
             }
-
-            int thWidthNow = getElementWidth(th);
-
-            int siblingWidthNow;
-            if (siblingIndex > -1)
-                siblingWidthNow = getElementWidth(sibling);
-            else
-                siblingWidthNow = 0;
-
-            if (thWidthNow > thExpectedWidth)
-                grid.setColumnWidth(thIndex, 2 * thExpectedWidth - thWidthNow);
-            if (siblingWidthNow > siblingExpectedWidth && siblingIndex > -1)
-                grid.setColumnWidth(siblingIndex, 2 * siblingExpectedWidth - siblingWidthNow);
-            this.startX = position;
         }
 
         /**
@@ -935,17 +953,28 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
                 currentX = startX;
                 if (!isOverBorder(event, th))
                     th = null;
-            }
-        }
+                else {
+                    tr = DOM.getParent(th);
+                    int left = DOM.getAbsoluteLeft(th);
+                    int width = getThElementWidth(th);
 
-        /**
-         * Gets element width.
-         *
-         * @param element is an element
-         * @return width in pixels
-         */
-        protected int getElementWidth(Element element) {
-            return DOM.getElementPropertyInt(element, "offsetWidth");
+                    int thIndex = DOM.getChildIndex(tr, th);
+
+                    if (startX <= left + 2) {
+                        sign = 1;
+                        sibling = DOM.getChild(tr, thIndex - 1);
+                    } else if (startX >= left + width - 2) {
+                        sign = -1;
+                        sibling = DOM.getChild(tr, thIndex + 1);
+                    }
+
+                    Element lastTh = DOM.getChild(tr, DOM.getChildCount(tr) - 1);
+                    lastTh.getStyle().setWidth(lastTh.getClientWidth(), Style.Unit.PX);
+                    timer.scheduleRepeating(20);
+                }
+
+                GWTUtil.preventEvent(event);
+            }
         }
 
         /**
@@ -1001,7 +1030,7 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         protected boolean isOverBorder(Event event, Element th) {
             int position = getPositionX(event);
             int left = DOM.getAbsoluteLeft(th);
-            int width = getElementWidth(th);
+            int width = getThElementWidth(th);
             int index = DOM.getChildIndex(DOM.getParent(th), th);
 
             return position <= left + 1 && index > 0
