@@ -549,16 +549,11 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
                 HTMLTable.CellFormatter formatter = getBodyTable().getCellFormatter();
                 Element td = formatter.getElement(0, column);
                 DOM.setStyleAttribute(td, "width", size + "px");
-
-//                for (int i = 1; !GWTUtil.isIE() && i < getRowCount(); i++) {
-//                    td = formatter.getElement(i, column);
-//                    DOM.setStyleAttribute(td, "width", size + "px");
-//                }
             }
         }
     }
 
-    /**
+    /**                                                 
      * This method gets a TH element.
      *
      * @param column is a column number.

@@ -3,6 +3,18 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 2.0.3 includes:
+
+Bug fixes:
+1. Unable to set Visible for more than 1 column
+2. TreeGrid > Unable to change value of TextBoxCell at level > 0 
+3. [IE] Uncaught exception escaped 
+4. Grid toolbar is always displayed over the grid in FF
+
+New features:
+1. Make column resizing work more smoothly
+
+====================================================================================================================
 Release 2.0.2 includes:
 
 Bug fixes:

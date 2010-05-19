@@ -6,7 +6,14 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="2.0.2" date="2010-04-27" description="Latest supported version">
+        <release version="2.0.3" date="2010-05-19" description="Latest supported version">
+            <action type="add" issue="88" system="google">Make column resizing work more smoothly</action>
+            <action type="fix" issue="83" system="google">Unable to set Visible for more than 1 column</action>
+            <action type="fix" issue="84" system="google">TreeGrid > Unable to change value of TextBoxCell at level > 0</action>
+            <action type="fix" issue="85" system="google">[IE] Uncaught exception escaped</action>
+            <action type="fix" issue="89" system="google">Grid toolbar is always displayed over the grid in FF</action>
+        </release>
+        <release version="2.0.2" date="2010-04-27" description="Old unsupported version">
             <action type="add" issue="69" system="google">Add a model listener in the ComboBox.getModel() method</action>
             <action type="add" issue="70" system="google">Add ability to switch off lazy rendering in ComboBox</action>
             <action type="add" issue="74" system="google">Request features: keyboard navigation/manipulation support</action>
