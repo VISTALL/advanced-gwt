@@ -292,7 +292,7 @@ public class EditableGridDataModel extends SimpleGridDataModel implements Editab
         Object[][] rows = new Object[removedRows.size()][getTotalColumnCount()];
 
         for (int i = 0; i < rows.length; i++) {
-            rows[i] = ((List)removedRows.get(i)).toArray();
+            rows[i] = removedRows.get(i).getData();
         }
         return rows;
     }

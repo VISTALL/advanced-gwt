@@ -16,6 +16,8 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -24,6 +26,7 @@ import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.ui.widget.ComboBox;
+import org.gwt.advanced.client.ui.widget.EditableGrid;
 import org.gwt.advanced.client.util.GWTUtil;
 
 /**
@@ -35,6 +38,7 @@ import org.gwt.advanced.client.util.GWTUtil;
 public class ComboBoxCell extends AbstractCell {
     /** handler registration for combo box click (valid for FF only) */
     private HandlerRegistration ffHandlerRegistration;
+    private HandlerRegistration changeHandlerRegistration;
 
     /** {@inheritDoc} */
     public boolean valueEqual(Object value) {
@@ -48,7 +52,7 @@ public class ComboBoxCell extends AbstractCell {
             value = new ComboBox<ComboBoxDataModel>();
             ComboBoxDataModel model = new ComboBoxDataModel();
             model.add("---", "---");
-            ((ComboBox<ComboBoxDataModel>)value).setModel(model);
+            ((ComboBox<ComboBoxDataModel>) value).setModel(model);
         } else if (value instanceof ComboBoxDataModel) {
             ComboBox<ComboBoxDataModel> box = new ComboBox<ComboBoxDataModel>();
             box.setModel((ComboBoxDataModel) value);
@@ -60,11 +64,20 @@ public class ComboBoxCell extends AbstractCell {
     /** {@inheritDoc} */
     protected Widget createActive() {
         removeStyleName("list-cell");
-        ComboBox box = (ComboBox) getValue();
+        final ComboBox box = (ComboBox) getValue();
         if (box == null)
             removeStyleName("active-cell");
         else
             box.setWidth("100%");
+
+        if (box != null) {
+            changeHandlerRegistration = box.addChangeHandler(new ChangeHandler() {
+                @Override
+                public void onChange(ChangeEvent event) {
+                    ((EditableGrid)getGrid()).setFocus(true);
+                }
+            });
+        }
         return box;
     }
 
@@ -73,6 +86,10 @@ public class ComboBoxCell extends AbstractCell {
         ComboBox comboBox = (ComboBox) getValue();
         if (comboBox != null && comboBox.isListPanelOpened())
             comboBox.setListPopupOpened(false);
+        if (changeHandlerRegistration != null) {
+            changeHandlerRegistration.removeHandler();
+            changeHandlerRegistration = null;
+        }
         return getComboBoxWidget(comboBox);
     }
 
@@ -87,7 +104,7 @@ public class ComboBoxCell extends AbstractCell {
             // the cell is activated on enter key press and as result the box closes the drop down list
             // opened before
             if (GWTUtil.isFF()) {
-                ffHandlerRegistration = box.addClickHandler(new ClickHandler(){
+                ffHandlerRegistration = box.addClickHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
                         box.showList(true);
@@ -111,10 +128,9 @@ public class ComboBoxCell extends AbstractCell {
      * This method returns a widget for the inactive combo box.
      *
      * @param comboBox is a combo box.
-     *
      * @return a widget to be extracted from the combo box.
      */
-    protected Widget getComboBoxWidget (ComboBox comboBox) {
+    protected Widget getComboBoxWidget(ComboBox comboBox) {
         Widget widget = new Label();
         if (comboBox != null) {
             int index;
