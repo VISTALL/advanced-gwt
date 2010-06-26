@@ -21,6 +21,7 @@ import org.gwt.advanced.client.ui.GridListener;
 import org.gwt.advanced.client.ui.GridToolbarListener;
 import org.gwt.advanced.client.ui.PagerListener;
 import org.gwt.advanced.client.ui.SelectRowListener;
+import org.gwt.advanced.client.ui.widget.cell.GridCell;
 import org.gwt.advanced.client.ui.widget.cell.HeaderCell;
 
 import java.util.ArrayList;
@@ -132,11 +133,25 @@ public class EventMediator implements PagerListener, GridListener, GridToolbarLi
     /** {@inheritDoc} */
     public void onSaveClick () {
         EditableGrid grid = getPanel().getGrid();
+        boolean active = grid.hasActiveCell();
+
+        if (active) {
+            GridCell cell = (GridCell) grid.getWidget(grid.getCurrentRow(), grid.getCurrentColumn());
+            if (grid.fireFinishEdit(cell, cell.getNewValue())) {
+                grid.activateCell(grid.getCurrentRow(), grid.getCurrentColumn(), false);
+            } else {
+                return;
+            }
+        }
         Editable model = grid.getModel();
         fireSaveEvent(model);
 
         if (grid instanceof HierarchicalGrid)
             ((HierarchicalGrid)grid).getGridPanelCache().clear();
+
+        if (active) {
+            grid.setCurrentCell(0, 0);
+        }
     }
 
     /** {@inheritDoc} */

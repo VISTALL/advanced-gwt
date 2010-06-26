@@ -487,7 +487,7 @@ public class EditableGrid<T extends Editable> extends SimpleGrid implements Adva
             HTMLTable.RowFormatter rowFormatter = getRowFormatter();
             rowFormatter.removeStyleName(row, "selected-row");
 
-            if (column > 0 && column < getCellCount(row)) {
+            if (column >= 0 && column < getCellCount(row)) {
                 getColumnFormatter().removeStyleName(column, "selected-column");
                 getCellFormatter().removeStyleName(row, column, "selected-cell");
                 this.currentColumn = -1;
