@@ -19,11 +19,17 @@ package org.gwt.advanced.client.ui.widget;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.AdvancedWidget;
 import org.gwt.advanced.client.ui.resources.GridToolbarConstants;
 import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a grid toolbar widget.<p>
@@ -50,6 +56,8 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
     private boolean moveRightButtonVisible = true;
     /** a grid panel instance */
     private GridPanel gridPanel;
+    /** click handler registrations for the buttons */
+    private List<HandlerRegistration> registrations = new ArrayList<HandlerRegistration>();
 
     /**
      * Creates an instance of this class.
@@ -252,7 +260,7 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
      * @param image is an image of the button.
      * @param handler is a handler to be invoked on button click.
      */
-    protected void addButton(String image, ClickHandler handler) {
+    public void addButton(String image, ClickHandler handler) {
       addButton(image, null, handler);
     }
 
@@ -263,12 +271,74 @@ public class GridToolbar extends FlowPanel implements AdvancedWidget {
      * @param hint is a popup hint of the button.
      * @param handler is a handler to be invoked on button click.
      */
-    protected void addButton(String image, String hint, ClickHandler handler) {
+    public void addButton(String image, String hint, ClickHandler handler) {
         ToggleButton button = new ToggleButton(new ThemeImage(image));
         button.setStyleName("advanced-GridToolbar-button");
-        button.addClickHandler(handler);
+        registrations.add(button.addClickHandler(handler));
         button.setTitle(hint);
         add(button);
+    }
+
+    /**
+     * This method removes a button from the toolbar.<p/>
+     * It also removes a click handler associated with the button.
+     *
+     * @param index is an index of the button.
+     */
+    public void removeButton(int index) {
+        remove(index);
+        HandlerRegistration registration = registrations.get(index);
+        registration.removeHandler();
+        registrations.remove(index);
+    }
+
+    /**
+     * Creates and inserts a new button into the specified position.
+     *
+     * @param before is a position of the new button.
+     * @param image is an image URL.
+     * @param handler is a handler for this button to be invoked on click.
+     */
+    public void insertButton(int before, String image, ClickHandler handler) {
+        insertButton(before, image, null, handler);
+    }
+
+    /**
+     * Creates and inserts a new button into the specified position.
+     *
+     * @param before is a position of the new button.
+     * @param image is an image URL.
+     * @param hint is a button hint value.
+     * @param handler is a handler for this button to be invoked on click.
+     */
+    public void insertButton(int before, String image, String hint, ClickHandler handler) {
+        ToggleButton button = new ToggleButton(new ThemeImage(image));
+        button.setStyleName("advanced-GridToolbar-button");
+        registrations.add(before, button.addClickHandler(handler));
+        button.setTitle(hint);
+        insert(button, before);
+    }
+
+    /**
+     * Sets a button visible or invisible.
+     *
+     * @param index is an index of the button in the toolbar.
+     * @param visible is a visibility option.
+     */
+    public void setButtonVisible(int index, boolean visible) {
+        getWidget(index).setVisible(visible);
+    }
+
+    /**
+     * Sets a button enabled or disabled.
+     *
+     * @param index is an index of the button in the toolbar.
+     * @param enabled is a button enabled option.
+     */
+    public void setButtonEnabled(int index, boolean enabled) {
+        Widget widget = getWidget(index);
+        if (widget instanceof FocusWidget)
+            ((FocusWidget) widget).setEnabled(enabled);
     }
 
     /**
