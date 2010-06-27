@@ -42,20 +42,20 @@ public class TabPosition {
     private DockPanel.DockLayoutConstant layoutPosition;
 
     /**
-     * Creates an instance of this class and initializes internale fields..
+     * Creates an instance of this class and initializes internal fields.
      *
      * @param name is a position name.
      * @param renderer is a tabs band renderer to be used for this position.
      * @param layoutPosition is a dock layout position (to be used by the tabs panel).
      */
-    protected TabPosition(String name, TabBandRenderer renderer, DockPanel.DockLayoutConstant layoutPosition) {
+    public TabPosition(String name, TabBandRenderer renderer, DockPanel.DockLayoutConstant layoutPosition) {
         this.name = name;
         this.renderer = renderer;
         this.layoutPosition = layoutPosition;
     }
 
     /**
-     * Gets a name of the postition.
+     * Gets a name of the position.
      *
      * @return a name.
      */

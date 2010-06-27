@@ -96,7 +96,7 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
     /**
      * Creates an instance of this class and displays the panel using the specified border factories.
      *
-     * @param position             is a postion of tabs.
+     * @param position             is a position of tabs.
      * @param tabBorderFactory     is a factory for tabs border.
      * @param contentBorderFactory is a factory for the content border.
      */
