@@ -55,7 +55,7 @@
               <ul>
                   <li>improved browser independent table body scrolling</li>
                   <li>editable grids</li>
-                  <li>hierarchcal and master-detail representations of complicated data models</li>
+                  <li>hierarchical and master-detail representations of complicated data models</li>
                   <li>multiple and single row selections</li>
                   <li>client side paging and sorting</li>
                   <li>server side (lazy) data loading</li>

@@ -3,6 +3,18 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 2.0.4 includes:
+
+Bug fixes:
+1. Editable grid: edit mode
+2. Combox and Tab Key press
+3. classcast exception when calling method EditableGridDataModel.getRemovedRows()
+
+New features:
+1. GridPanel - GridToolbar extensibility!?
+2. TabPosition lacks setRenderer
+
+====================================================================================================================
 Release 2.0.3 includes:
 
 Bug fixes:

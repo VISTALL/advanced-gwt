@@ -6,7 +6,14 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="2.0.3" date="2010-05-19" description="Latest supported version">
+        <release version="2.0.4" date="2010-07-03" description="Latest supported version">
+            <action type="add" issue="90" system="google">GridPanel - GridToolbar extensibility!?</action>
+            <action type="add" issue="91" system="google">TabPosition lacks setRenderer</action>
+            <action type="fix" issue="92" system="google">Editable grid: edit mode</action>
+            <action type="fix" issue="93" system="google">Combox and Tab Key press</action>
+            <action type="fix" issue="94" system="google">classcast exception when calling method EditableGridDataModel.getRemovedRows()</action>
+        </release>
+        <release version="2.0.3" date="2010-05-19" description="Old unsupported version">
             <action type="add" issue="88" system="google">Make column resizing work more smoothly</action>
             <action type="fix" issue="83" system="google">Unable to set Visible for more than 1 column</action>
             <action type="fix" issue="84" system="google">TreeGrid > Unable to change value of TextBoxCell at level > 0</action>
