@@ -74,7 +74,7 @@
                       <li>customizable keyboard events management</li>
                       <li>customizable content drawing, including server side rendering</li>
                       <li>updatable cells</li>
-                      <li>multiple and sigle row selection modes</li>
+                      <li>multiple and single row selection modes</li>
                       <li>ability to add and remove rows as well as grid cleaning</li>
                       <li>ability to validate entering cell values</li>
                       <li>ability to synchronize whole data model and particular cells with any source of data</li>
