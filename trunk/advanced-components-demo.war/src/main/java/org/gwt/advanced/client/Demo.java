@@ -39,13 +39,13 @@ public class Demo implements EntryPoint {
         RootPanel.get("container").add(advancedTabPanel);
 
         new EditableGridShowcase().initShowcase(advancedTabPanel);
-//        new HierarchicalGridShowcase().initShowcase(advancedTabPanel);
-//        new TreeGridShowcase().initShowcase(advancedTabPanel);
-//        new SimpleGridShowcase().initShowcase(advancedTabPanel);
-//        new MVPShowcase().initShowcase(advancedTabPanel);
-//        new MasterDetailPanelShowcase().initShowcase(advancedTabPanel);
-//        new TextAndButtonShowcase().initShowcase(advancedTabPanel);
-//        new BordersShowcase().initShowcase(advancedTabPanel);
+        new HierarchicalGridShowcase().initShowcase(advancedTabPanel);
+        new TreeGridShowcase().initShowcase(advancedTabPanel);
+        new SimpleGridShowcase().initShowcase(advancedTabPanel);
+        new MVPShowcase().initShowcase(advancedTabPanel);
+        new MasterDetailPanelShowcase().initShowcase(advancedTabPanel);
+        new TextAndButtonShowcase().initShowcase(advancedTabPanel);
+        new BordersShowcase().initShowcase(advancedTabPanel);
     }
 
     /**
