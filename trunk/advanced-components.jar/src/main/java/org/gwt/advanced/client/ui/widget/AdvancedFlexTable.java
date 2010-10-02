@@ -56,9 +56,17 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
      */
     private Element tHeadElement;
     /**
+     * the tfoot element
+     */
+    private Element tFootElement;
+    /**
      * header widgets list
      */
     private List<Widget> headerWidgets;
+    /**
+     * footer widgets list
+     */
+    private List<Widget> footerWidgets;
     /**
      * a scroll panel widget (supported by IE only)
      */
@@ -163,9 +171,53 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
     }
 
     /**
-     * This method enables verticall scrolling ability<p/>
-     * Note that in different browsers theis feature can work in absolutely diffirent ways.
-     * Rememeber this fact every time when you make CSS for your site.
+     * This method sets a widget for the specified footer cell.
+     *
+     * @param column is a column number.
+     * @param widget is a widget to be added to the cell.
+     */
+    public void setFooterWidget(int column, Widget widget) {
+        prepareFooterCell(column);
+
+        if (widget != null) {
+            widget.removeFromParent();
+
+            Element td = DOM.getChild(DOM.getFirstChild(getTFootElement()), column);
+            internalClearCell(td, true);
+
+            // Physical attach.
+            DOM.appendChild(td, widget.getElement());
+
+            List<Widget> footerWidgets = getFooterWidgets();
+            if (footerWidgets.size() > column && footerWidgets.get(column) != null)
+                footerWidgets.set(column, widget);
+            else
+                footerWidgets.add(column, widget);
+
+            adopt(widget);
+        }
+    }
+
+    /**
+     * This method removes the header widget.
+     *
+     * @param column is a column number.
+     */
+    public void removeFooterWidget(int column) {
+        if (column < 0)
+            throw new IndexOutOfBoundsException("Column number mustn't be negative");
+
+        Element tr = DOM.getFirstChild(getTFootElement());
+        Element th = DOM.getChild(tr, column);
+        DOM.removeChild(tr, th);
+
+        getFooterWidgets().remove(column);
+    }
+
+    /**
+     * This method enables vertical scrolling ability<p/>
+     * Note that in different browsers this feature can work in absolutely different ways.
+     * Remember this fact every time when you make CSS for your site.
      *
      * @param enabled if <code>true</code> then the scrolling feature should be enabled,
      */
@@ -472,6 +524,33 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
     }
 
     /**
+     * This method prepares the footer cell to be used.
+     *
+     * @param column is a column number.
+     */
+    protected void prepareFooterCell(int column) {
+        if (column < 0) {
+            throw new IndexOutOfBoundsException(
+                    "Cannot create a column with a negative index: " + column
+            );
+        }
+
+        if (tFootElement == null) {
+            tFootElement = DOM.createElement("tfoot");
+            DOM.insertChild(getElement(), getTFootElement(), 1);
+            Element tr = DOM.createTR();
+            DOM.insertChild(getTFootElement(), tr, 0);
+        }
+
+        List<Widget> footerWidgets = getFooterWidgets();
+        if (footerWidgets.size() <= column || footerWidgets.get(column) == null) {
+            int required = column + 1 - DOM.getChildCount(DOM.getChild(getTFootElement(), 0));
+            if (required > 0)
+                addFooterCells(getTFootElement(), required);
+        }
+    }
+
+    /**
      * This native method is used to create TH tags instead of TD tags.
      *
      * @param tHead is a grid thead element.
@@ -486,12 +565,35 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
     }-*/;
 
     /**
+     * This native method is used to create TD tags.
+     *
+     * @param tFoot is a grid tfoot element.
+     * @param num   is a number of columns to create.
+     */
+    protected native void addFooterCells(Element tFoot, int num)/*-{
+        var rowElem = tFoot.rows[0];
+        for(var i = 0; i < num; i++){
+          var cell = $doc.createElement("td");
+          rowElem.appendChild(cell);
+        }
+    }-*/;
+
+    /**
      * Getter for property 'tHeadElement'.
      *
      * @return Value for property 'tHeadElement'.
      */
     public Element getTHeadElement() {
         return tHeadElement;
+    }
+
+    /**
+     * Getter for property 'tFootElement'.
+     *
+     * @return Value for property 'tFootElement'.
+     */
+    public Element getTFootElement() {
+        return tFootElement;
     }
 
     /**
@@ -503,6 +605,17 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
         if (headerWidgets == null)
             headerWidgets = new ArrayList<Widget>();
         return headerWidgets;
+    }
+
+    /**
+     * Getter for property 'footerWidgets'.
+     *
+     * @return Value for property 'footerWidgets'.
+     */
+    protected List<Widget> getFooterWidgets() {
+        if (footerWidgets == null)
+            footerWidgets = new ArrayList<Widget>();
+        return footerWidgets;
     }
 
     /**

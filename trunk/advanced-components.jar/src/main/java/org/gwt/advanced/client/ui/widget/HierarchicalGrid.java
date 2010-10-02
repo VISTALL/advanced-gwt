@@ -198,7 +198,8 @@ public class HierarchicalGrid extends EditableGrid<Editable> implements ExpandCe
 
         if (isResizable()) {
             Element th = getThElement(column);
-            DOM.setStyleAttribute(th, "width", size + "px");
+            if (th != null)
+                DOM.setStyleAttribute(th, "width", size + "px");
             if (getRowCount() > 0) {
                 HTMLTable.CellFormatter formatter = getBodyTable().getCellFormatter();
                 Element td = formatter.getElement(0, column);
