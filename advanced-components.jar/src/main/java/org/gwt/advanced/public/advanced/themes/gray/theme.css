@@ -430,6 +430,11 @@
     margin-left: 15px;
 }
 
+/** footer styles */
+.footer-table-cell .advanced-Grid td {
+    font-weight: bold;
+}
+
 /*********************
  * Locking panel
  */

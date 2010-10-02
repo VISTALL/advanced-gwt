@@ -30,6 +30,10 @@ public class SimpleGridShowcase extends AbstractShowcase {
             }
         }
 
+        for (int i = 0; i < 3; i++) {
+            grid.setFooterWidget(i, new Label("Footer " + i));
+        }
+
         return grid;
     }
 

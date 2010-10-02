@@ -40,6 +40,8 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     private AdvancedFlexTable headerTable;
     /** body container */
     private AdvancedFlexTable bodyTable;
+    /** footer container */
+    private AdvancedFlexTable footerTable;
     /** body scroll panel */
     private ScrollPanel scrollPanel;
     /** flag meaning that the grid has already benen initialized */
@@ -87,6 +89,17 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         getBodyTable().setCellSpacing(0);
         getBodyTable().setCellPadding(0);
 
+        super.setWidget(2, 0, getFooterTable());
+        tr = getRowFormatter().getElement(1);
+        DOM.setStyleAttribute(tr, "border", "0");
+        DOM.setStyleAttribute(tr, "padding", "0");
+        DOM.setStyleAttribute(tr, "margin", "0");
+        getCellFormatter().setStyleName(2, 0, "footer-table-cell");
+        getCellFormatter().setVerticalAlignment(2, 0, HasVerticalAlignment.ALIGN_TOP);
+        getFooterTable().setStyleName("advanced-Grid");
+        getFooterTable().setCellSpacing(0);
+        getFooterTable().setCellPadding(0);
+
         DOM.setStyleAttribute(getElement(), "border", "0");
         DOM.setStyleAttribute(getElement(), "padding", "0");
         DOM.setStyleAttribute(getElement(), "margin", "0");
@@ -119,7 +132,8 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         parent = getScrollPanel().getElement();
 
         GWTUtil.adjustWidgetSize(getHeaderTable(), DOM.getParent(getHeaderTable().getElement()), false);
-        GWTUtil.adjustWidgetSize(getBodyTable(), parent, false);
+        getBodyTable().setWidth(getHeaderTable().getOffsetWidth() + "px");
+        GWTUtil.adjustWidgetSize(getFooterTable(), DOM.getParent(getFooterTable().getElement()), false);
 
         if (getBodyTable().getRowCount() > 0) {
             int parentWidth = DOM.getElementPropertyInt(parent, "clientWidth");
@@ -131,7 +145,12 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
                     setColumnWidth(i, size);
 
                 Element th = getThElement(count - 1);
-                setColumnWidth(count - 1, th.getClientWidth());
+                if (th != null)
+                    setColumnWidth(count - 1, th.getClientWidth());
+
+                Element td = getFooterTdElement(count - 1);
+                if (td != null)
+                    setColumnWidth(count - 1, td.getClientWidth());
             }
         }
     }
@@ -188,9 +207,27 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         }
     }
 
-    /** {@inheritDoc} */                              
+    /** {@inheritDoc} */
+    @Override
+    public void setFooterWidget(int column, Widget widget) {
+        getFooterTable().setFooterWidget(column, widget);
+        Element tr = DOM.getChild(getTFootElement(), 0);
+        Element td = DOM.getChild(tr, column);
+        if (isResizable()) {
+            DOM.setStyleAttribute(td, "overflow", "hidden");
+            DOM.setStyleAttribute(td, "whiteSpace", "nowrap");
+        }
+    }
+
+    /** {@inheritDoc} */
     public void removeHeaderWidget(int column) {
         getHeaderTable().removeHeaderWidget(column);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void removeFooterWidget(int column) {
+        getFooterTable().removeFooterWidget(column);
     }
 
     /** {@inheritDoc} */
@@ -236,6 +273,12 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     }
 
     /** {@inheritDoc} */
+    @Override
+    protected void prepareFooterCell(int column) {
+        getFooterTable().prepareFooterCell(column);
+    }
+
+    /** {@inheritDoc} */
     protected void addHeaderCells(Element tHead, int num) {
         getHeaderTable().addHeaderCells(tHead, num);
     }
@@ -251,8 +294,20 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public Element getTFootElement() {
+        return getFooterTable().getTFootElement();
+    }
+
+    /** {@inheritDoc} */
     protected List<Widget> getHeaderWidgets() {
         return getHeaderTable().getHeaderWidgets();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected List<Widget> getFooterWidgets() {
+        return getFooterTable().getFooterWidgets();
     }
 
     /** {@inheritDoc} */
@@ -544,11 +599,20 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
             if (size < 0)
                 size = 0;
             Element th = getThElement(column);
-            DOM.setStyleAttribute(th, "width", size + "px");
+            if (th != null)
+                DOM.setStyleAttribute(th, "width", size + "px");
+
+            Element tdFooter = getFooterTdElement(column);
+            if (tdFooter != null)
+                DOM.setStyleAttribute(tdFooter, "width", size + "px");
+
             if (getRowCount() > 0) {
                 HTMLTable.CellFormatter formatter = getBodyTable().getCellFormatter();
                 Element td = formatter.getElement(0, column);
-                DOM.setStyleAttribute(td, "width", size + "px");
+                if (th != null)
+                    DOM.setStyleAttribute(td, "width", th.getClientWidth() + "px");
+                else
+                    DOM.setStyleAttribute(td, "width", size + "px");
             }
         }
     }
@@ -560,8 +624,27 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
      * @return an element.
      */
     protected Element getThElement(int column) {
-        Element tr = DOM.getChild(getHeaderTable().getTHeadElement(), 0);
-        return DOM.getChild(tr, column);
+        Element thead = getHeaderTable().getTHeadElement();
+        if (thead.getChildCount() > 0 && thead.getFirstChildElement().getChildCount() > column) {
+            Element tr = DOM.getChild(thead, 0);
+            return DOM.getChild(tr, column);
+        }
+        return null;
+    }
+
+    /**
+     * This method gets a footer TD element.
+     *
+     * @param column is a column number.
+     * @return an element.
+     */
+    protected Element getFooterTdElement(int column) {
+        Element tfoot = getFooterTable().getTFootElement();
+        if (tfoot.getChildCount() > 0 && tfoot.getFirstChildElement().getChildCount() > column) {
+            Element tr = DOM.getChild(tfoot, 0);
+            return DOM.getChild(tr, column);
+        }
+        return null;
     }
 
     /**
@@ -705,6 +788,17 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     }
 
     /**
+     * Getter for property 'footerTable'.
+     *
+     * @return Value for property 'footerTable'.
+     */
+    protected AdvancedFlexTable getFooterTable() {
+        if (footerTable == null)
+            footerTable = new AdvancedFlexTable();
+        return footerTable;
+    }
+
+    /**
      * Getter for property 'bodyTable'.
      *
      * @return Value for property 'bodyTable'.
@@ -744,10 +838,12 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
         if (resizable){
             DOM.setStyleAttribute(getBodyTable().getElement(), "tableLayout", "fixed");
             DOM.setStyleAttribute(getHeaderTable().getElement(), "tableLayout", "fixed");
+            DOM.setStyleAttribute(getFooterTable().getElement(), "tableLayout", "fixed");
             DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
         } else {
             DOM.setStyleAttribute(getBodyTable().getElement(), "tableLayout", "");
             DOM.setStyleAttribute(getHeaderTable().getElement(), "tableLayout", "");
+            DOM.setStyleAttribute(getFooterTable().getElement(), "tableLayout", "");
             DOM.setStyleAttribute(getElement(), "tableLayout", "");
         }
     }
