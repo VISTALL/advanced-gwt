@@ -6,7 +6,7 @@
     <artifactId>advanced-components-demo</artifactId>
     <packaging>war</packaging>
     <name>Advanced GWT Components Demo Application</name>
-    <version>2.0.4</version>
+    <version>2.0.5</version>
 
     <description>The application demonstrating features of the GWT Advanced Components library.</description>
     <inceptionYear>2008</inceptionYear>
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>org.gwt.advanced</groupId>
             <artifactId>advanced-components</artifactId>
-            <version>2.0.4</version>
+            <version>2.0.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
