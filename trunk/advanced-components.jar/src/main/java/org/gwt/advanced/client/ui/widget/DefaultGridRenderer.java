@@ -54,12 +54,19 @@ public class DefaultGridRenderer implements GridRenderer {
     /** {@inheritDoc} */
     public void drawHeaders(Object[] headers) {
         EditableGrid grid = getGrid();
+        int size = grid.getHeaderWidgets().size();
+        for (int i = 0; i < size; i++) {
+            grid.removeHeaderWidget(0);
+        }
 
+        int skippedColumns = 0;
         for (int i = 0; i < headers.length; i++) {
             String header = (String) headers[i];
             if (grid.isVisible(i)) {
-                HeaderCell cell = getCellFactory().create(i, header);
+                HeaderCell cell = getCellFactory().create(i - skippedColumns, header);
                 cell.displayActive(false);
+            } else {
+                skippedColumns++;
             }
         }
     }

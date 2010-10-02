@@ -157,7 +157,7 @@ public class DemoModelFactory {
     };
 
     /**
-     * This method creates an employy model mapping the specified department to
+     * This method creates an employee model mapping the specified department to
      * appropriate employees.
      *
      * @param departmentId is a department ID.
