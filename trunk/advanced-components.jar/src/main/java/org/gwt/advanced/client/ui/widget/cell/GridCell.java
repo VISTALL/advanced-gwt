@@ -114,4 +114,13 @@ public interface GridCell {
      * @return <code>true</code> if values are equal.
      */
     boolean valueEqual (Object value);
+
+    /**
+     * This method checks whether a cell can be deactivated by a grid or another component
+     * on any input / output event produced outside the cell.<p/>
+     * Most of cells always allow deactivation in this case, others only in particular situations.
+     *
+     * @return a result of check.
+     */
+    boolean canBeDeactivated();
 }

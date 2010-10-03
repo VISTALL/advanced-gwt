@@ -193,7 +193,7 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Moves the cursor to the next cell */
     protected void moveToNextCell() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
 
         if (grid.getCurrentColumn() < grid.getCellCount(grid.getCurrentRow()) - 1)
@@ -205,7 +205,7 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Moves the cursor to the previous cell */
     protected void moveToPreviousCell() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
 
         if (grid.getCurrentColumn() > 0)
@@ -217,7 +217,7 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Moves the cursor right */
     protected void moveCursorRight() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         setCursor(grid.getCurrentRow(), grid.getCurrentColumn() + 1, false);
     }
@@ -225,7 +225,7 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Moves the cursor down */
     protected void moveCursorDown() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         setCursor(grid.getCurrentRow() + 1, grid.getCurrentColumn(), false);
     }
@@ -233,7 +233,7 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Moves the cursor left */
     protected void moveCursorLeft() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         setCursor(grid.getCurrentRow(), grid.getCurrentColumn() - 1, false);
     }
@@ -241,14 +241,14 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Moves the cursor up */
     protected void moveCursorUp() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         setCursor(grid.getCurrentRow() - 1, grid.getCurrentColumn(), false);
     }
 
     /** Opens the first page of the grid */
     protected void moveToStartPage() {
-        if (getPanel().getGrid().hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         setPage(0);
     }
@@ -256,7 +256,7 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Opens the last page of the grid */
     protected void moveToEndPage() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         int page = grid.getModel().getTotalPagesNumber() - 1;
         setPage(page);
@@ -264,7 +264,7 @@ public class DefaultGridEventManager implements GridEventManager {
 
     /** Moves the cursor to the first cell on this page */
     protected void moveToFirstCell() {
-        if (getPanel().getGrid().hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         setCursor(0, 0, false);
     }
@@ -272,7 +272,7 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Moves the cursor to the last cell on this page */
     protected void moveToLastCell() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         int row = grid.getRowCount() - 1;
         if (row < 0)
@@ -286,7 +286,7 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Open the next page */
     protected void moveToNextPage() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         int page = grid.getModel().getCurrentPageNumber();
         setPage(page + 1);
@@ -295,10 +295,26 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Opens the previous page */
     protected void moveToPrevPage() {
         EditableGrid grid = getPanel().getGrid();
-        if (grid.hasActiveCell())
+        if(!deactivateActiveCell())
             return;
         int page = grid.getModel().getCurrentPageNumber();
         setPage(page - 1);
+    }
+
+    /**
+     * This method activates an active cell if there is one and if this cell allows
+     * centralized deactivation by keyboard.<p/>
+     * Invoke this method only if you handle keyboard events. Otherwise invoke {@link #activateCell()}.
+     *
+     * @return <code>true</code> if cell is deactivated.
+     */
+    protected boolean deactivateActiveCell() {
+        EditableGrid grid = getPanel().getGrid();
+        if (grid.hasActiveCell() && grid.getActiveCell().canBeDeactivated()) {
+            activateCell();
+            return true;
+        }
+        return !grid.hasActiveCell();
     }
 
     /**

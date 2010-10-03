@@ -132,6 +132,12 @@ public abstract class AbstractCell extends SimplePanel implements GridCell {
         return thisValue == value || thisValue != null && thisValue.equals(value);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean canBeDeactivated() {
+        return true;
+    }
+
     /**
      * This method creates an active cell element (content).
      *
