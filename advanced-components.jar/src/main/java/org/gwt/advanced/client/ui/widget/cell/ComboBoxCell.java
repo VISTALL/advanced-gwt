@@ -62,6 +62,12 @@ public class ComboBoxCell extends AbstractCell {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public boolean canBeDeactivated() {
+        return false;
+    }
+
+    /** {@inheritDoc} */
     protected Widget createActive() {
         removeStyleName("list-cell");
         final ComboBox box = (ComboBox) getValue();

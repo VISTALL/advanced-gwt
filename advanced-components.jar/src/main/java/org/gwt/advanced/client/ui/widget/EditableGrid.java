@@ -1348,8 +1348,22 @@ public class EditableGrid<T extends Editable> extends SimpleGrid implements Adva
         }
     }
 
+    /**
+     * Checks whether the grid has an activated cell.
+     *
+     * @return a result of check.
+     */
     protected boolean hasActiveCell() {
         return activeCell != null;
+    }
+
+    /**
+     * Gets a cell that is active, i.e. a cell that is chosen by a user to edit data.
+     *
+     * @return a grid cell that is currently active.
+     */
+    protected GridCell getActiveCell() {
+        return activeCell;
     }
 
     /**
