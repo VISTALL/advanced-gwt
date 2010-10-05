@@ -16,7 +16,7 @@
             </p>
             <p>
                 The latest stable version is
-                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.3/">2.0.3</a>.
+                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.4/">2.0.4</a>.
                 <!--You can try also a new one (released but may contain some bugs):
                 <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.0-beta/">2.0.0-beta</a>.-->
             </p>
@@ -65,6 +65,7 @@
                   <li>customizable borders API</li>
                   <li>localization and internationalization</li>
                   <li>&lt;thead&gt; HTML tag support in tables</li>
+                  <li>&lt;tfoot&gt; HTML tag support in tables<span class="new">new</span></li>
                   <li>splitting to view and model (MVP design)</li>
                   <li>data model events</li>
                   <li>lazy rendering for large drop down lists</li>

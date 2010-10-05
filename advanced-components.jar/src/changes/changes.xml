@@ -6,7 +6,13 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="2.0.4" date="2010-07-03" description="Latest supported version">
+		<release version="2.0.5" date="2010-10-06" description="Latest supported version">
+            <action type="add" issue="36" system="google">Add footer to all the grids</action>
+            <action type="add" issue="96" system="google">Moving next/prev row when in editing cell</action>
+            <action type="fix" issue="99" system="google">GridPanel.setInvisibleColumn works incorrectly</action>
+            <action type="fix" issue="98" system="google">Change GridPanel extends DockLayoutPanel instead</action>
+        </release>
+        <release version="2.0.4" date="2010-07-03" description="Old unsupported version">
             <action type="add" issue="90" system="google">GridPanel - GridToolbar extensibility!?</action>
             <action type="add" issue="91" system="google">TabPosition lacks setRenderer</action>
             <action type="fix" issue="92" system="google">Editable grid: edit mode</action>
