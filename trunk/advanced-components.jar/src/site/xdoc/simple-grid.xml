@@ -48,7 +48,7 @@
                     new features. The reason why this component was made is just to improve table usability and avoid
                     side effects appearing in different browsers during scrolling.
 
-                    Before 1.4.5 all the grids of the Advnaced GWT Components library were inherited from the Advanced
+                    Before 1.4.5 all the grids of the Advanced GWT Components library were inherited from the Advanced
                     Flex Table and it was a source of numerous problems with look and feel. Simple Grid solves most of
                     them and makes work with the framework more comfortable.
                 </p>

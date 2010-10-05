@@ -3,6 +3,17 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 2.0.5 includes:
+
+Bug fixes:
+1. GridPanel.setInvisibleColumn works incorrectly
+2. Change GridPanel extends DockLayoutPanel instead
+
+New features:
+1. Add footer to all the grids
+2. Moving next/prev row when in editing cell
+
+====================================================================================================================
 Release 2.0.4 includes:
 
 Bug fixes:
