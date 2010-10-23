@@ -640,9 +640,11 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
      */
     protected Element getFooterTdElement(int column) {
         Element tfoot = getFooterTable().getTFootElement();
-        if (tfoot.getChildCount() > 0 && tfoot.getFirstChildElement().getChildCount() > column) {
-            Element tr = DOM.getChild(tfoot, 0);
-            return DOM.getChild(tr, column);
+        if (tfoot != null) {
+            if (tfoot.getChildCount() > 0 && tfoot.getFirstChildElement().getChildCount() > column) {
+                Element tr = DOM.getChild(tfoot, 0);
+                return DOM.getChild(tr, column);
+            }
         }
         return null;
     }
