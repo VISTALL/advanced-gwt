@@ -78,6 +78,7 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
     /**
      * list of table click handlers
      */
+    @SuppressWarnings({"deprecation"})
     private HandlerManager handlerManager = new HandlerManager(this);
     /**
      * list of double click listeners registered in this widget
@@ -374,10 +375,12 @@ public class AdvancedFlexTable extends FlexTable implements SourcesTableDoubleCl
             return getCellElement(table);
     }
 
+    @SuppressWarnings({"deprecation"})
     protected HandlerManager getHandlerManager() {
         return handlerManager;
     }
 
+    @SuppressWarnings({"deprecation"})
     protected void setHandlerManager(HandlerManager handlerManager) {
         this.handlerManager = handlerManager;
     }

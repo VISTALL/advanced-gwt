@@ -151,7 +151,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
      * @param row is a row number to become highlight.
      */
     protected void setHighlightRow(int row) {
-        if (row >= 0 && row < getList().getWidgetCount()) {
+        if (row < getList().getWidgetCount()) {
             Widget widget = null;
             if (this.highlightRow >= 0 && getList().getWidgetCount() > this.highlightRow)
                 widget = getList().getWidget(this.highlightRow);
@@ -159,8 +159,10 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
             if (widget != null)
                 widget.removeStyleName("selected-row");
             this.highlightRow = row;
-            widget = getList().getWidget(this.highlightRow);
-            widget.addStyleName("selected-row");
+            if (row >= 0) {
+                widget = getList().getWidget(this.highlightRow);
+                widget.addStyleName("selected-row");
+            }
         }
     }
 

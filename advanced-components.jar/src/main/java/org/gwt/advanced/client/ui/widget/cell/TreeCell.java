@@ -69,6 +69,7 @@ public class TreeCell extends ExpandableCellImpl implements ExpandableCell {
      *
      * @param widget is a pager widget.
      */
+    @SuppressWarnings({"deprecation"})
     public void putPager(Widget widget) {
         if (widget != null) {
             getPanel().add(widget, DockPanel.EAST);
