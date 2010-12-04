@@ -71,6 +71,7 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings({"deprecation"})
     protected Widget createInactive() {
         FlexTable panel = getDockPanel();
 

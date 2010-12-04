@@ -32,6 +32,7 @@ import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
+@SuppressWarnings({"deprecation"})
 public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
     /** a dock panel to place an original cell and a node image */
     private DockPanel panel;

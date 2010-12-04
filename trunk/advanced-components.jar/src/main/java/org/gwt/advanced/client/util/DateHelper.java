@@ -148,11 +148,11 @@ public class DateHelper {
      * @return a number of days.
      */
     public int getNumberOfDaysInMonth() {
-        if ((date.getMonth() == 1) && ((date.getYear() % 400 == 0) ||
-                ((date.getYear() % 100 != 0) && (date.getYear() % 4 == 0))))
+        if ((getMonth() == 1) && ((getYear() % 400 == 0) ||
+                ((getYear() % 100 != 0) && (getYear() % 4 == 0))))
             return 29;
         else
-            return DAYS_PER_MONTH[date.getMonth()];
+            return DAYS_PER_MONTH[getMonth()];
     }
 
 

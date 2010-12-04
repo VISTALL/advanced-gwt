@@ -137,11 +137,12 @@ public class DateCell extends AbstractCell {
     }
 
     /**
-     * This method formates the specified date.
+     * This method formats the specified date.
      *
      * @param date is a date to be formatted.
      * @return a date string.
      */
+    @SuppressWarnings({"deprecation"})
     protected String formatDate (Date date) {
         return DateTimeFormat.getLongDateFormat().format(date);
     }

@@ -15,6 +15,7 @@
                 Any widget of the library has a least one style. Currently therea are 3 themes included into the package:
 
                 <ul>
+                    <li>classic</li>
                     <li>default</li>
                     <li>gray</li>
                     <li>ascetic</li>

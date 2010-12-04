@@ -24,6 +24,7 @@ import com.google.gwt.user.client.ui.DockPanel;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.6
  */
+@SuppressWarnings({"deprecation"})
 public class TabPosition {
     /** above the content */
     public static final TabPosition TOP = new TabPosition("top", new TopBandRenderer(), DockPanel.NORTH);

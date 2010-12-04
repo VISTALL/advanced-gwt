@@ -63,6 +63,7 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
     /**
      * tab panel layout
      */
+    @SuppressWarnings({"deprecation"})
     private DockPanel layout = new DockPanel();
     /**
      * content border instance
@@ -376,6 +377,7 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
     /**
      * Renders the widget.
      */
+    @SuppressWarnings({"deprecation"})
     protected void render() {
         remove(this.layout);
         setWidget(this.layout);

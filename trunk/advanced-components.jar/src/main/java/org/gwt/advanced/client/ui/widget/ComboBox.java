@@ -16,6 +16,7 @@
 
 package org.gwt.advanced.client.ui.widget;
 
+import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -321,7 +322,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      *
      * @param row is a row number to highlight. If it's out of range thus method does nothing.
      */
-    public void setHightListRow(int row) {
+    public void setHighlightRow(int row) {
         getListPanel().setHighlightRow(row);
     }
 
@@ -732,10 +733,10 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
     }
 
     /**
-     * This is a keyboard manager implemntation developed for the widget.<p/>
+     * This is a keyboard manager implementation developed for the widget.<p/>
      * It prevents default browser event handling for system keys like arrow up / down, escape, enter and tab.
      * This manager is activated on widget focus and is used for opening / closing the drop down list and
-     * swicthing a cursor position in the list.<p/>
+     * switching a cursor position in the list.<p/>
      * It also supports Shift+Tab combination but skips other modifiers.
      */
     protected class ComboBoxKeyboardManager implements Event.NativePreviewHandler {
@@ -743,7 +744,11 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         @Override
         public void onPreviewNativeEvent(Event.NativePreviewEvent event) {
             NativeEvent nativeEvent = event.getNativeEvent();
-            Element target = (Element) Element.as(nativeEvent.getEventTarget());
+            EventTarget eventTarget = nativeEvent.getEventTarget();
+            if (!Element.is(eventTarget)) //chrome fix
+                return;
+
+            Element target = (Element) Element.as(eventTarget);
 
             int type = event.getTypeInt();
             if (type == Event.ONKEYDOWN) {
