@@ -20,7 +20,7 @@ import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.ui.Resizable;
@@ -40,47 +40,26 @@ import java.util.List;
  * @since 1.4.6
  */
 public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandlers<Integer>, HasBeforeSelectionHandlers<Integer>, Resizable {
-    /**
-     * tabs position for displaying
-     */
+    /** tabs position for displaying */
     private TabPosition position;
-    /**
-     * index of the currently selected tab
-     */
+    /** index of the currently selected tab */
     private int selected = -1;
-    /**
-     * tabs and contents list
-     */
+    /** tabs and contents list */
     private List<TabHolder> tabs = new ArrayList<TabHolder>();
-    /**
-     * a factory for rendering tab borders
-     */
+    /** a factory for rendering tab borders */
     private BorderFactory tabBorderFactory;
-    /**
-     * a factory for rendering the content border
-     */
+    /** a factory for rendering the content border */
     private BorderFactory contentBorderFactory;
-    /**
-     * tab panel layout
-     */
-    @SuppressWarnings({"deprecation"})
-    private DockPanel layout = new DockPanel();
-    /**
-     * content border instance
-     */
+    /** tab panel layout */
+    private FlexTable layout = new FlexTable();
+    /** content border instance */
     private Border contentBorder;
-    /**
-     * a widget of the tabs band
-     */
+    /** a widget of the tabs band */
     private Widget tabsWidget;
-    /**
-     * tab states list
-     */
+    /** tab states list */
     private List<TabState> tabStates = new ArrayList<TabState>();
 
-    /**
-     * Creates an instance of this class and displays top tabs band.
-     */
+    /** Creates an instance of this class and displays top tabs band. */
     public AdvancedTabPanel() {
         this(TabPosition.TOP);
     }
@@ -322,7 +301,7 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
      * Sets the specified tab enabled or disabled.
      *
      * @param tabIndex is a tab index.
-     * @param enable is a tab state value.
+     * @param enable   is a tab state value.
      */
     public void setTabEnabled(int tabIndex, boolean enable) {
         Widget w = getTab(tabIndex);
@@ -374,10 +353,7 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
         return position;
     }
 
-    /**
-     * Renders the widget.
-     */
-    @SuppressWarnings({"deprecation"})
+    /** Renders the widget. */
     protected void render() {
         remove(this.layout);
         setWidget(this.layout);
@@ -386,19 +362,32 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
             this.layout.remove((Widget) getContentBorder());
         this.contentBorder = getContentBorderFactory().create();
         ((Widget) getContentBorder()).addStyleName("content-" + getPosition().getName());
-        this.layout.add((Widget) getContentBorder(), DockPanel.CENTER);
+        this.layout.setWidget(1, 1, (Widget) getContentBorder());
 
         resize();
     }
 
-    /**
-     * This method renders tabs band widget and puts it in the current position.
-     */
+    /** This method renders tabs band widget and puts it in the current position. */
     protected void renderTabs() {
         if (this.tabsWidget != null)
             this.tabsWidget.removeFromParent();
         this.tabsWidget = getPosition().getRenderer().render(this);
-        this.layout.add(this.tabsWidget, getPosition().getLayoutPosition());
+
+        TabPosition.LayoutPosition layoutPosition = getPosition().getLayoutPosition();
+        switch (layoutPosition) {
+            case LEFT:
+                this.layout.setWidget(1, 0, this.tabsWidget);
+                break;
+            case RIGHT:
+                this.layout.setWidget(1, 2, this.tabsWidget);
+                break;
+            case BOTTOM:
+                this.layout.setWidget(2, 1, this.tabsWidget);
+                break;
+            case TOP:
+            default:
+                this.layout.setWidget(0, 1, this.tabsWidget);
+        }
 
         Element parent = DOM.getParent(((Widget) getContentBorder()).getElement());
         DOM.setStyleAttribute(parent, "height", "100%");
@@ -410,9 +399,7 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     public void resize() {
         Widget content = getContent(getTab(getSelected()));
         if (content != null && content instanceof Resizable)
@@ -437,17 +424,13 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
      * @author Sergey Skladchikov
      */
     protected static class TabHolder {
-        /**
-         * tab widget
-         */
+        /** tab widget */
         private Widget tab;
-        /**
-         * content widegt
-         */
+        /** content widget */
         private Widget content;
 
         /**
-         * Creates an instance of this class and initilizes internla fields.
+         * Creates an instance of this class and initializes internal fields.
          *
          * @param tab     is a tab widget (key).
          * @param content is a content widget (value).
@@ -475,27 +458,23 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
             return content;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        /** {@inheritDoc} */
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null) return false;
-            TabHolder tabHolder = (TabHolder) o;
-            return !(tab != null ? !tab.equals(tabHolder.tab) : tabHolder.tab != null);
+            if (o instanceof TabHolder) {
+                if (this == o) return true;
+                TabHolder tabHolder = (TabHolder) o;
+                return !(tab != null ? !tab.equals(tabHolder.tab) : tabHolder.tab != null);
+            } else
+                return false;
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        /** {@inheritDoc} */
         public int hashCode() {
             return tab != null ? tab.hashCode() : 0;
         }
     }
 
-    /**
-     * Describes the tab state (enabled or disabled.
-     */
+    /** Describes the tab state (enabled or disabled. */
     protected class TabState {
         /** tab index */
         int index;

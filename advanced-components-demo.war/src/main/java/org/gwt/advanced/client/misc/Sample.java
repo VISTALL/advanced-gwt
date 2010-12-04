@@ -521,7 +521,7 @@ public class Sample {
         public static final TabPosition CUSTOM = new MyTabPosition("custom");
 
         protected MyTabPosition(String name) {
-            super(name, new MyTabBandRenderer(), DockPanel.NORTH);
+            super(name, new MyTabBandRenderer(), LayoutPosition.TOP);
         }
     }
 

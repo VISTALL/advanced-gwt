@@ -83,7 +83,7 @@ public class HeaderCellImpl extends AbstractCell implements HeaderCell {
 
         if (panel.getRowCount() < 1) {
             panel.setWidget(0, 0, label);
-            panel.getFlexCellFormatter().setVerticalAlignment(0, 0, DockPanel.ALIGN_MIDDLE);
+            panel.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
             panel.setCellPadding(0);
             panel.setCellSpacing(0);
         }

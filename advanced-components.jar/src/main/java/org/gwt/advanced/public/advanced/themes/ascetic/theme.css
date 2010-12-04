@@ -906,7 +906,13 @@
 .advanced-TabPanel, .advanced-TabPanel .layout {
     width: 100%;
     height: 100%;
+    border-collapse: collapse;
 }
+
+.advanced-TabPanel .layout td {
+    padding: 0;
+}
+
 
 .advanced-TabPanel .disabled-tab {
     color: #777777;
@@ -923,12 +929,12 @@
     height: 14px;
 }
 
-/** top tab seperator element styles */
+/** top tab separator element styles */
 .advanced-TabPanel .tabs-top .separator {
     border-bottom: 1px solid black;
 }
 
-/** top tab seperator element styles */
+/** top tab separator element styles */
 .advanced-TabPanel .tabs-top .separator img {
     width: 3px;
 }
