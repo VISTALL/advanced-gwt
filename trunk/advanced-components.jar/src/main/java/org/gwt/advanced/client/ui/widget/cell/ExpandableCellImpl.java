@@ -19,7 +19,7 @@ package org.gwt.advanced.client.ui.widget.cell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -32,10 +32,9 @@ import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-@SuppressWarnings({"deprecation"})
 public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
     /** a dock panel to place an original cell and a node image */
-    private DockPanel panel;
+    private HorizontalPanel panel;
     /** a node image */
     private Image image;
     /** image click handler registration */
@@ -65,21 +64,21 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
 
     /** {@inheritDoc} */
     protected Widget createInactive() {
-        DockPanel panel = getPanel();
+        HorizontalPanel panel = getPanel();
         Image image = getImage();
         Widget child = (Widget) getValue();
 
         if (panel.getWidgetIndex(image) == -1 && !isLeaf()) {
-            panel.add(image, DockPanel.WEST);
+            panel.add(image);
             panel.setCellWidth(image, "1%");
         } else {
             Label label = new Label();
-            panel.add(label, DockPanel.WEST);
+            panel.add(label);
             panel.setCellWidth(label, "1%");
         }
 
         if (panel.getWidgetIndex(child) == -1)
-            panel.add(child, DockPanel.CENTER);
+            panel.add(child);
         panel.setCellWidth(child, "99%");
 
         return panel;
@@ -99,11 +98,11 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
             public void onClick(ClickEvent clickEvent) {
                 setExpanded(!isExpanded());
 
-                DockPanel panel = getPanel();
+                HorizontalPanel panel = getPanel();
                 panel.remove(getImage());
                 createImage();
-                panel.add(getImage(), DockPanel.WEST);
-
+                panel.insert(getImage(), 0);
+                panel.setCellWidth(getImage(), "1%");
 
                 if (!isLeaf())
                     ((ExpandCellEventProducer)getGrid()).fireExpandCell(cell);
@@ -177,10 +176,10 @@ public class ExpandableCellImpl extends AbstractCell implements ExpandableCell {
      *
      * @return Value for property 'panel'.
      */
-    protected DockPanel getPanel() {
+    protected HorizontalPanel getPanel() {
         if (panel == null) {
-            panel = new DockPanel();
-            panel.setVerticalAlignment(DockPanel.ALIGN_MIDDLE);
+            panel = new HorizontalPanel();
+            panel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
         }
         return panel;
     }

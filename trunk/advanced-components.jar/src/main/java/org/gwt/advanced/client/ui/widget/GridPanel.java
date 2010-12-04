@@ -41,8 +41,7 @@ import java.util.List;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-@SuppressWarnings({"deprecation"})
-public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
+public class GridPanel extends VerticalPanel implements AdvancedWidget, Resizable {
     /** an editable grid */
     private EditableGrid grid;
     /** a top pager */
@@ -646,7 +645,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
     }
 
     /**
-     * Enables or disbales the multi-row selection mode.
+     * Enables or disables the multi-row selection mode.
      *
      * @param enabled <code>true</code> means that this grid will allow multiple row selection.
      */
@@ -699,7 +698,7 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
     protected void packTopPanel() {
         if (isTopPagerVisible() || isTopToolbarVisible()) {
             Panel panel = getTopPanel();
-            add(panel, NORTH);
+            add(panel);
 
             if (isTopPagerVisible())
                 preparePager(getTopPager(), panel).display();
@@ -713,14 +712,14 @@ public class GridPanel extends DockPanel implements AdvancedWidget, Resizable {
         EditableGrid grid = getGrid();
         FocusPanel focusPanel = getFocusPanel();
         focusPanel.setWidget(grid);
-        add(focusPanel, CENTER);
+        add(focusPanel);
     }
 
     /** This method displays a bottom panel and adds a bottom pager and toolbar into it. */
     protected void packBottomPanel() {
         if (isBottomPagerVisible() || isBottomToolbarVisible()) {
             Panel panel = getBottomPanel();
-            add(panel, SOUTH);
+            add(panel);
 
             if (isBottomPagerVisible())
                 preparePager(getBottomPager(), panel).display();

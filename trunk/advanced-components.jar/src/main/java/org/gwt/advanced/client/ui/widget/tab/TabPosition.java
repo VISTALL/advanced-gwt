@@ -16,40 +16,42 @@
 
 package org.gwt.advanced.client.ui.widget.tab;
 
-import com.google.gwt.user.client.ui.DockPanel;
-
 /**
  * This enumeration describes possible tabs band positions.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.4.6
  */
-@SuppressWarnings({"deprecation"})
 public class TabPosition {
     /** above the content */
-    public static final TabPosition TOP = new TabPosition("top", new TopBandRenderer(), DockPanel.NORTH);
+    public static final TabPosition TOP = new TabPosition("top", new TopBandRenderer(), LayoutPosition.TOP);
     /** left side */
-    public static final TabPosition LEFT = new TabPosition("left", new LeftBandRenderer(), DockPanel.WEST);
+    public static final TabPosition LEFT = new TabPosition("left", new LeftBandRenderer(), LayoutPosition.LEFT);
     /** right side */
-    public static final TabPosition RIGHT = new TabPosition("right", new RightBandRenderer(), DockPanel.EAST);
+    public static final TabPosition RIGHT = new TabPosition("right", new RightBandRenderer(), LayoutPosition.RIGHT);
     /** bottom the content */
-    public static final TabPosition BOTTOM = new TabPosition("bottom", new BottomBandRenderer(), DockPanel.SOUTH);
+    public static final TabPosition BOTTOM = new TabPosition("bottom", new BottomBandRenderer(), LayoutPosition.BOTTOM);
+
+    /** This enum contains layout positions of the tabs in the {@link org.gwt.advanced.client.ui.widget.AdvancedTabPanel} */
+    public enum LayoutPosition {
+        TOP, LEFT, RIGHT, BOTTOM
+    }
 
     /** position name */
     private String name;
     /** tabs band renderer specific for this position */
     private TabBandRenderer renderer;
     /** dock layout constant that can be compared to the position */
-    private DockPanel.DockLayoutConstant layoutPosition;
+    private LayoutPosition layoutPosition;
 
     /**
      * Creates an instance of this class and initializes internal fields.
      *
-     * @param name is a position name.
-     * @param renderer is a tabs band renderer to be used for this position.
+     * @param name           is a position name.
+     * @param renderer       is a tabs band renderer to be used for this position.
      * @param layoutPosition is a dock layout position (to be used by the tabs panel).
      */
-    public TabPosition(String name, TabBandRenderer renderer, DockPanel.DockLayoutConstant layoutPosition) {
+    public TabPosition(String name, TabBandRenderer renderer, LayoutPosition layoutPosition) {
         this.name = name;
         this.renderer = renderer;
         this.layoutPosition = layoutPosition;
@@ -78,7 +80,7 @@ public class TabPosition {
      *
      * @return a dock layout constant.
      */
-    public DockPanel.DockLayoutConstant getLayoutPosition() {
+    public LayoutPosition getLayoutPosition() {
         return layoutPosition;
     }
 
