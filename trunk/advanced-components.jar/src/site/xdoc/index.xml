@@ -89,10 +89,12 @@
                     <th>GWT 1.5.x</th>
                     <th>GWT 1.6.x</th>
                     <th>GWT 1.7.x</th>
-                    <th>GWT 2.x</th>
+                    <th>GWT 2.0</th>
+                    <th>GWT 2.1</th>
                 </tr>
                 <tr>
                     <th>1.x</th>
+                    <td>Yes</td>
                     <td>Yes</td>
                     <td>Yes</td>
                     <td>Yes</td>
@@ -103,6 +105,7 @@
                     <th>2.x</th>
                     <td>No</td>
                     <td>No</td>
+                    <td>Yes</td>
                     <td>Yes</td>
                     <td>Yes</td>
                     <td>Yes</td>
