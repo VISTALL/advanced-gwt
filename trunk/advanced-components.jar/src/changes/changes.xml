@@ -6,11 +6,18 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-		<release version="2.0.5" date="2010-10-06" description="Latest supported version">
+        <release version="2.0.6" date="2010-12-05" description="Last stable version">
+            <action type="fix" issue="98" system="google">Change GridPanel extends DockLayoutPanel instead</action>
+            <action type="fix" issue="100" system="google">Typo in ComboBox.java</action>
+            <action type="fix" issue="101" system="google">advanced-gwt web page on sourceforge loosing stylesheet</action>
+            <action type="fix" issue="102" system="google">Wrong leap-year</action>
+            <action type="fix" issue="103" system="google">SuggestionBox and ComboBox set wrong highlight row index</action>
+            <action type="fix" issue="104" system="google">Unexpected AssertException in Chrome 8.x</action>
+        </release>
+		<release version="2.0.5" date="2010-10-06" description="Old unsupported version">
             <action type="add" issue="36" system="google">Add footer to all the grids</action>
             <action type="add" issue="96" system="google">Moving next/prev row when in editing cell</action>
             <action type="fix" issue="99" system="google">GridPanel.setInvisibleColumn works incorrectly</action>
-            <action type="fix" issue="98" system="google">Change GridPanel extends DockLayoutPanel instead</action>
         </release>
         <release version="2.0.4" date="2010-07-03" description="Old unsupported version">
             <action type="add" issue="90" system="google">GridPanel - GridToolbar extensibility!?</action>
