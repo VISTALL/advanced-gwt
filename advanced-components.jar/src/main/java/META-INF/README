@@ -3,6 +3,17 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 2.0.6 includes:
+
+Bug fixes:
+1. Change GridPanel extends DockLayoutPanel instead
+2. Typo in ComboBox.java
+3. advanced-gwt web page on sourceforge loosing stylesheet
+4. Wrong leap-year
+5. SuggestionBox and ComboBox set wrong highlight row index
+6. Unexpected AssertException in Chrome 8.x
+
+====================================================================================================================
 Release 2.0.5 includes:
 
 Bug fixes:
