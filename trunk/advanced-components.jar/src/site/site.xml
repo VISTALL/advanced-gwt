@@ -8,7 +8,7 @@
       <item name="Home" href="/index.html"/>
       <item name="News" href="http://sourceforge.net/news/?group_id=216339"/>
       <item name="Live Demo" href="/demo/index.html"/>
-      <item name="Downloads" href="http://sourceforge.net/project/showfiles.php?group_id=216339&amp;package_id=261233"/>
+      <item name="Downloads" href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/"/>
       <item name="Quick Start" href="/quickstart.html"/>
       <item name="FAQ" href="/faq.html"/>
       <item name="API Documents" href="apidocs/index.html"/>
@@ -19,7 +19,7 @@
       <item name="Welcome Page" href="/index.html"/>
     </menu>
     <menu name="Downloads">
-      <item name="Free Binary" href="http://sourceforge.net/project/showfiles.php?group_id=216339&amp;package_id=261233"/>
+      <item name="Free Binary" href="https://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/"/>
       <item name="Source Code" href="/source-repository.html"/>
     </menu>
     <menu name="Demo">
