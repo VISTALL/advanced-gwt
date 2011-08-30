@@ -18,14 +18,11 @@ package org.gwt.advanced.client.datamodel;
 
 import com.google.gwt.core.client.GWT;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This is an implementation of the data model interface for the ComboBox widget.
- * 
+ *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
  */
@@ -41,10 +38,7 @@ public class ComboBoxDataModel implements ListDataModel {
 
     /** {@inheritDoc} */
     public void add(String id, Object item) {
-        List<String> ids = getItemIds();
-        if (!ids.contains(id))
-            ids.add(id);
-        getItems().put(id, item);
+        addInternally(id, item);
 
         fireEvent(new ListModelEvent(this, id, getItemIds().indexOf(id), ListModelEvent.ADD_ITEM));
     }
@@ -61,6 +55,22 @@ public class ComboBoxDataModel implements ListDataModel {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public void add(Map<String, Object> items) {
+        if (items == null) {
+            return;
+        }
+
+        Map<String, Integer> itemIndexes = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Object> entry : items.entrySet()) {
+            addInternally(entry.getKey(), entry.getValue());
+            itemIndexes.put(entry.getKey(), getItemIds().indexOf(entry.getKey()));
+        }
+
+        fireEvent(new ListModelEvent(this, itemIndexes, ListModelEvent.ADD_ITEM));
+    }
+
+    /** {@inheritDoc} */
     public Object get(String id) {
         return getItems().get(id);
     }
@@ -74,18 +84,28 @@ public class ComboBoxDataModel implements ListDataModel {
     }
 
     /** {@inheritDoc} */
-    public void remove(String id) {
-        int index = getItemIds().indexOf(id);
-        getItemIds().remove(id);
-        getItems().remove(id);
+    public void remove(String... ids) {
+        Map<String, Integer> itemIndexes = new LinkedHashMap<String, Integer>();
+        for (String id : ids) {
+            int index = removeInternally(id);
+            itemIndexes.put(id, index);
+        }
 
-        fireEvent(new ListModelEvent(this, id, index, ListModelEvent.REMOVE_ITEM));
+        fireEvent(new ListModelEvent(this, itemIndexes, ListModelEvent.REMOVE_ITEM));
     }
 
     /** {@inheritDoc} */
-    public void remove(int index) {
-        if (isIndexValid(index))
-            remove(getItemIds().get(index));
+    public void remove(int... indexes) {
+        Map<String, Integer> itemIndexes = new LinkedHashMap<String, Integer>();
+        for (int index : indexes) {
+            if (isIndexValid(index)) {
+                String id = getItemIds().get(index);
+                removeInternally(id);
+                itemIndexes.put(id, index);
+            }
+        }
+
+        fireEvent(new ListModelEvent(this, itemIndexes, ListModelEvent.REMOVE_ITEM));
     }
 
     /** {@inheritDoc} */
@@ -172,6 +192,32 @@ public class ComboBoxDataModel implements ListDataModel {
                 GWT.log("Unknown listener error", t);
             }
         }
+    }
+
+    /**
+     * Adds a new item into the list without firing an event.
+     *
+     * @param id   is an item ID to add.
+     * @param item is an item itself.
+     */
+    protected void addInternally(String id, Object item) {
+        List<String> ids = getItemIds();
+        if (!ids.contains(id))
+            ids.add(id);
+        getItems().put(id, item);
+    }
+
+    /**
+     * This method removes one item without sending any event.
+     *
+     * @param id is an ID of the item to remove.
+     * @return an index of the item that was removed.
+     */
+    protected int removeInternally(String id) {
+        int index = getItemIds().indexOf(id);
+        getItemIds().remove(id);
+        getItems().remove(id);
+        return index;
     }
 
     /**
