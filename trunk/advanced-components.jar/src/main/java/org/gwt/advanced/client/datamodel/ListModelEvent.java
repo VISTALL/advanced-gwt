@@ -16,6 +16,10 @@
 
 package org.gwt.advanced.client.datamodel;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This is a model event that is sent by the {@link org.gwt.advanced.client.datamodel.ListDataModel} implementations
  * if anything is changed in encapsulated data.
@@ -35,10 +39,8 @@ public class ListModelEvent {
 
     /** it's a data model that produced the event */
     private ListDataModel source;
-    /** related item ID */
-    private String itemId = null;
-    /** related item index */
-    private int itemIndex = -1;
+    /** it's list of attached item indexes mapped to their IDs */
+    private Map<String, Integer> itemIndexes;
     /** type of the event */
     private EventType type;
 
@@ -47,11 +49,10 @@ public class ListModelEvent {
      * Mostly applicable for types like {@link #CLEAN} which don't require to specify a concrete item.
      *
      * @param source is a data model produced this event.
-     * @param type is an event type.
+     * @param type   is an event type.
      */
     public ListModelEvent(ListDataModel source, EventType type) {
-        this.source = source;
-        this.type = type;
+        this(source, new HashMap<String, Integer>(), type);
     }
 
     /**
@@ -59,15 +60,30 @@ public class ListModelEvent {
      * Mostly applicable for types like {@link #ADD_ITEM}, {@link #REMOVE_ITEM} or {@link #SELECT_ITEM}
      * which require to specify a concrete item.
      *
-     * @param source is a data model produced this event.
-     * @param itemId is a related item ID.
-     * @param itemIndex is a related item index (usauly index of the item identified with <code>itemId</code>.
-     * @param type is an event type.
+     * @param source    is a data model produced this event.
+     * @param itemId    is a related item ID.
+     * @param itemIndex is a related item index (usually index of the item identified with <code>itemId</code>.
+     * @param type      is an event type.
      */
     public ListModelEvent(ListDataModel source, String itemId, int itemIndex, EventType type) {
+        this(source, new HashMap<String, Integer>(), type);
+        this.itemIndexes.put(itemId, itemIndex);
+    }
+
+    /**
+     * Creates an instance of this class.<p/>
+     * Mostly applicable for types like {@link #ADD_ITEM}, {@link #REMOVE_ITEM} or {@link #SELECT_ITEM}
+     * which require to specify a concrete item.<p/>
+     * use this constructor if you want to notify listeners about bulk model update.
+     *
+     * @param source      is a data model produced this event.
+     * @param itemIndexes is a list of indexes mapped to their IDs. It must contain items which were affected by
+     *                    model change.
+     * @param type        is an event type.
+     */
+    public ListModelEvent(ListDataModel source, Map<String, Integer> itemIndexes, EventType type) {
         this.source = source;
-        this.itemId = itemId;
-        this.itemIndex = itemIndex;
+        this.itemIndexes = Collections.unmodifiableMap(itemIndexes);
         this.type = type;
     }
 
@@ -82,22 +98,33 @@ public class ListModelEvent {
 
     /**
      * Gets a related item ID.<p/>
-     * Might be equal to <code>null</code> for those events which are not related to a concrete item.
+     * Might be equal to <code>null</code> for those events which are not related to a concrete item.<p/>
+     * If there are several affected items it gets an ID of the first one.
      *
      * @return an item ID.
      */
     public String getItemId() {
-        return itemId;
+        return itemIndexes.isEmpty() ? null : itemIndexes.keySet().iterator().next();
     }
 
     /**
      * Gets a related item index.<p/>
-     * Might be equal to <code>-1</code> for those events which are not related to a concrete item.
+     * Might be equal to <code>-1</code> for those events which are not related to a concrete item.<p/>
+     * If there are several affected items it gets an ID of the first one.
      *
      * @return an item ID.
      */
     public int getItemIndex() {
-        return itemIndex;
+        return itemIndexes.isEmpty() ? -1 : itemIndexes.values().iterator().next();
+    }
+
+    /**
+     * This method gets a map of affected item indexes mapped to their IDs.
+     *
+     * @return a map of item indexes with IDs.
+     */
+    public Map<String, Integer> getItemIndexes() {
+        return itemIndexes;
     }
 
     /**
