@@ -83,7 +83,7 @@ public class ListModelEvent {
      */
     public ListModelEvent(ListDataModel source, Map<String, Integer> itemIndexes, EventType type) {
         this.source = source;
-        this.itemIndexes = Collections.unmodifiableMap(itemIndexes);
+        this.itemIndexes = itemIndexes;
         this.type = type;
     }
 
@@ -124,7 +124,7 @@ public class ListModelEvent {
      * @return a map of item indexes with IDs.
      */
     public Map<String, Integer> getItemIndexes() {
-        return itemIndexes;
+        return Collections.unmodifiableMap(itemIndexes);
     }
 
     /**
