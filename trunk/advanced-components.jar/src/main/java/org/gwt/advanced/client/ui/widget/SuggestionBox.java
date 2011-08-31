@@ -233,9 +233,6 @@ public class SuggestionBox extends ComboBox<SuggestionBoxDataModel> {
      * @param event is an event containing data about the added item.
      */
     protected void add(ListModelEvent event) {
-        if (event.getItemIndex() > getItemCount())
-            return;
-
         getTimer().cancel();
         if (!isListPanelOpened()) {
             getListPanel().getList().clear();

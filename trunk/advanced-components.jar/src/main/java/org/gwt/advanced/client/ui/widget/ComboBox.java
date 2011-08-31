@@ -34,6 +34,7 @@ import org.gwt.advanced.client.ui.widget.combo.DropDownPosition;
 import org.gwt.advanced.client.ui.widget.combo.ListItemFactory;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -478,19 +479,21 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      */
     protected void add(ListModelEvent event) {
         if (isListPanelOpened()) {
-            if (event.getItemIndex() <= getItemCount()) {
-                Widget item = getListItemFactory().createWidget(event.getSource().get(event.getItemId()));
-                item = getListPanel().adoptItemWidget(item);
+            for (Map.Entry<String, Integer> entry : event.getItemIndexes().entrySet()) {
+                if (entry.getValue() <= getItemCount()) {
+                    Widget item = getListItemFactory().createWidget(event.getSource().get(entry.getKey()));
+                    item = getListPanel().adoptItemWidget(item);
 
-                if (event.getItemIndex() < getListPanel().getList().getWidgetCount()) {
-                    getListPanel().getList().insert(item, event.getItemIndex());
+                    if (entry.getValue() < getListPanel().getList().getWidgetCount()) {
+                        getListPanel().getList().insert(item, entry.getValue());
+                    } else {
+                        getListPanel().getList().add(item);
+                    }
                 } else {
-                    getListPanel().getList().add(item);
+                    getListPanel().prepareList();
+                    if (getItemCount() <= 0)
+                        getListPanel().hide();
                 }
-            } else {
-                getListPanel().prepareList();
-                if (getItemCount() <= 0)
-                    getListPanel().hide();
             }
         }
     }
@@ -514,10 +517,14 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      * @param event is an event that contains data of the removed item.
      */
     protected void remove(ListModelEvent event) {
-        if (isListPanelOpened() && event.getItemIndex() < getListPanel().getList().getWidgetCount()) {
-            getListPanel().remove(getListPanel().getList().getWidget(event.getItemIndex()));
-            if (getListPanel().getList().getWidgetCount() <= 0)
-                getListPanel().hide();
+        if (isListPanelOpened()) {
+            for (Map.Entry<String, Integer> entry : event.getItemIndexes().entrySet()) {
+                if (entry.getValue() < getListPanel().getList().getWidgetCount()) {
+                    getListPanel().remove(getListPanel().getList().getWidget(entry.getValue()));
+                    if (getListPanel().getList().getWidgetCount() <= 0)
+                        getListPanel().hide();
+                }
+            }
         }
     }
 
