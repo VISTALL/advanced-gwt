@@ -23,14 +23,14 @@ package org.gwt.advanced.client.datamodel;
  * @author Sergey Skladchikov
  */
 public class CompositeModelEvent extends EditableModelEvent {
-    /** on remove a subtree */
+    /** on remove a sub-tree */
     public static final EventType CLEAN_SUBTREE = new EventType();
     
     /** parent row */
     private TreeGridRow parent;
 
     /**
-     * Creates an instance of this class and initilizes mandatory fields.
+     * Creates an instance of this class and initializes mandatory fields.
      *
      * @param eventType is an event type.
      * @param parent is a parent row link.
@@ -41,7 +41,7 @@ public class CompositeModelEvent extends EditableModelEvent {
     }
 
     /**
-     * Creates an instance of this class and initilizes internal fields.
+     * Creates an instance of this class and initializes internal fields.
      *
      * @param eventType is an event type.
      * @param parent is a parent row link.

@@ -6,7 +6,15 @@
 <description>This RSS feed contains information about latest project changes and released versions.</description>
 <link>http://advanced-gwt.sourceforge.net</link>
 <language>en</language>
-<pubDate>Sun, 11 Apr 2010 20:43:31 GMT</pubDate>
+<pubDate>Sat, 03 Sep 2011 13:39:51 GMT</pubDate>
+
+<item>
+<title>Advanced GWT Components 2.0.7 Released</title>
+<description><![CDATA[<P>The new version includes some minor bug fixes and compiled with the GWT 2.3.0 comiler.</P><P>Issues included:</P><OL>  <LI>Make 'handler' field mutable in the SuggestionBoxDataModel</LI>  <LI>Add bulk operations for ComboBoxdataModel</LI></OL>]]></description>
+<link>http//advanced-gwt.sf.net</link>
+<author>Sergey Skladchikov</author>
+<pubDate>Sat, 03 Sep 2011 13:39:45 GMT</pubDate>
+</item>
 
 <item>
 <title>Advanced GWT Components 2.0.0 Released</title>

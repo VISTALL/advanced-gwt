@@ -6,7 +6,12 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="2.0.6" date="2010-12-05" description="Last stable version">
+        <release version="2.0.7" date="2011-09-04" description="Last stable version">
+            <action type="add" issue="108" system="google">Apply lasted GWT version</action>
+            <action type="fix" issue="106" system="google">Make field 'handler' mutable in SuggestionBoxDataModel</action>
+            <action type="fix" issue="107" system="google">Add bulk operations for ComboBoxDataModel</action>
+        </release>
+        <release version="2.0.6" date="2010-12-05" description="Old unsupported version">
             <action type="fix" issue="98" system="google">Change GridPanel extends DockLayoutPanel instead</action>
             <action type="fix" issue="100" system="google">Typo in ComboBox.java</action>
             <action type="fix" issue="101" system="google">advanced-gwt web page on sourceforge loosing stylesheet</action>
@@ -93,7 +98,7 @@
             <action type="add" issue="38" system="google">New theme required</action>
             <action type="add" issue="40" system="google">Resources not found when loading entry point from a page not in the root dir</action>
         </release>
-        <release version="1.4.6" date="2009-03-12" description="Supported version">
+        <release version="1.4.6" date="2009-03-12" description="Old unsupported version">
             <action type="update" issue="26" system="google">Columns resizing feature must be implemented in the
                 SimpleGrid           
             </action>
@@ -130,7 +135,7 @@
                 time-related drop-downs
             </action>
         </release>
-        <release version="1.4.1" date="2008-08-03" description="Old but still supported version">
+        <release version="1.4.1" date="2008-08-03" description="Old unsupported version">
             <action type="add" issue="1" system="google">Paging supoport for subtrees in the TreeGrid component</action>
             <action type="update">Quick page switching for the main Pager widget</action>
             <action type="fix" issue="4" system="google">JavaScript error on focus lost event in the TreeGrid</action>
@@ -164,7 +169,7 @@
             <action type="fix">ConcurrentModificationException in debug mode</action>
             <action type="fix">Other minor bug fixes</action>
         </release>
-        <release version="1.2.2" date="2008-04-05" description="Still supported since popular">
+        <release version="1.2.2" date="2008-04-05" description="Old unsupported version">
             <action type="add">License file was added into the package</action>
             <action type="add">Minor improvements related to grids, combo box, suggestion box and grid panel usability:
                 some methods have been added to avoid getModel() invocation every time when data change required
