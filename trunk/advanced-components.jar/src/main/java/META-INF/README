@@ -3,6 +3,16 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 2.0.7 includes:
+
+Bug fixes:
+1. Make field 'handler' mutable in SuggestionBoxDataModel
+2. Add bulk operations for ComboBoxDataModel
+
+New features:
+1. Apply lasted GWT version
+
+====================================================================================================================
 Release 2.0.6 includes:
 
 Bug fixes:

@@ -49,6 +49,7 @@
                         <li>Data model events</li>
                         <li>Lazy rendering</li>
                         <li>Manageable drop down list position</li>
+                        <li>Items multiple insertion <span class="new">new</span></li>
                     </ul>
                 </p>
             </div>
@@ -97,16 +98,16 @@
 
         </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//add Johns
         </span><span style="background-color:#ffffff;">model.add(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"john1"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"John Doe"</span><span style="background-color:#ffffff;">);
-            model.add(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"john2"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"John Parkinson"</span><span style="background-color:#ffffff;">);
-            model.add(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"john3"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"John Todd"</span><span style="background-color:#ffffff;">);
-        } </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">else</span><span style="background-color:#ffffff;"> {
-            </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//remove old values
-            </span><span style="background-color:#ffffff;">model.clear();
+        model.add(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"john2"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"John Parkinson"</span><span style="background-color:#ffffff;">);
+        model.add(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"john3"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"John Todd"</span><span style="background-color:#ffffff;">);
+    } </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">else</span><span style="background-color:#ffffff;"> {
+        </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//remove old values
+        </span><span style="background-color:#ffffff;">model.clear();
 
-            </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//add default item
-            </span><span style="background-color:#ffffff;">model.add(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">""</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Nobody"</span><span style="background-color:#ffffff;">);
-        }
+        </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//add default item
+        </span><span style="background-color:#ffffff;">model.add(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">""</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"Nobody"</span><span style="background-color:#ffffff;">);
     }
+}
 });
 
 </span><span style="color:#808080;background-color:#ffffff;font-style:italic;">//initilize the suggestion box

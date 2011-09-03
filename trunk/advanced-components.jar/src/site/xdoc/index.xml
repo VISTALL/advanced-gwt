@@ -16,7 +16,7 @@
             </p>
             <p>
                 The latest stable version is
-                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.6/">2.0.6</a>.
+                <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.7/">2.0.7</a>.
                 <!--You can try also a new one (released but may contain some bugs):
                 <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.0-beta/">2.0.0-beta</a>.-->
             </p>
@@ -65,12 +65,12 @@
                   <li>customizable borders API</li>
                   <li>localization and internationalization</li>
                   <li>&lt;thead&gt; HTML tag support in tables</li>
-                  <li>&lt;tfoot&gt; HTML tag support in tables<span class="new">new</span></li>
+                  <li>&lt;tfoot&gt; HTML tag support in tables</li>
                   <li>splitting to view and model (MVP design)</li>
                   <li>data model events</li>
                   <li>lazy rendering for large drop down lists</li>
                   <li>customizable event management and rendering</li>
-                  <li>GWT 1.4.62, 1.5.3, 1.6.4, 1.7.1, 2.0.3 or higher compatibility</li>
+                  <li>GWT 1.6.4, 1.7.1, 2.0.x, 2.1.x, 2.2.x, 2.3.x or higher compatibility</li>
                   <li>no dependencies to other third-party libraries</li>
                   <li>theme runtime switching for non-styled widgets</li>
               </ul>
@@ -91,6 +91,8 @@
                     <th>GWT 1.7.x</th>
                     <th>GWT 2.0.x</th>
                     <th>GWT 2.1.x</th>
+                    <th>GWT 2.2.x</th>
+                    <th>GWT 2.3.x</th>
                 </tr>
                 <tr>
                     <th>1.x</th>
@@ -100,6 +102,8 @@
                     <td>Yes</td>
                     <td>Yes</td>
                     <td>Yes</td>
+                    <td>Yes*</td>
+                    <td>Yes*</td>
                 </tr>
                 <tr>
                     <th>2.x</th>
@@ -109,8 +113,13 @@
                     <td>Yes</td>
                     <td>Yes</td>
                     <td>Yes</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
                 </tr>
             </table>
+            <p>
+                * - should work but hasn't been tested
+            </p>
             <p>
                 Note that older versions of the library (1.x) will be patched only in case of critical bug fixes. All
                 the new features are expected to be done in 2.x releases.

@@ -201,6 +201,7 @@ alt="SpyLOG" width="88" height="31" /></a>
 </noscript>
 <!--/ SpyLOG -->
 <a href="http://sourceforge.net/donate/index.php?group_id=216339"><img src="http://images.sourceforge.net/images/project-support.jpg" width="88" height="32" border="0" alt="Support This Project" /></a>
+<a href="http://www.jetbrains.com/idea/" style="width:88px; height:31px; border:0; margin:0;padding:0;text-decoration:none;text-indent:0;"><img src="http://www.jetbrains.com/idea/opensource/img/all/banners/idea88x31_white.gif" alt="The best Java IDE" border="0"/></a>
 </div>
 #end
 
@@ -241,6 +242,7 @@ $bodyContent
     </style>
     <link rel="alternate"  type="application/rss+xml" href="http://feedproxy.google.com/AdvancedGwtComponents-ProjectNews" title="Advanced GWT Components - Project News"/>
     <link rel="stylesheet" href="$relativePath/css/print.css" type="text/css" media="print" />
+    <link rel="alternate" title="Advanced GWT Components Project News" href="/rss/rss.xml" type="application/rss+xml"/>
     #foreach( $author in $authors )
       <meta name="author" content="$author" />
     #end
