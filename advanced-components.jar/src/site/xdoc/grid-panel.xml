@@ -43,7 +43,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Sample">
             <p>
                 The next sample shows how to create a new Grid Panel and control Pager and Grid Toolbar displaying.
@@ -64,6 +64,6 @@ panel.setTopPagerVisible(</span><span style="color:#000080;background-color:#fff
                 Some methods of the Grid Panel actually delegate invocations to the nested grid methods. 
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

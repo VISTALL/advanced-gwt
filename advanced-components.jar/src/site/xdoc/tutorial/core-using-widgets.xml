@@ -57,7 +57,7 @@ new EditableGrid() {
                 makes GWT application be slower than alternative server side solutions. Taking into account this fact
                 imagine what could happen if the widgets redrew their content on each widget property change!
             </p>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
             <p>
                 To avoid this problem all the widgets implement this interface and redraw their content only if the
                 <i>display()</i> method is invoked. Look at the next sample to understand how it works:
@@ -118,7 +118,7 @@ panel.display();
                 It means that you can build widget content on server side and it will be displayed allegedly it was
                 dynamically rendered on client side.
             </p>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
             <p>
                 Look at the sample that shows how it could be made for grids:
             </p>
@@ -180,7 +180,7 @@ editableGrid.display();
                 implement necessary operations manually as you want.
             </p>
         </section>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
         <div class="navigator"><a href="core-modeling-data.html">Previous</a> | <a href="index.html">Table of contents</a> | <a href="core-events-handling.html">Next</a></div>
     </body>
 </document>

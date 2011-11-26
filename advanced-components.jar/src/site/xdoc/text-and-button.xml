@@ -74,7 +74,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Samples">
             <p>
                 The sample below shows how to use the Date Picker
@@ -121,6 +121,6 @@ box.setMaxLength(</span><span style="color:#0000ff;background-color:#ffffff;">3<
               The source code for the Combo Box will be similar but note that you can't create callback handlers.
           </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

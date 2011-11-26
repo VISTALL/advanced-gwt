@@ -33,7 +33,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Sample">
             <p>
                 The next sample illustrates how to make nested tab panels.
@@ -50,6 +50,6 @@ panel1.addTab(<span style="color:rgb(0,0,128);font-weight:bold;font-style:normal
                 Note that the <i>display()</i> method is not invoked.
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

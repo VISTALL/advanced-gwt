@@ -206,7 +206,7 @@ alt="SpyLOG" width="88" height="31" /></a>
 #end
 
 #macro (placeContent)
-#set ($bodyContent = $bodyContent.replaceAll('<google-ads-horizontal-banner>','
+#set ($bodyContent = $bodyContent.replaceAll('google-ads-horizontal-banner','
 <script type="text/javascript"><!--
 google_ad_client = "pub-9000622932994109";
 /* 728x90, created 25.11.08 */
@@ -219,7 +219,7 @@ google_ad_height = 90;
 src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </script>
 '))
-#set ($bodyContent = $bodyContent.replaceAll('<google-search-results>','
+#set ($bodyContent = $bodyContent.replaceAll('google-search-results','
 <div id="cse-search-results"></div>
 <script type="text/javascript">
   var googleSearchIframeName = "cse-search-results";

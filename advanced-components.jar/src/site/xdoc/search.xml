@@ -5,7 +5,7 @@
     </properties>
     <body>
         <section name="Search Results">
-<google-search-results/>
+google-search-results
         </section>
     </body>
 </document>

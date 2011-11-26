@@ -24,7 +24,7 @@
                 Don't forget to look at our <a href="/demo/index.html">Live Demo</a>!
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Widgets">
             <p>
               Click one of the following links to know more about a widget:
@@ -49,7 +49,7 @@
               Click the link to try our <a href="decision-maker.html">decision making scheme</a>!
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Features List">
             <p>
               <ul>
@@ -125,6 +125,6 @@
                 the new features are expected to be done in 2.x releases.
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

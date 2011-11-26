@@ -35,7 +35,7 @@
                 Current there are several basic interfaces for diffrent kinds of widgets. All the models have the
                 same package <i>org.gwt.advanced.client.datamodel.*</i>.
             </p>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
             <table>
                 <thead>
                     <tr>
@@ -156,7 +156,7 @@ Editable model = new EditableGridDataModel(data);
 model.addRow(1, new Object[]{"Text 2", new ListBox(), Boolean.FALSE});
 model.addColumn(2, new Object[]{Integer.MAX_VALUE});
             </source>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
             <p>
                 As a result the model will contain 2 rows and 4 columns. Note that adding column we put only one value
                 in the array. The model detects that a new column array dimension is less than number of rows and
@@ -211,7 +211,7 @@ model.add("Item 3", new IconItem("my-image3.jpg", "Image 3"));
                 to an image URI.
             </p>
         </section>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
         <div class="navigator"><a href="core.html">Previous</a> | <a href="index.html">Table of contents</a> | <a href="core-using-widgets.html">Next</a></div>
     </body>
 </document>
