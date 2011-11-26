@@ -87,6 +87,6 @@
                 </ul>
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

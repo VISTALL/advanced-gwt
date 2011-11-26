@@ -36,7 +36,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Features List">
             <div class="imageRight">
                 <p>
@@ -61,7 +61,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Sample">
             <p>
                 The next sample shows how to prepare the hierarchical data model for the grid.
@@ -124,6 +124,6 @@ grid.setModel(hierarchicalModel);
                 Is it too difficult for you? But imagine you making the same functionality manually!.
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

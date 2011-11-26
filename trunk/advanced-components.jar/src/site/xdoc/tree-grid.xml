@@ -37,7 +37,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Sample">
             <p>
                 The next sample shows how to prepare the tree grid data model and creates the structure of a
@@ -92,6 +92,6 @@ model.addRow(marketingDirector, </span><span style="color:#000080;background-col
 </span><span style="background-color:#ffffff;">RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(</span><span style="background-color:#ffffff;">).add(panel);</span></pre>
 </source>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

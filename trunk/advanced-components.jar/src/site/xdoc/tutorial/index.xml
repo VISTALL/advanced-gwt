@@ -14,6 +14,6 @@
             3.4 <a href="core-using-themes.html">Using Themes</a><br/>                
             3.5 <a href="core-widgets-customization.html">Widgets Customization</a><br/>                
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

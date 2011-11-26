@@ -85,6 +85,6 @@ grid.setColumnWidth(</span><span style="color:#0000ff;background-color:#ffffff;"
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

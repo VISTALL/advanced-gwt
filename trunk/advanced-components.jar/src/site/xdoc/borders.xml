@@ -34,7 +34,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Sample">
             <p>
                 The next sample illustrates how to create and display a border with a shadow.
@@ -49,6 +49,6 @@ border.setShadowVisibile(<span style="color:rgb(0,0,128);font-weight:bold;font-s
 </pre>
 </source>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

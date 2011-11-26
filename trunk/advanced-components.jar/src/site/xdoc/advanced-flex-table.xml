@@ -39,7 +39,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Sample">
             <p>
                 The next sample illustrates how to enable vertical scrolling.
@@ -59,6 +59,6 @@ table.setHeaderWidget(</span><span style="color:#0000ff;background-color:#ffffff
                 like floating headers (IE) or broken CSS (FireFox).
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>

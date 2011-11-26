@@ -31,7 +31,7 @@
                 create and set a model because the widgets don't instantiate them automatically.
             </p>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <div class="navigator"><a href="introduction.html">Previous</a> | <a href="index.html">Table of contents</a> | <a href="core.html">Next</a></div>
     </body>
 </document>

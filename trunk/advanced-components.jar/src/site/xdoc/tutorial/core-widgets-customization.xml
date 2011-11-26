@@ -36,7 +36,7 @@ editableGrid.addGridDecorator( new GridDecorator() {
                 headers, table body rows or cells. Currently a grid calls only two methods: <i>drawHeaders()</i> and
                 <i>drawContent()</i>. Other methods might be used by a renderer itself.
             </p>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
             <p>
                 The most effective way to develop a renderer is to extend it from one of default implementations:
             </p>
@@ -78,7 +78,7 @@ new DatePicker(new Date()) {
                 If you run this code you can see that the default button image will be replaces with yours.
             </p>
         </section>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
         <div class="navigator"><a href="core-using-themes.html">Previous</a> | <a href="index.html">Table of contents</a></div>
     </body>
 </document>

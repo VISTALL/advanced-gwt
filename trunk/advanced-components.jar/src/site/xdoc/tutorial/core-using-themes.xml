@@ -51,7 +51,7 @@ ThemeHelper.getInstance().setThemeName("ascetic");
                 <i>theme.css</i>.
             </p>
         </section>
-<div class="googleAds"><google-ads-horizontal-banner/></div>
+<div class="googleAds">google-ads-horizontal-banner</div>
         <div class="navigator"><a href="core-events-handling.html">Previous</a> | <a href="index.html">Table of contents</a> | <a href="core-widgets-customization.html">Next</a></div>
     </body>
 </document>

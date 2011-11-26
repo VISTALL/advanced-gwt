@@ -53,7 +53,7 @@
             </div>
         </section>
         <br/>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Features List">
             <div class="imageRight">
                 <p>
@@ -86,7 +86,7 @@
                 </p>
             </div>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
         <section name="Sample">
             <p>
                 The next sample demonstrates how to create a new Editable Grid and a <a href="grid-panel.html">Grid Panel</a> and
@@ -115,6 +115,6 @@ RootPanel.</span><span style="background-color:#ffffff;font-style:italic;">get(<
 </span></pre>
 </source>
         </section>
-        <div class="googleAds"><google-ads-horizontal-banner/></div>
+        <div class="googleAds">google-ads-horizontal-banner</div>
     </body>
 </document>
