@@ -23,7 +23,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.datamodel.ListModelEvent;
@@ -780,12 +783,14 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
                         moveCursor(1);
                         cancelAndPrevent(event);
                     } else if (button == KeyCodes.KEY_ENTER && !hasModifiers) {
-                        select(getHighlightRow());
-                        getChoiceButton().setFocus(false);
-                        ChangeEvent changeEvent = new ComboBoxChangeEvent(
-                                getHighlightRow(), ComboBoxChangeEvent.ChangeEventInputDevice.KEYBOARD
-                        );
-                        fireEvent(changeEvent);
+                        if (getEnterAction() == EnterAction.OPEN_DROP_DOWN) {
+                            select(getHighlightRow());
+                            getChoiceButton().setFocus(false);
+                            ChangeEvent changeEvent = new ComboBoxChangeEvent(
+                                    getHighlightRow(), ComboBoxChangeEvent.ChangeEventInputDevice.KEYBOARD
+                            );
+                            fireEvent(changeEvent);
+                        }
                         setKeyPressed(false);
                     } else if (button == KeyCodes.KEY_ESCAPE && !hasModifiers) {
                         hideList();
@@ -796,7 +801,9 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
                     }
                 } else if (eventTargetsPopup && !hasModifiers
                         && button == KeyCodes.KEY_ENTER && getModel().getCount() > 0) {
-                    showList(true);
+                    if (getEnterAction() == EnterAction.OPEN_DROP_DOWN) {
+                        showList(true);
+                    }
                 }
             } else if (type == Event.ONKEYUP) {
                 setKeyPressed(false);
