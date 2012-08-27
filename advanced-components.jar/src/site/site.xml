@@ -12,7 +12,6 @@
       <item name="Quick Start" href="/quickstart.html"/>
       <item name="FAQ" href="/faq.html"/>
       <item name="API Documents" href="apidocs/index.html"/>
-      <item name="Forum" href="http://advancedgwt.freeforums.org/"/>
       <item name="Tracker" href="http://code.google.com/p/advanced-gwt-components/issues/list?can=1&amp;q=&amp;colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&amp;cells=tiles"/>
     </links>
     <menu name="Home">
@@ -51,7 +50,6 @@
       <item name="JavaDocs API" href="/apidocs/index.html"/>
     </menu>
     <menu name="Support">
-      <item name="Forum" href="http://advancedgwt.freeforums.org/"/>
       <item name="Tracker" href="http://code.google.com/p/advanced-gwt-components/issues/list?can=1&amp;q=&amp;colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&amp;cells=tiles"/>
     </menu>
     ${reports}
