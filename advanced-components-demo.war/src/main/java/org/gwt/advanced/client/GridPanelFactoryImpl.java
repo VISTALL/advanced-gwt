@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Sergey Skladchikov
+ * Copyright 2008-2012 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class GridPanelFactoryImpl implements GridPanelFactory {
      * Creates a new grid panel containing simple editable grid of employees.
      *
      * @param model is a model of the new grid.
-     * @return an isntance of the grid panel.
+     * @return an instance of the grid panel.
      */
     public GridPanel create(GridDataModel model) {
         final GridPanel gridPanel = new GridPanel();

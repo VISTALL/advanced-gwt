@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Sergey Skladchikov
+ * Copyright 2008-2012 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ package org.gwt.advanced.client.misc;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.EditCellListener;
 import org.gwt.advanced.client.ui.GridListenerAdapter;
