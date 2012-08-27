@@ -21,7 +21,9 @@ import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.HTMLTable;
 import org.gwt.advanced.client.datamodel.Editable;
 import org.gwt.advanced.client.datamodel.GridDataModel;
 import org.gwt.advanced.client.datamodel.Hierarchical;
@@ -223,7 +225,10 @@ public class HierarchicalGridRenderer extends DefaultGridRenderer {
             }
             grid.getFlexCellFormatter().setColSpan(thisRow, parentColumn, grid.getCellCount(parentRow) - parentColumn - invisibleColumns);
             grid.getRowFormatter().setStyleName(thisRow, HierarchicalGrid.SUBGRID_ROW_STYLE);
-            grid.getCellFormatter().setStyleName(thisRow, parentColumn, "subgrid-cell");
+
+            FlexTable.FlexCellFormatter formatter = (FlexTable.FlexCellFormatter) grid.getCellFormatter();
+            formatter.setStyleName(thisRow, parentColumn, "subgrid-cell");
+            formatter.setColSpan(thisRow, parentColumn, grid.getCellCount(parentRow) - parentColumn);
             grid.setWidget(thisRow, parentColumn, gridPanel);
         }
     }

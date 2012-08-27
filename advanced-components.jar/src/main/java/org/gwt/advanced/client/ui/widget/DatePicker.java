@@ -124,7 +124,10 @@ public class DatePicker extends TextButtonPanel implements CalendarListener<Cale
      */
     public void setDate(Date date) {
         this.date = date;
-        getSelectedValue().setText(getFormat().format(date));
+        if (date != null)
+            getSelectedValue().setText(getFormat().format(date));
+        else
+            getSelectedValue().setText("");
     }
 
     /**
