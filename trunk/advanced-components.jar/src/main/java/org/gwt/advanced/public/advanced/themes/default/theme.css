@@ -291,14 +291,18 @@
 }
 
 /** input controls styles */
-.advanced-Grid .active-cell input {
+.advanced-Grid .active-cell input,
+.advanced-Grid .active-cell textarea {
     width: 100%;
     font-family: sans-serif;
     font-size: 12px;
     font-weight: normal;
     border: 0;
     padding: 0;
-    background-color: transparent;
+    background-color: white;
+}
+
+.advanced-Grid .active-cell input {
     height: 13px;
 }
 

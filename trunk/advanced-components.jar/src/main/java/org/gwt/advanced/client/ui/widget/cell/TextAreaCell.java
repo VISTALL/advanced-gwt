@@ -16,20 +16,27 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextArea;
 
 /**
- * This is a text cell implementation.
+ * This is a multiline text cell implementation.
  *
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
- * @since 1.0.0
+ * @since 2.0.8
  */
-public class TextBoxCell extends TextBaseCell {
+public class TextAreaCell extends TextBaseCell {
     /** {@inheritDoc} */
-    protected TextBox getTextBox () {
-        if (textBox == null)
-            textBox = new TextBox();
-
-        return (TextBox) textBox;
+    @Override
+    protected TextArea getTextBox() {
+        if (textBox == null) {
+            textBox = new TextArea();
+            Object value = getValue();
+            if (value != null) {
+                String text = String.valueOf(value);
+                int lines = text.split("\n").length + 1;
+                ((TextArea)textBox).setVisibleLines(lines);
+            }
+        }
+        return (TextArea) textBox;
     }
 }

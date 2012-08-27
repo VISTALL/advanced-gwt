@@ -51,6 +51,8 @@ public class DefaultGridCellFactory implements GridCellFactory {
 
         if (TextBoxCell.class.equals(columnType)) {
             result = create((String) data);
+        } else if (TextAreaCell.class.equals(columnType)) {
+            result = createMultiline((String) data);
         } else if (ListCell.class.equals(columnType)) {
             result = create((ListBox) data);
         } else if (BooleanCell.class.equals(columnType)) {
@@ -165,6 +167,17 @@ public class DefaultGridCellFactory implements GridCellFactory {
      */
     protected GridCell create (String data) {
         return new TextBoxCell();
+    }
+
+    /**
+     * This method creates a multiline text box cell.
+     *
+     * @param data is a text value.
+     *
+     * @return a {@link TextAreaCell} instance.
+     */
+    protected GridCell createMultiline (String data) {
+        return new TextAreaCell();
     }
 
     /**
