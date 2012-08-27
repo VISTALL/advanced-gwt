@@ -119,6 +119,8 @@ public class DefaultGridRenderer implements GridRenderer {
                 setCellText(getListBoxText((ListBox) data), row, gridColumn, "list-cell");
             else if (DateCell.class.equals(columnType))
                 setCellText(formatDate((Date) data), row, gridColumn, "date-cell");
+            else if (TextAreaCell.class.equals(columnType))
+                setCellText(formatString(data).replaceAll("\n", "<br/>"), row, gridColumn, "text-cell");
             else if (LabelCell.class.equals(columnType) || TextBoxCell.class.equals(columnType))
                 setCellText(formatString(data), row, gridColumn, "text-cell");
             else if (ImageCell.class.equals(columnType))

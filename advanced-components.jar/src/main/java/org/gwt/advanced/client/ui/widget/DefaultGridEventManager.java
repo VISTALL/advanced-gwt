@@ -28,6 +28,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.HTMLTable;
 import org.gwt.advanced.client.ui.GridEventManager;
 import org.gwt.advanced.client.ui.widget.cell.GridCell;
+import org.gwt.advanced.client.ui.widget.cell.TextAreaCell;
 
 /**
  * This is a default implementation of the grid event manager.
@@ -61,43 +62,43 @@ public class DefaultGridEventManager implements GridEventManager {
         else
             selectionModifier = 0;
 
-        if (KeyCodes.KEY_DOWN == keyCode) {
+        if (KeyCodes.KEY_DOWN == keyCode && !isSkipKeyboardEnabled()) {
             moveCursorDown();
             return true;
-        } else if (KeyCodes.KEY_RIGHT == keyCode) {
+        } else if (KeyCodes.KEY_RIGHT == keyCode && !isSkipKeyboardEnabled()) {
             moveCursorRight();
             return true;
-        } else if (KeyCodes.KEY_UP == keyCode) {
+        } else if (KeyCodes.KEY_UP == keyCode && !isSkipKeyboardEnabled()) {
             moveCursorUp();
             return true;
-        } else if (KeyCodes.KEY_LEFT == keyCode) {
+        } else if (KeyCodes.KEY_LEFT == keyCode && !isSkipKeyboardEnabled()) {
             moveCursorLeft();
             return true;
-        } else if (KeyCodes.KEY_HOME == keyCode && modifiers == MODIFIER_SHIFT) {
+        } else if (KeyCodes.KEY_HOME == keyCode && modifiers == MODIFIER_SHIFT && !isSkipKeyboardEnabled()) {
             moveToFirstCell();
             return true;
-        } else if (KeyCodes.KEY_END == keyCode && modifiers == MODIFIER_SHIFT) {
+        } else if (KeyCodes.KEY_END == keyCode && modifiers == MODIFIER_SHIFT && !isSkipKeyboardEnabled()) {
             moveToLastCell();
             return true;
-        } else if (KeyCodes.KEY_HOME == keyCode) {
+        } else if (KeyCodes.KEY_HOME == keyCode && !isSkipKeyboardEnabled()) {
             moveToStartPage();
             return true;
-        } else if (KeyCodes.KEY_END == keyCode) {
+        } else if (KeyCodes.KEY_END == keyCode && !isSkipKeyboardEnabled()) {
             moveToEndPage();
             return true;
-        } else if (KeyCodes.KEY_PAGEUP == keyCode) {
+        } else if (KeyCodes.KEY_PAGEUP == keyCode && !isSkipKeyboardEnabled()) {
             moveToPrevPage();
             return true;
-        } else if (KeyCodes.KEY_PAGEDOWN == keyCode) {
+        } else if (KeyCodes.KEY_PAGEDOWN == keyCode && !isSkipKeyboardEnabled()) {
             moveToNextPage();
             return true;
-        } else if (keyCode == ' ' && modifiers == (MODIFIER_SHIFT | mainModifier)) {
+        } else if (keyCode == ' ' && modifiers == (MODIFIER_SHIFT | mainModifier) && !isSkipKeyboardEnabled()) {
             moveToPreviousCell();
             return true;
-        } else if (keyCode == ' ' && modifiers == mainModifier) {
+        } else if (keyCode == ' ' && modifiers == mainModifier && !isSkipKeyboardEnabled()) {
             moveToNextCell();
             return true;
-        } else if (KeyCodes.KEY_ENTER == keyCode && !isReadOnly()) {
+        } else if (KeyCodes.KEY_ENTER == keyCode && !isReadOnly() && !isSkipKeyboardEnabled()) {
             activateCell();
             return true;
         } else if (KeyCodes.KEY_TAB == keyCode && modifiers == MODIFIER_SHIFT) {
@@ -391,6 +392,20 @@ public class DefaultGridEventManager implements GridEventManager {
         EditableGrid grid = getPanel().getGrid();
         int column = grid.getCurrentColumn();
         return grid.isReadOnly(column);
+    }
+
+    /**
+     * Checks whether the current cell is enabled for activation / deactivation by keyboard events.
+     *
+     * @return <code>true</code> if skip enabled for activation.
+     */
+    protected boolean isSkipKeyboardEnabled() {
+        EditableGrid grid = getPanel().getGrid();
+        int row = grid.getCurrentRow();
+        int column = grid.getCurrentColumn();
+        GridCell gridCell = (GridCell) grid.getWidget(row, column);
+
+        return gridCell.isActive() && gridCell instanceof TextAreaCell;
     }
 
     /**
