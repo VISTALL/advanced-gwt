@@ -169,7 +169,7 @@ public class HierarchicalGrid extends EditableGrid<Editable> implements ExpandCe
 
     /**
      * This method looks for a subgrid panel and returns it if the specified cell
-     * has been a leats one time expanded.
+     * has been a least one time expanded.
      *
      * @param parentRow    is a parent cell parentRow.
      * @param parentColumn is a parent cell parentColumn.
@@ -232,7 +232,7 @@ public class HierarchicalGrid extends EditableGrid<Editable> implements ExpandCe
         int from = Math.min(getCurrentRow(), toRow);
         int to = Math.max(getCurrentRow(), toRow);
         for (int i = from; i <= to; i++) {
-            if (formatter.getStyleName(i).indexOf(HierarchicalGrid.SUBGRID_ROW_STYLE) != -1) {
+            if (formatter.getStyleName(i).contains(HierarchicalGrid.SUBGRID_ROW_STYLE)) {
                 formatter.removeStyleName(i, "selected-row");
                 getSelectionModel().remove(i);
             }
@@ -299,7 +299,7 @@ public class HierarchicalGrid extends EditableGrid<Editable> implements ExpandCe
             HTMLTable.RowFormatter rowFormatter = getRowFormatter();
             while (
                     last > 0 && last < getRowCount()
-                    && rowFormatter.getStyleName(last).indexOf(HierarchicalGrid.SUBGRID_ROW_STYLE) != -1
+                    && rowFormatter.getStyleName(last).contains(HierarchicalGrid.SUBGRID_ROW_STYLE)
             ) {
                 last++;
             }
