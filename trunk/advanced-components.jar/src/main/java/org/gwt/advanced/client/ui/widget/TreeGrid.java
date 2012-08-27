@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Sergey Skladchikov
+ * Copyright 2008-2012 Sergey Skladchikov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.DOM;
 import org.gwt.advanced.client.datamodel.*;
 import org.gwt.advanced.client.ui.ExpandCellEventProducer;
 import org.gwt.advanced.client.ui.ExpandableCellListener;
