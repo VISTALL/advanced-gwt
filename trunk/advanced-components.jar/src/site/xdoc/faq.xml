@@ -5,10 +5,6 @@
     </properties>
     <body>
         <section name="Frequently Asked Questions">
-            <p>
-                Please find your question below. If you can't find it ask for help in our
-                <a href="http://advancedgwt.freeforums.org/help-support-f1.html">community forum</a>.
-            </p>
             <div class="googleAds">google-ads-horizontal-banner</div>
             <section name="Common Questions">
                 <p>

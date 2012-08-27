@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>net.sf.advanced-gwt</groupId>
+        <artifactId>advanced-gwt-root</artifactId>
+        <version>2.0.8</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.gwt.advanced</groupId>
-    <artifactId>advanced-components</artifactId>
+    <artifactId>advanced-gwt</artifactId>
     <packaging>jar</packaging>
     <name>Advanced GWT Components</name>
-    <version>2.0.7</version>
+
     <url>http://advanced-gwt.sourceforge.net</url>
     <description>The set of useful GWT components</description>
 
@@ -26,7 +32,7 @@
                 <role>Architect</role>
                 <role>Developer</role>
             </roles>
-            <timezone>+3</timezone>
+            <timezone>+4</timezone>
         </developer>
     </developers>
 
@@ -71,17 +77,9 @@
 
         <plugins>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.1</version>
                 <configuration>
                     <templateFile>src/site/resources/META-INF/maven/site.vm</templateFile>
                 </configuration>
@@ -89,21 +87,12 @@
         </plugins>
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>2.3.0</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-
     <reporting>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.5</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -114,21 +103,10 @@
                     </reportSet>
                 </reportSets>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-changes-plugin</artifactId>
-                <version>2.6</version>
+                <version>2.7.1</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -147,8 +125,7 @@
 
     <scm>
         <connection>scm:svn:https://advanced-gwt.svn.sourceforge.net/svnroot/advanced-gwt/trunk</connection>
-        <developerConnection>scm:svn:https://advanced-gwt.svn.sourceforge.net/svnroot/advanced-gwt/trunk
-        </developerConnection>
+        <developerConnection>scm:svn:https://advanced-gwt.svn.sourceforge.net/svnroot/advanced-gwt/trunk</developerConnection>
         <url>http://advanced-gwt.svn.sourceforge.net/viewvc/advanced-gwt/</url>
     </scm>
 </project>
