@@ -52,6 +52,12 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
     private String height;
     /** enabled panel controls flag */
     private boolean enabled;
+    /** action to be performed on Enter key press in the text field */
+    private EnterAction enterAction = EnterAction.OPEN_DROP_DOWN;
+
+    public enum EnterAction {
+        OPEN_DROP_DOWN, DO_NOTHING;
+    }
 
     protected TextButtonPanel() {
         getLayout().setWidget(0, 0, getSelectedValue());
@@ -348,5 +354,13 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
      */
     protected String getHeight() {
         return height;
+    }
+
+    public ComboBox.EnterAction getEnterAction() {
+        return enterAction;
+    }
+
+    public void setEnterAction(ComboBox.EnterAction enterAction) {
+        this.enterAction = enterAction;
     }
 }
