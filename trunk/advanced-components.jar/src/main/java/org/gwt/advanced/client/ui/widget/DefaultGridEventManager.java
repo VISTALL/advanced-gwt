@@ -114,14 +114,18 @@ public class DefaultGridEventManager implements GridEventManager {
     /** Sets a position of the cursor */
     public void onFocus(FocusEvent focusEvent) {
         EditableGrid grid = getPanel().getGrid();
-        int row = grid.getCurrentRow();
-        int column = grid.getCurrentColumn();
+        if (grid.getActiveCell() != null) { // Chrome fix
+            grid.getActiveCell().setFocus(true);
+        } else {
+            int row = grid.getCurrentRow();
+            int column = grid.getCurrentColumn();
 
-        if (row != -1 && column != -1 && (!grid.isMultiRowModeEnabled() || getSelectionModifier() == 0))
-            setCursor(row, column, false);
+            if (row != -1 && column != -1 && (!grid.isMultiRowModeEnabled() || getSelectionModifier() == 0))
+                setCursor(row, column, false);
 
-        if (keyHandlerRegistration == null)
-            keyHandlerRegistration = Event.addNativePreviewHandler(this);
+            if (keyHandlerRegistration == null)
+                keyHandlerRegistration = Event.addNativePreviewHandler(this);
+        }
     }
 
     /**
