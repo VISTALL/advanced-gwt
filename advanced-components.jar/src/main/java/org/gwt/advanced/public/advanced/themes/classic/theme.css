@@ -291,7 +291,8 @@
 }
 
 /** grid selected row styles */
-.advanced-Grid .selected-row {
+.advanced-Grid .selected-row,
+.advanced-Grid .selected-row .expandable-cell table {
     background-color: #0a246a;
     color: white;
 }
