@@ -71,6 +71,7 @@
                   <li>GWT 1.6.4, 1.7.1, 2.0.x, 2.1.x, 2.2.x, 2.3.x, 2.4.x, 2.5.x or higher compatibility</li>
                   <li>no dependencies to other third-party libraries</li>
                   <li>theme runtime switching for non-styled widgets</li>
+                  <li>latest releases are available in the Maven Central Repository <span class="new">new</span></li>
               </ul>
             </p>
         </section>
