@@ -3,7 +3,7 @@
     <parent>
         <groupId>net.sf.advanced-gwt</groupId>
         <artifactId>advanced-gwt-root</artifactId>
-        <version>2.0.9-SNAPSHOT</version>
+        <version>2.0.8-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -14,51 +14,6 @@
 
     <url>http://advanced-gwt.sourceforge.net</url>
     <description>The set of useful GWT components</description>
-
-    <inceptionYear>2008</inceptionYear>
-
-    <issueManagement>
-        <system>google</system>
-        <url>http://code.google.com/p/advanced-gwt-components/issues/list</url>
-    </issueManagement>
-
-    <developers>
-        <developer>
-            <id>sskladchikov</id>
-            <name>Sergey Skladchikov</name>
-            <email>sskladchikov@gmail.com</email>
-            <roles>
-                <role>Architect</role>
-                <role>Developer</role>
-            </roles>
-            <timezone>+4</timezone>
-        </developer>
-    </developers>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <mailingLists>
-        <mailingList>
-            <name>Project News</name>
-            <subscribe>http://lists.sourceforge.net/lists/listinfo/advanced-gwt-news</subscribe>
-            <unsubscribe>http://lists.sourceforge.net/lists/listinfo/advanced-gwt-news</unsubscribe>
-            <post>advanced-gwt-news@lists.sourceforge.net</post>
-            <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=advanced-gwt-news</archive>
-        </mailingList>
-        <mailingList>
-            <name>Project Troubleshooting</name>
-            <subscribe>http://lists.sourceforge.net/lists/listinfo/advanced-gwt-troubleshooting</subscribe>
-            <unsubscribe>http://lists.sourceforge.net/lists/listinfo/advanced-gwt-troubleshooting</unsubscribe>
-            <post>advanced-gwt-troubleshooting@lists.sourceforge.net</post>
-            <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=advanced-gwt-troubleshooting</archive>
-        </mailingList>
-    </mailingLists>
 
     <build>
         <defaultGoal>install</defaultGoal>
