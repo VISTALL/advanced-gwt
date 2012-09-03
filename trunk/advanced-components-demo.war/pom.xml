@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>net.sf.advanced-gwt</groupId>
         <artifactId>advanced-gwt-root</artifactId>
-        <version>2.0.8-SNAPSHOT</version>
+        <version>2.0.8</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,7 +19,7 @@
         <dependency>
             <groupId>net.sf.advanced-gwt</groupId>
             <artifactId>advanced-gwt</artifactId>
-            <version>2.0.8-SNAPSHOT</version>
+            <version>2.0.8</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -69,13 +68,12 @@
                         <phase>package</phase>
                         <configuration>
                             <tasks>
-                                <copy overwrite="true"
-                                      todir="./target/advanced-components-demo-${version}/org.gwt.advanced.Demo">
+                                <copy overwrite="true" todir="./target/advanced-components-demo-${version}/org.gwt.advanced.Demo">
                                     <fileset dir="../advanced-components.jar/src/main/java/org/gwt/advanced/public">
-                                        <include name="**/*.gif"/>
+                                        <include name="**/*.gif" />
                                     </fileset>
                                     <fileset dir="src/main/java/org/gwt/advanced/public">
-                                        <include name="**/*.gif"/>
+                                        <include name="**/*.gif" />
                                     </fileset>
                                 </copy>
                             </tasks>
