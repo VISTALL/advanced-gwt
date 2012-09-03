@@ -6,8 +6,16 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="2.0.7" date="2011-09-04" description="Last stable version">
-            <action type="add" issue="108" system="google">Apply lasted GWT version</action>
+        <release version="2.0.8" date="2012-09-04" description="Last stable version">
+            <action type="add" issue="114" system="google">Remove form links from project site</action>
+            <action type="add" issue="112" system="google">Text Area Rich Text Areas</action>
+            <action type="add" issue="111" system="google">ComboBox with CustomText allowed problem with Enter KeyPress event</action>
+            <action type="fix" issue="113" system="google">I am unable to find any maven artifacts</action>
+            <action type="fix" issue="110" system="google">Problem with editing TreeGrid in Chrome</action>
+            <action type="fix" issue="109" system="google">Null check on setDate(date) in DatePicker widget</action>
+        </release>
+        <release version="2.0.7" date="2011-09-04" description="Old unsupported version">
+            <action type="add" issue="108" system="google">Apply latest GWT version</action>
             <action type="fix" issue="106" system="google">Make field 'handler' mutable in SuggestionBoxDataModel</action>
             <action type="fix" issue="107" system="google">Add bulk operations for ComboBoxDataModel</action>
         </release>
