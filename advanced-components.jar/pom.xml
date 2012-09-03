@@ -121,10 +121,4 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <scm>
-        <connection>scm:svn:https://advanced-gwt.svn.sourceforge.net/svnroot/advanced-gwt/tags/advanced-gwt-root-2.0.8/tags/advanced-gwt-root-2.0.8/trunk</connection>
-        <developerConnection>scm:svn:https://advanced-gwt.svn.sourceforge.net/svnroot/advanced-gwt/tags/advanced-gwt-root-2.0.8/tags/advanced-gwt-root-2.0.8/trunk</developerConnection>
-        <url>http://advanced-gwt.svn.sourceforge.net/viewvc/advanced-gwt/tags/advanced-gwt-root-2.0.8/advanced-gwt</url>
-    </scm>
 </project>
