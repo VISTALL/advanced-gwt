@@ -15,8 +15,29 @@
                 The library is absolutely free and you can download and use it right now. 
             </p>
             <p>
-                The latest stable version is
+                Download the latest stable version here:
                 <a href="http://sourceforge.net/projects/advanced-gwt/files/advanced-gwt-components/2.0.8/">2.0.8</a>.
+            </p>
+            <p>
+                Or add the following Maven dependency:
+<source>
+    <style type="text/css">
+        .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+        .s0 { }
+        .s1 { color: rgb(0,0,128); font-weight: bold; }
+        .s2 { }
+        .s3 { font-weight: bold; }
+        .s4 { color: rgb(0,0,255); font-weight: bold; }
+        .s5 { color: rgb(0,128,0); font-weight: bold; }
+    </style>
+<pre>
+<span class="s0">&lt;</span><span class="s1">dependency</span><span class="s0">&gt;</span><span class="s2">
+<a name="l18"/>     </span><span class="s0">&lt;</span><span class="s1">groupId</span><span class="s0">&gt;</span><span class="s3">net.sf.advanced-gwt</span><span class="s0">&lt;/</span><span class="s1">groupId</span><span class="s0">&gt;</span><span class="s2">
+<a name="l19"/>     </span><span class="s0">&lt;</span><span class="s1">artifactId</span><span class="s0">&gt;</span><span class="s3">advanced-gwt</span><span class="s0">&lt;/</span><span class="s1">artifactId</span><span class="s0">&gt;</span><span class="s2">
+<a name="l20"/>     </span><span class="s0">&lt;</span><span class="s1">version</span><span class="s0">&gt;</span><span class="s3">2.0.8</span><span class="s0">&lt;/</span><span class="s1">version</span><span class="s0">&gt;</span><span class="s2">
+<a name="l21"/>     </span><span class="s0">&lt;</span><span class="s1">scope</span><span class="s0">&gt;</span><span class="s3">provided</span><span class="s0">&lt;/</span><span class="s1">scope</span><span class="s0">&gt;</span><span class="s2">
+<a name="l22"/></span><span class="s0">&lt;/</span><span class="s1">dependency</span><span class="s0">&gt;</span></pre>
+</source>
             </p>
             <p>
                 Don't forget to look at our <a href="/demo/index.html">Live Demo</a>!
