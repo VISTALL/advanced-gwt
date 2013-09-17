@@ -187,13 +187,17 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
 
     /**
      * Sets body height property to the specified value.<p/>
-     * This method might be very useful when you need to enebale vertical scrolling
+     * This method might be very useful when you need to enable vertical scrolling
      * (see {@link #enableVerticalScrolling(boolean)}).
      *
      * @param height is a value of the property.
      */
     public void setBodyHeight(String height) {
-        DOM.setStyleAttribute(DOM.getParent(getScrollPanel().getElement()), "height", height);
+        Element element = getScrollPanel().getElement();
+        Element parent = DOM.getParent(element);
+        DOM.setStyleAttribute(parent, "height", height);
+        DOM.setStyleAttribute(element, "height", height);
+//        GWTUtil.adjustElementSize(element, parent, true);
     }
 
     /** {@inheritDoc} */
