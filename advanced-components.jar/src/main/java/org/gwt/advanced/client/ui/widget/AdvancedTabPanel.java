@@ -192,8 +192,8 @@ public class AdvancedTabPanel extends SimplePanel implements HasSelectionHandler
      * @param before  is an index of existent tab.
      */
     public void insertTab(Widget tab, Widget content, int before) {
-        if (tabs.size() >= before)
-            throw new IllegalArgumentException("Insertion index can't be greater the number of existing tabs");
+        if (before < 0 || tabs.size() <= before)
+            throw new IllegalArgumentException("Insertion index can't be < 0 or >= the number of existing tabs");
 
         TabHolder holder = new TabHolder(tab, content);
         tabs.remove(holder); // to avoid duplicated tabs

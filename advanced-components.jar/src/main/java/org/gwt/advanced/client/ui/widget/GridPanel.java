@@ -219,7 +219,7 @@ public class GridPanel extends VerticalPanel implements AdvancedWidget, Resizabl
             getBottomPager().setTotalCountDisplayed(value);
     }
 
-    /** This method displays the panel and adds nexted widgets. */
+    /** This method displays the panel and adds nested widgets. */
     public void display() {
         if (getGrid() == null)
             throw new IllegalStateException("Grid hasn't been initialized");
