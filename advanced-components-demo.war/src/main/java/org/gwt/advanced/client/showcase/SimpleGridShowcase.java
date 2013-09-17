@@ -54,7 +54,6 @@ public class SimpleGridShowcase extends AbstractShowcase {
      */
     public void initShowcase(AdvancedTabPanel panel) {
         super.initShowcase(panel);
-//        grid.setBodyHeight("200px");
         grid.enableVerticalScrolling(true);
     }
 }
