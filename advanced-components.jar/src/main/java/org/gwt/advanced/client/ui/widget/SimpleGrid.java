@@ -233,6 +233,10 @@ public class SimpleGrid extends AdvancedFlexTable implements Resizable {
     /** {@inheritDoc} */
     public void enableVerticalScrolling(boolean enabled) {
         if (isScrollable() != enabled) {
+            String bodyParentHeight = DOM.getStyleAttribute(DOM.getParent(getScrollPanel().getElement()), "height");
+            if (bodyParentHeight == null || "".equals(bodyParentHeight)) {
+                setBodyHeight("200px"); //default height of body if actual height is missed
+            }
             super.enableVerticalScrolling(enabled);
             resize();
         }
