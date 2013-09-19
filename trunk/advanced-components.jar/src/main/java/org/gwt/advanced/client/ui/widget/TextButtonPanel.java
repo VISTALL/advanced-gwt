@@ -254,6 +254,7 @@ public abstract class TextButtonPanel extends SimplePanel implements AdvancedWid
             layout = new FlexTable();
             layout.setCellPadding(0);
             layout.setCellSpacing(0);
+            layout.getFlexCellFormatter().setWidth(0, 0, "100%");
         }
         return layout;
     }

@@ -718,6 +718,10 @@
     height: 18px;
 }
 
+.advanced-TextButtonPanel>table {
+    width: 100%;
+}
+
 /** layout styles */
 .advanced-Grid .advanced-TextButtonPanel table {
     height: 13px;
@@ -745,6 +749,7 @@
     color: black;
     height: 16px;
     padding: 0;
+    width: 100%;
 }
 
 .advanced-Grid .selected-value {
