@@ -707,6 +707,11 @@
 }
 
 /** layout styles */
+.advanced-TextButtonPanel>table {
+    width: 100%;
+}
+
+/** layout styles */
 .advanced-Grid .advanced-TextButtonPanel table {
     height: 13px;
 }
