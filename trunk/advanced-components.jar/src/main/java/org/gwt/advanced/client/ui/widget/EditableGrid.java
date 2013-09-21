@@ -1373,7 +1373,7 @@ public class EditableGrid<T extends Editable> extends SimpleGrid implements Adva
      * @param column is a column of the cell.
      * @param active is an activation flag.
      */
-    protected void activateCell(int row, int column, boolean active) {
+    public void activateCell(int row, int column, boolean active) {
         if (row < 0 || column < 0 || row > getRowCount() || column > getCellCount(row))
             return;
 
