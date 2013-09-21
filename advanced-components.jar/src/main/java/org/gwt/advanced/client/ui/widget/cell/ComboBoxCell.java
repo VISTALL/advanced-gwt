@@ -20,8 +20,11 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListDataModel;
@@ -38,6 +41,9 @@ import org.gwt.advanced.client.util.GWTUtil;
 public class ComboBoxCell extends AbstractCell {
     /** handler registration for combo box click (valid for FF only) */
     private HandlerRegistration ffHandlerRegistration;
+    /** handler registration for combo box items list closing */
+    private HandlerRegistration closeHandlerRegistration;
+    /** handler registration for combo box value changing */
     private HandlerRegistration changeHandlerRegistration;
 
     /** {@inheritDoc} */
@@ -76,11 +82,17 @@ public class ComboBoxCell extends AbstractCell {
         else
             box.setWidth("100%");
 
-        if (box != null) {
+        if (box != null && !GWTUtil.isFF() && !GWTUtil.isIE()) {
+            closeHandlerRegistration = box.addCloseHandler(new CloseHandler<PopupPanel>() {
+                @Override
+                public void onClose(CloseEvent event) {
+                    ((EditableGrid)getGrid()).activateCell(getRow(), getColumn(), false);
+                }
+            });
             changeHandlerRegistration = box.addChangeHandler(new ChangeHandler() {
                 @Override
                 public void onChange(ChangeEvent event) {
-                    ((EditableGrid)getGrid()).setFocus(true);
+                    box.hideList();
                 }
             });
         }
@@ -95,6 +107,10 @@ public class ComboBoxCell extends AbstractCell {
         if (changeHandlerRegistration != null) {
             changeHandlerRegistration.removeHandler();
             changeHandlerRegistration = null;
+        }
+        if (closeHandlerRegistration != null) {
+            closeHandlerRegistration.removeHandler();
+            closeHandlerRegistration = null;
         }
         return getComboBoxWidget(comboBox);
     }
@@ -113,7 +129,7 @@ public class ComboBoxCell extends AbstractCell {
                 ffHandlerRegistration = box.addClickHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
-                        box.showList(true);
+//                        box.showList(true);
                         if (ffHandlerRegistration != null) {
                             ffHandlerRegistration.removeHandler();
                             ffHandlerRegistration = null;

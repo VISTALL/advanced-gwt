@@ -19,14 +19,13 @@ package org.gwt.advanced.client.ui.widget;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.event.logical.shared.HasCloseHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.ToggleButton;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import org.gwt.advanced.client.datamodel.ComboBoxDataModel;
 import org.gwt.advanced.client.datamodel.ListDataModel;
 import org.gwt.advanced.client.datamodel.ListModelEvent;
@@ -47,7 +46,8 @@ import java.util.Set;
  * @since 1.2.0
  */
 public class ComboBox<T extends ListDataModel> extends TextButtonPanel
-        implements HasAllFocusHandlers, HasAllKeyHandlers, HasClickHandlers, ListModelListener, HasChangeHandlers {
+        implements HasAllFocusHandlers, HasAllKeyHandlers, HasClickHandlers,
+        ListModelListener, HasChangeHandlers, HasCloseHandlers<PopupPanel> {
     /** a combo box data model */
     private ListDataModel model;
     /** a list item factory */
@@ -472,6 +472,16 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      */
     public void setDropDownPosition(DropDownPosition dropDownPosition) {
         getListPanel().setDropDownPosition(dropDownPosition);
+    }
+
+    /**
+     * Adds a close handler to the popup list of items.
+     *
+     * @param handler is a handler to add.
+     * @return a handler registration.
+     */
+    public HandlerRegistration addCloseHandler(CloseHandler<PopupPanel> handler) {
+        return getListPanel().addCloseHandler(handler);
     }
 
     /**
