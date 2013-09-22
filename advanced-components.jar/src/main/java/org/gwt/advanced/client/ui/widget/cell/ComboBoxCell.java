@@ -16,8 +16,6 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -82,16 +80,11 @@ public class ComboBoxCell extends AbstractCell {
         else
             box.setWidth("100%");
 
-        if (box != null && !GWTUtil.isFF() && !GWTUtil.isIE()) {
+        if (box != null) {
             closeHandlerRegistration = box.addCloseHandler(new CloseHandler<PopupPanel>() {
                 @Override
                 public void onClose(CloseEvent event) {
                     ((EditableGrid)getGrid()).activateCell(getRow(), getColumn(), false);
-                }
-            });
-            changeHandlerRegistration = box.addChangeHandler(new ChangeHandler() {
-                @Override
-                public void onChange(ChangeEvent event) {
                     box.hideList();
                 }
             });
@@ -129,7 +122,7 @@ public class ComboBoxCell extends AbstractCell {
                 ffHandlerRegistration = box.addClickHandler(new ClickHandler() {
                     @Override
                     public void onClick(ClickEvent event) {
-//                        box.showList(true);
+                        box.showList(true);
                         if (ffHandlerRegistration != null) {
                             ffHandlerRegistration.removeHandler();
                             ffHandlerRegistration = null;

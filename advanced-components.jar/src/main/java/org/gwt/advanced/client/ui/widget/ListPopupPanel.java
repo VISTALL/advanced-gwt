@@ -449,6 +449,7 @@ public class ListPopupPanel extends PopupPanel implements AdvancedWidget, HasCha
         panel.addMouseOverHandler(getMouseEventsHandler());
         panel.addMouseOutHandler(getMouseEventsHandler());
         panel.setStyleName("item");
+        DOM.removeElementAttribute(panel.getElement(), "tabindex");
         return panel;
     }
 
