@@ -16,6 +16,8 @@
 
 package org.gwt.advanced.client.ui.widget.cell;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -37,19 +39,29 @@ import org.gwt.advanced.client.util.GWTUtil;
  * @since 1.2.0
  */
 public class ComboBoxCell extends AbstractCell {
-    /** handler registration for combo box click (valid for FF only) */
+    /**
+     * handler registration for combo box click (valid for FF only)
+     */
     private HandlerRegistration ffHandlerRegistration;
-    /** handler registration for combo box items list closing */
+    /**
+     * handler registration for combo box items list closing
+     */
     private HandlerRegistration closeHandlerRegistration;
-    /** handler registration for combo box value changing */
+    /**
+     * handler registration for combo box value changing
+     */
     private HandlerRegistration changeHandlerRegistration;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public boolean valueEqual(Object value) {
         return false; // because it will be always the same widget
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings({"unchecked"})
     public void setValue(Object value) {
         if (value == null) {
@@ -65,13 +77,17 @@ public class ComboBoxCell extends AbstractCell {
         super.setValue(value);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean canBeDeactivated() {
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected Widget createActive() {
         removeStyleName("list-cell");
         final ComboBox box = (ComboBox) getValue();
@@ -81,18 +97,29 @@ public class ComboBoxCell extends AbstractCell {
             box.setWidth("100%");
 
         if (box != null) {
-            closeHandlerRegistration = box.addCloseHandler(new CloseHandler<PopupPanel>() {
-                @Override
-                public void onClose(CloseEvent event) {
-                    ((EditableGrid)getGrid()).activateCell(getRow(), getColumn(), false);
-                    box.hideList();
-                }
-            });
+            if (!GWTUtil.isFF()) {
+                closeHandlerRegistration = box.addCloseHandler(new CloseHandler<PopupPanel>() {
+                    @Override
+                    public void onClose(CloseEvent event) {
+                        ((EditableGrid) getGrid()).activateCell(getRow(), getColumn(), false);
+                    }
+                });
+            } else {
+                changeHandlerRegistration = box.addChangeHandler(new ChangeHandler() {
+                    @Override
+                    public void onChange(ChangeEvent event) {
+                        ((EditableGrid) getGrid()).activateCell(getRow(), getColumn(), false);
+                        box.hideList();
+                    }
+                });
+            }
         }
         return box;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     protected Widget createInactive() {
         ComboBox comboBox = (ComboBox) getValue();
         if (comboBox != null && comboBox.isListPanelOpened())
@@ -108,7 +135,9 @@ public class ComboBoxCell extends AbstractCell {
         return getComboBoxWidget(comboBox);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void setFocus(boolean focus) {
         final ComboBox box = (ComboBox) getValue();
         if (focus && box != null && !box.isListPanelOpened()) {
@@ -134,7 +163,9 @@ public class ComboBoxCell extends AbstractCell {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Object getNewValue() {
         return getValue();
     }
