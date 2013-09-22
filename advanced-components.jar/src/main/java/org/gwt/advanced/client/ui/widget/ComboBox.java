@@ -800,12 +800,13 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
                                     getHighlightRow(), ComboBoxChangeEvent.ChangeEventInputDevice.KEYBOARD
                             );
                             fireEvent(changeEvent);
+                            cancelAndPrevent(event);
                         }
                         setKeyPressed(false);
                     } else if (button == KeyCodes.KEY_ESCAPE && !hasModifiers) {
                         hideList();
                         setKeyPressed(false);
-                    } else if (button == KeyCodes.KEY_TAB && (!hasModifiers || !alt && !ctrl && shift)) {
+                    } else if (button == KeyCodes.KEY_TAB && (!hasModifiers || !alt && !ctrl)) {
                         hideList();
                         setKeyPressed(false);
                     }
