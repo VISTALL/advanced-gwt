@@ -21,6 +21,8 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.HasCloseHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
@@ -45,7 +47,7 @@ import java.util.Set;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
  */
-public class ComboBox<T extends ListDataModel> extends TextButtonPanel
+public class ComboBox<T extends ListDataModel> extends TextButtonPanel<String>
         implements HasAllFocusHandlers, HasAllKeyHandlers, HasClickHandlers,
         ListModelListener, HasChangeHandlers, HasCloseHandlers<PopupPanel> {
     /** a combo box data model */
@@ -181,6 +183,8 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      * This method returns a value currently displayed in the text box.
      *
      * @return a text value.
+     *
+     * @deprecated use {@link #getValue()} instead.
      */
     public String getText() {
         return getSelectedValue().getText();
@@ -226,6 +230,8 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
      * in the list of items.
      *
      * @param text is a text to set.
+     *
+     * @deprecated use {@link #setValue(String)} instead.
      */
     public void setText(String text) {
         getSelectedValue().setText(text);
@@ -484,6 +490,38 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
         return getListPanel().addCloseHandler(handler);
     }
 
+    /** Similar to {@link #getText()} */
+    @Override
+    public String getValue() {
+        return getSelectedValue().getText();
+    }
+
+    /** Similar to {@link #setText(String)} and doesn't send any event */
+    @Override
+    public void setValue(String value) {
+        setValue(value, false);
+    }
+
+    /** Similar to {@link #setText(String)} and sends {@code ValueChangeEvent} if {@code fireEvents = true} */
+    @Override
+    public void setValue(String value, boolean fireEvents) {
+        getSelectedValue().setText(value);
+        if (fireEvents) {
+            fireEvent(new ValueChangeEvent<String>(value){});
+        }
+    }
+
+    /**
+     * Adds a value change handler to the component that will be invoked only if
+     * {@link #setValue(Object, boolean)} has the second parameter = {@code true}.<p/>
+     *
+     * Note that the widget doesn't fire the event if you don't use the method specified above.
+     */
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
     /**
      * Adds a new visual item into the drop down list every time when it's added into the data
      * model.
@@ -551,7 +589,7 @@ public class ComboBox<T extends ListDataModel> extends TextButtonPanel
             if (isListPanelOpened()) {
                 getListPanel().setHighlightRow(event.getItemIndex());
             }
-            setText(getListItemFactory().convert(model.getSelected()));
+            setValue(getListItemFactory().convert(model.getSelected()));
         }
     }
 
