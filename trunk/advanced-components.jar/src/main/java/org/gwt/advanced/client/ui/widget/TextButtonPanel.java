@@ -29,7 +29,8 @@ import org.gwt.advanced.client.ui.widget.theme.ThemeImage;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.2.0
  */
-public abstract class TextButtonPanel extends SimplePanel implements AdvancedWidget {
+public abstract class TextButtonPanel<TypeOfSelectedValue> extends SimplePanel
+        implements AdvancedWidget, HasValue<TypeOfSelectedValue> {
     /** widget layout */
     private FlexTable layout;
     /** a selected value box */

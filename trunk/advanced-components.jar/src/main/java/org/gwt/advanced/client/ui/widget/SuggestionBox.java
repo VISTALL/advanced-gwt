@@ -221,8 +221,8 @@ public class SuggestionBox extends ComboBox<SuggestionBoxDataModel> {
      */
     public void onModelEvent(ListModelEvent event) {
         if (event.getType() == SuggestionModelEvent.EXPRESSION_CHANGED
-                && !getText().equals(((SuggestionModelEvent) event).getExpression())) {
-            setText(((SuggestionModelEvent) event).getExpression());
+                && !getValue().equals(((SuggestionModelEvent) event).getExpression())) {
+            setValue(((SuggestionModelEvent) event).getExpression());
             getListPanel().adjustSize();
         } else if (event.getType() != SuggestionModelEvent.EXPRESSION_CHANGED) {
             super.onModelEvent(event);
@@ -363,8 +363,8 @@ public class SuggestionBox extends ComboBox<SuggestionBoxDataModel> {
          */
         @Override
         public void onKeyUp(KeyUpEvent event) {
-            if (!getText().equals(lastExpression) && event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
-                lastExpression = getText();
+            if (!getValue().equals(lastExpression) && event.getNativeKeyCode() != KeyCodes.KEY_ENTER) {
+                lastExpression = getValue();
                 setSelectedId(null);
                 getTimer().schedule(getRequestTimeout());
             }

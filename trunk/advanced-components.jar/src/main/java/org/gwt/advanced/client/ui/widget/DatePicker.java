@@ -17,6 +17,8 @@
 package org.gwt.advanced.client.ui.widget;
 
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
@@ -33,7 +35,7 @@ import java.util.Date;
  * @author <a href="mailto:sskladchikov@gmail.com">Sergey Skladchikov</a>
  * @since 1.0.0
  */
-public class DatePicker extends TextButtonPanel implements CalendarListener<Calendar>, HasChangeHandlers {
+public class DatePicker extends TextButtonPanel<Date> implements CalendarListener<Calendar>, HasChangeHandlers {
     /** calendar popup panel */
     private PopupPanel calendarPanel;
     /** calendar widget */
@@ -81,7 +83,7 @@ public class DatePicker extends TextButtonPanel implements CalendarListener<Cale
      */
     public void setTimeVisible(boolean timeVisible) {
         this.timeVisible = timeVisible;
-        if (getDate() != null)
+        if (getValue() != null)
             getSelectedValue().setText(getFormat().format(date));
         getCalendar().setShowTime(timeVisible);
     }
@@ -112,6 +114,7 @@ public class DatePicker extends TextButtonPanel implements CalendarListener<Cale
      * Getter for property 'date'.
      *
      * @return Value for property 'date'.
+     * @deprecated use {@link #getValue()} instead.
      */
     public Date getDate() {
         return date;
@@ -121,6 +124,7 @@ public class DatePicker extends TextButtonPanel implements CalendarListener<Cale
      * Sets a date for this date picker.
      *
      * @param date is a date to set.
+     * @deprecated use {@link #setValue(Date)} instead.
      */
     public void setDate(Date date) {
         this.date = date;
@@ -146,8 +150,8 @@ public class DatePicker extends TextButtonPanel implements CalendarListener<Cale
      * @return textual representation.
      */
     public String getTextualDate() {
-        if (getDate() != null)
-            return getFormat().format(getDate());
+        if (getValue() != null)
+            return getFormat().format(getValue());
         else
             return "";
     }
@@ -163,11 +167,47 @@ public class DatePicker extends TextButtonPanel implements CalendarListener<Cale
         this.format = format;
     }
 
+    /** Similar to {@link #getDate()} */
+    @Override
+    public Date getValue() {
+        return date;
+    }
+
+    /** Similar to {@link #setDate(Date)} and doesn't send any event */
+    @Override
+    public void setValue(Date value) {
+        setValue(value, false);
+    }
+
+    /** Similar to {@link #setDate(Date)} and sends {@code ValueChangeEvent} if {@code fireEvents = true} */
+    @Override
+    public void setValue(Date value, boolean fireEvents) {
+        this.date = value;
+        if (date != null)
+            getSelectedValue().setText(getFormat().format(date));
+        else
+            getSelectedValue().setText("");
+        if (fireEvents) {
+            fireEvent(new ValueChangeEvent<Date>(value){});
+        }
+    }
+
+    /**
+     * Adds a value change handler to the component that will be invoked only if
+     * {@link #setValue(Object, boolean)} has the second parameter = {@code true}.<p/>
+     *
+     * Note that the widget doesn't fire the event if you don't use the method specified above.
+     */
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Date> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
     /** {@inheritDoc} */
     protected void prepareSelectedValue() {
         super.prepareSelectedValue();
         getSelectedValue().setReadOnly(true);
-        Date date = getDate();
+        Date date = getValue();
         if (date != null)
             getSelectedValue().setText(getFormat().format(date));
     }
@@ -202,8 +242,8 @@ public class DatePicker extends TextButtonPanel implements CalendarListener<Cale
     protected Calendar getCalendar () {
         if (calendar == null) {
             calendar = new Calendar();
-            if (getDate() != null)
-                calendar.setSelectedDate(getDate());
+            if (getValue() != null)
+                calendar.setSelectedDate(getValue());
             else
                 calendar.setSelectedDate(new Date());
         }
@@ -255,8 +295,8 @@ public class DatePicker extends TextButtonPanel implements CalendarListener<Cale
             
             Calendar calendar = getCalendar();
 
-            if (getDate() != null)
-                calendar.setSelectedDate(getDate());
+            if (getValue() != null)
+                calendar.setSelectedDate(getValue());
             else
                 calendar.setSelectedDate(new Date());
 
