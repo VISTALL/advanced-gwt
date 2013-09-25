@@ -6,7 +6,14 @@
         <author email="sskladchikov@gmail.com">Sergey Skladchikov</author>
     </properties>
     <body>
-        <release version="2.0.8" date="2012-09-04" description="Last stable version">
+        <release version="2.0.9" date="2012-09-26" description="Last stable version">
+            <action type="add" issue="115" system="google">ComboBox addCloseHandler missing</action>
+            <action type="add" issue="120" system="google">Let DatePicker implement HasValue<Date></action>
+            <action type="fix" issue="117" system="google">AdvancedTabPanel insertTab() incorrectly failing</action>
+            <action type="fix" issue="119" system="google">There is little problem with width set of date picker</action>
+            <action type="fix" issue="121" system="google">enableVerticalScrolling(true) on EditableGrid sets bodyTable to 0px height on window resize</action>
+        </release>
+        <release version="2.0.8" date="2012-09-04" description="Old unsupported version">
             <action type="add" issue="114" system="google">Remove form links from project site</action>
             <action type="add" issue="112" system="google">Text Area Rich Text Areas</action>
             <action type="add" issue="111" system="google">ComboBox with CustomText allowed problem with Enter KeyPress event</action>
