@@ -5,7 +5,7 @@
     <artifactId>advanced-gwt-root</artifactId>
     <packaging>pom</packaging>
     <name>Advanced GWT Components Root Script</name>
-    <version>2.0.9</version>
+    <version>2.0.9-SNAPSHOT</version>
 
     <url>http://advanced-gwt.sourceforge.net</url>
     <description>This script builds the whole project.</description>
@@ -61,9 +61,9 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:svn+ssh://svn.code.sf.net/p/advanced-gwt/code/tags/advanced-gwt-root-2.0.9</connection>
-        <developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/advanced-gwt/code/tags/advanced-gwt-root-2.0.9</developerConnection>
-        <url>http://advanced-gwt.svn.sourceforge.net/viewvc/advanced-gwt/tags/advanced-gwt-root-2.0.9</url>
+        <connection>scm:svn:svn+ssh://svn.code.sf.net/p/advanced-gwt/code/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/advanced-gwt/code/trunk</developerConnection>
+        <url>http://advanced-gwt.svn.sourceforge.net/viewvc/advanced-gwt/trunk</url>
     </scm>
 
     <properties>
