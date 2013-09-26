@@ -61,7 +61,7 @@
     </modules>
 
     <scm>
-        <connection>scm:svn:svn://svn.code.sf.net/p/advanced-gwt/code/trunk</connection>
+        <connection>scm:svn:svn+ssh://svn.code.sf.net/p/advanced-gwt/code/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://svn.code.sf.net/p/advanced-gwt/code/trunk</developerConnection>
         <url>http://advanced-gwt.svn.sourceforge.net/viewvc/advanced-gwt/trunk</url>
     </scm>
