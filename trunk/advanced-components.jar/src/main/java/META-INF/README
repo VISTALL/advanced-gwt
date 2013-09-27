@@ -3,6 +3,18 @@ Visit our site http://advanced-gwt.sourceforge.net/
 Release Notes
 
 ====================================================================================================================
+Release 2.0.9 includes:
+
+Bug fixes:
+1. AdvancedTabPanel insertTab() incorrectly failing
+2. There is little problem with width set of date picker
+3. enableVerticalScrolling(true) on EditableGrid sets bodyTable to 0px height on window resize
+
+New features:
+1. ComboBox addCloseHandler missing
+2. Let DatePicker implement HasValue<Date>
+
+====================================================================================================================
 Release 2.0.8 includes:
 
 Bug fixes:
